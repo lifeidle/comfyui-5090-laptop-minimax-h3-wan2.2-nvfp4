@@ -21,7 +21,7 @@ HV_NEG = "低质量，模糊，抖动，畸变，静止不动，字幕，水印"
 
 def convert(template):
     """注意：ui2api 无 -o 时会把输出截断到 4000 字符，大图会解析失败 —— 必须走临时文件。"""
-    tmp = os.path.join(os.environ.get("TEMP", r"C:\Users\chenhua\AppData\Local\Temp"),
+    tmp = os.path.join(tempfile.gettempdir(),
                        "_mk_wf_conv.json")
     r = subprocess.run([PY, UI2API, template, "-o", tmp],
                        capture_output=True, text=True, encoding="utf-8")

@@ -176,7 +176,7 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:22px 0 0;color:v
 <td>量化格式的完整心智模型</td>
 </tr>
 <tr>
-<td><a href="#3-怎么下把-1256-gb-拉下来">3</a></td>
+<td><a href="#3-怎么下把几百-gb-拉下来">3</a></td>
 <td>怎么下</td>
 <td>多源下载工程</td>
 </tr>
@@ -221,9 +221,14 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:22px 0 0;color:v
 <td><strong>每个领域的一条最佳选择 + 证据链</strong></td>
 </tr>
 <tr>
-<td><a href="#附录-e覆盖度审计我们试过什么没试什么为什么放弃">附录 E</a></td>
+<td><a href="#附录-e覆盖度审计--我们试过什么没试什么为什么放弃">附录 E</a></td>
 <td><strong>覆盖度审计</strong></td>
 <td><strong>试过什么、没试什么、每个放弃的确切理由</strong></td>
+</tr>
+<tr>
+<td><a href="#附录-f授权与法律边界必读">附录 F</a></td>
+<td><strong>授权与法律边界</strong></td>
+<td><strong>每个模型的授权、能否商用、四条硬约束</strong></td>
 </tr>
 </tbody>
 </table></div>
@@ -1843,7 +1848,7 @@ python tools/ab_metrics.py
 </tr>
 <tr>
 <td><strong>图像编辑</strong></td>
-<td><strong>FLUX.2 Klein 9B fp8</strong></td>
+<td><strong>FLUX.2 Klein 9B fp8</strong>（⚠️ 非商用授权，商用改用 4B，见附录 F.3）</td>
 <td><strong>18.9 s</strong></td>
 <td>双 pass 9B 只占 18.3 GB；4B（42.3 s）质量更低还更慢</td>
 </tr>
@@ -1897,6 +1902,153 @@ python tools/ab_metrics.py
 <p><strong>只要显卡是 Blackwell（sm_120/121），一律选 NVFP4。</strong>
 本机 5 组同模型双格式对比，NVFP4 每次都更快、更小，画质差异落在噪声地板之下。
 而且 §5 的「快 22%」是在优化内核被禁用的前提下测得的<strong>下界</strong>（见附录 E ④）。</p>
+<hr />
+<h2 id="附录-f授权与法律边界必读">附录 F：授权与法律边界（必读）</h2>
+<blockquote>
+<p><strong>这不是法律意见。</strong> 下表是我们逐个核对后的整理，标注了「已核实」与「未核实」。
+<strong>授权条款会变，用之前请一定回到各模型的 HuggingFace / 官方页面再确认一次。</strong>
+另外要分清三件事：<strong>本仓库代码的授权</strong>、<strong>模型权重的授权</strong>、<strong>你喂给模型的素材的授权</strong> —— 三者互不相同。</p>
+</blockquote>
+<h3 id="f1-本仓库的授权">F.1 本仓库的授权</h3>
+<p>本仓库的<strong>代码、脚本、图表与文字</strong>采用 <a href="LICENSE">MIT</a>。<strong>它不覆盖任何模型权重</strong> —— 权重各有自己的授权（见下表）。
+也就是说：你可以自由使用/修改/分发本仓库的脚本，但<strong>跑哪个模型、能不能商用，由那个模型的授权决定</strong>。</p>
+<h3 id="f2-本手册涉及的模型授权一览">F.2 本手册涉及的模型授权一览</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>模型</th>
+<th>授权</th>
+<th>能否商用</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Qwen-Image 2512</strong></td>
+<td>Apache 2.0</td>
+<td>✅</td>
+<td>§11 的图像首选，授权干净</td>
+</tr>
+<tr>
+<td><strong>Wan 2.2（5B / 14B）</strong></td>
+<td>Apache 2.0</td>
+<td>✅</td>
+<td>§11 的视频首选，授权干净</td>
+</tr>
+<tr>
+<td><strong>ACE-Step 1.5</strong></td>
+<td>Apache 2.0</td>
+<td>✅</td>
+<td>§11 的音乐首选，授权干净</td>
+</tr>
+<tr>
+<td><strong>FLUX.2 Klein 4B</strong></td>
+<td><strong>Apache 2.0</strong></td>
+<td>✅</td>
+<td>⚠️ 与 9B <strong>授权相反</strong>，见 F.3</td>
+</tr>
+<tr>
+<td><strong>FLUX.2 Klein 9B</strong></td>
+<td><strong>FLUX Non-Commercial License</strong></td>
+<td>❌ <strong>禁止商用</strong></td>
+<td>⚠️ §11 推荐它做图像编辑 —— <strong>仅限非商用</strong>；商用请改用 4B</td>
+</tr>
+<tr>
+<td>FLUX.1-dev</td>
+<td>FLUX.1-dev Non-Commercial</td>
+<td>❌</td>
+<td>只用于对照基准</td>
+</tr>
+<tr>
+<td>SDXL base 1.0</td>
+<td>CreativeML Open RAIL++-M</td>
+<td>✅（附使用限制）</td>
+<td>带 AUP 禁止用途条款</td>
+</tr>
+<tr>
+<td><strong>Hunyuan3D 2.1</strong></td>
+<td>Tencent Hunyuan 3D 2.1 Community License</td>
+<td>⚠️ 有条件</td>
+<td>见 F.4，四条硬约束</td>
+</tr>
+<tr>
+<td>HunyuanVideo 1.5</td>
+<td>Tencent Community License</td>
+<td>⚠️ 有条件</td>
+<td>同样<strong>排除欧盟/英国/韩国</strong></td>
+</tr>
+<tr>
+<td>LTX-Video 2B / LTX-2.3</td>
+<td>LTX Community License</td>
+<td>⚠️ 有条件</td>
+<td>年营收 <strong>&lt; 1000 万美元</strong>可免费商用（网上常被误写成 Apache 2.0）</td>
+</tr>
+<tr>
+<td><strong>YuE2</strong></td>
+<td><strong>CC-BY-NC 4.0</strong></td>
+<td>❌ <strong>禁止商用</strong></td>
+<td>权重能下载 ≠ 产出能用</td>
+</tr>
+<tr>
+<td>MiniMax Music 3</td>
+<td>见官方仓库</td>
+<td>⚠️ 未核实</td>
+<td>用前必须自查</td>
+</tr>
+<tr>
+<td>MiniMax H3</td>
+<td>见官方仓库</td>
+<td>⚠️ 未核实</td>
+<td>用前必须自查</td>
+</tr>
+<tr>
+<td>Stable Audio 3 Medium</td>
+<td>见官方仓库</td>
+<td>⚠️ 未核实</td>
+<td>Stability 系社区授权通常有营收门槛</td>
+</tr>
+<tr>
+<td>Lens / ERNIE-Image</td>
+<td>见官方仓库</td>
+<td>⚠️ 未核实</td>
+<td>较新，条款以模型卡为准</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="f3-最大的一个坑flux2-klein-的-4b-与-9b-授权相反">F.3 最大的一个坑：FLUX.2 Klein 的 4B 与 9B <strong>授权相反</strong></h3>
+<p>这是本次核对中<strong>最容易踩、后果也最重</strong>的一条：</p>
+<ul>
+<li><strong>FLUX.2 Klein 4B → Apache 2.0</strong>（BFL 首个完全 Apache 2.0 的 FLUX 系模型，可商用）</li>
+<li><strong>FLUX.2 Klein 9B → FLUX Non-Commercial License</strong>（不可商用）</li>
+</ul>
+<p><strong>两者名字几乎一样，授权却完全相反。</strong> 而 §11 的图像编辑首选恰好是 9B —— 所以必须写明：</p>
+<blockquote>
+<ul>
+<li><strong>个人 / 研究 / 非商用</strong> → 用 9B（18.9 s，质量更好）</li>
+<li><strong>商用</strong> → 改用 <strong>4B</strong>（Apache 2.0，42.3 s，仍然可用）</li>
+</ul>
+</blockquote>
+<p>顺带提醒：<strong>FLUX.1-dev 也是非商业授权</strong>，它在本文只作对照基准，不该出现在商用管线里。</p>
+<h3 id="f4-hunyuan3d-21-的四条硬约束">F.4 Hunyuan3D 2.1 的四条硬约束</h3>
+<p>腾讯社区授权不是「宽松开源」，它有四条明确限制（逐条来自 LICENSE 原文）：</p>
+<ol>
+<li><strong>地域</strong>：授权<strong>不适用于欧盟、英国、韩国</strong>（原文大写强调；在该区域外使用即未授权）</li>
+<li><strong>商用规模</strong>：月活 <strong>&gt; 100 万</strong> 需另行向腾讯申请（<code>hunyuan3d@tencent.com</code>），是否授予由腾讯酌定</li>
+<li><strong>署名</strong>：分发时须附带指定措辞的 Notice 文件，产品需标注 <strong>&quot;Powered by Tencent Hunyuan&quot;</strong></li>
+<li><strong>竞业</strong>：<strong>不得用本模型或其产出去训练/改进其他 AI 模型</strong>（Hunyuan3D 本身及其衍生品除外）</li>
+</ol>
+<p>另有一条容易忽略的：<strong>模型权重的授权 ≠ 你输入素材的授权</strong>。喂给它做 3D 重建的图片如果不是你有权使用的，产出仍有风险。</p>
+<h3 id="f5-两条通用结论">F.5 两条通用结论</h3>
+<ol>
+<li><strong>音乐与视频模型的授权，比图像模型乱得多。</strong>
+流行的音乐模型里 CC-BY-NC 很常见（YuE2、MusicGen、早期 Stable Audio Open）；
+视频模型则常用「社区授权 + 营收门槛 + 地域排除」三件套。
+<strong>结论：选型时把授权当成与画质同级的硬指标</strong>，这也是 §11 把 ACE-Step（Apache 2.0）
+排在音乐第一、而把 YuE2 标成非商用的原因。</li>
+<li><strong>「权重能下载」不等于「产出能商用」。</strong>
+本手册所有性能数据都是在「权重可下载」的前提下测的；<strong>能否商用请回查 F.2</strong>。
+凡是标 ❌ 的，性能再好也不该进入商用管线。</li>
+</ol>
 <hr />
 <h2 id="附录-a完整模型清单100-文件--4584-gb">附录 A：完整模型清单（100 文件 / 458.4 GB）</h2>
 <blockquote>
@@ -2342,6 +2494,7 @@ python tools/ab_metrics.py
 <li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/benchmark-results.md"><code>data/benchmark-results.md</code></a> —— 各工作流服务端耗时</li>
 <li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/download-manifest.md"><code>data/download-manifest.md</code></a> —— 34 个文件的体积与 dtype</li>
 <li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/coverage-round2.md"><code>data/coverage-round2.md</code></a> —— <strong>第二轮覆盖度扩展的原始数据</strong>（音乐 4 条线 + Wan 2.2 14B + LTX + Hunyuan3D 的耗时与产物规格、VAE 踩坑记录、cu130 内核禁用证据）</li>
+<li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/coverage-round3.md"><code>data/coverage-round3.md</code></a> —— <strong>第三轮的原始数据</strong>（Wan 2.2 14B 4步 vs 20步、MiniMax H3 4步、FLUX.2 Klein 9B 解封、Lens、ERNIE、Stable Audio 3，以及全部 21 组基准）</li>
 </ul>
 <h2 id="附录-c术语表">附录 C：术语表</h2>
 <div class="tw"><table>
@@ -2676,7 +2829,7 @@ reproducible method.</p>
 <td>A complete mental model of quantization</td>
 </tr>
 <tr>
-<td><a href="#3-how-we-downloaded-moving-1256-gb">3</a></td>
+<td><a href="#3-how-we-downloaded-moving-several-hundred-gb">3</a></td>
 <td>How we downloaded</td>
 <td>Multi-source download engineering</td>
 </tr>
@@ -2721,9 +2874,14 @@ reproducible method.</p>
 <td><strong>The one best pick per domain, with the evidence chain</strong></td>
 </tr>
 <tr>
-<td><a href="#appendix-e-coverage-audit-what-we-ran-what-we-did-not-and-why">Appendix E</a></td>
+<td><a href="#appendix-e-coverage-audit--what-we-ran-what-we-did-not-and-why">Appendix E</a></td>
 <td><strong>Coverage audit</strong></td>
 <td><strong>What was run, what was not, and the exact reason for every skip</strong></td>
+</tr>
+<tr>
+<td><a href="#appendix-f-licences-and-legal-boundaries-read-this">Appendix F</a></td>
+<td><strong>Licences &amp; legal boundaries</strong></td>
+<td><strong>Each model's licence, commercial usability, four hard constraints</strong></td>
 </tr>
 </tbody>
 </table></div>
@@ -4412,7 +4570,7 @@ single line: <strong>if this 24 GB 5090 laptop could keep only one configuration
 </tr>
 <tr>
 <td><strong>Image editing</strong></td>
-<td><strong>FLUX.2 Klein 9B fp8</strong></td>
+<td><strong>FLUX.2 Klein 9B fp8</strong> (⚠️ non-commercial licence — use the 4B commercially, see Appendix F.3)</td>
 <td><strong>18.9 s</strong></td>
 <td>Two-pass 9B fits in 18.3 GB; 4B (42.3 s) is both lower quality and slower</td>
 </tr>
@@ -4470,6 +4628,166 @@ Five lines covering image / video / music / 3D, <strong>every one of them measur
 Across five same-model dual-format comparisons on this machine, NVFP4 was always faster and
 smaller, with the quality delta below the noise floor. And §5's &quot;22% faster&quot; was measured with the
 optimized kernels disabled — a <strong>lower bound</strong> (see Appendix E ④).</p>
+<hr />
+<h2 id="appendix-f-licences-and-legal-boundaries-read-this">Appendix F: Licences and legal boundaries (read this)</h2>
+<blockquote>
+<p><strong>This is not legal advice.</strong> The table below is our own verification pass, marked &quot;verified&quot; or
+&quot;not verified&quot;. <strong>Licences change — always re-check each model's HuggingFace / official page
+before use.</strong> Also keep three things apart: <strong>the licence of this repository's code</strong>, <strong>the licence
+of the model weights</strong>, and <strong>the licence of whatever you feed the model</strong> — they are three
+different questions.</p>
+</blockquote>
+<h3 id="f1-this-repositorys-licence">F.1 This repository's licence</h3>
+<p>The <strong>code, scripts, charts and prose</strong> in this repo are <a href="LICENSE">MIT</a>. <strong>It does not cover any
+model weights</strong> — weights carry their own licences (table below). You may freely use, modify and
+redistribute these scripts, but <strong>which model you run, and whether you may use it commercially, is
+decided by that model's own licence</strong>.</p>
+<h3 id="f2-licence-of-every-model-in-this-document">F.2 Licence of every model in this document</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Licence</th>
+<th>Commercial?</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Qwen-Image 2512</strong></td>
+<td>Apache 2.0</td>
+<td>✅</td>
+<td>§11's image pick, clean</td>
+</tr>
+<tr>
+<td><strong>Wan 2.2 (5B / 14B)</strong></td>
+<td>Apache 2.0</td>
+<td>✅</td>
+<td>§11's video pick, clean</td>
+</tr>
+<tr>
+<td><strong>ACE-Step 1.5</strong></td>
+<td>Apache 2.0</td>
+<td>✅</td>
+<td>§11's music pick, clean</td>
+</tr>
+<tr>
+<td><strong>FLUX.2 Klein 4B</strong></td>
+<td><strong>Apache 2.0</strong></td>
+<td>✅</td>
+<td>⚠️ <strong>opposite</strong> of the 9B, see F.3</td>
+</tr>
+<tr>
+<td><strong>FLUX.2 Klein 9B</strong></td>
+<td><strong>FLUX Non-Commercial Licence</strong></td>
+<td>❌ <strong>no</strong></td>
+<td>⚠️ §11 recommends it for editing — <strong>non-commercial only</strong>; use 4B for commercial work</td>
+</tr>
+<tr>
+<td>FLUX.1-dev</td>
+<td>FLUX.1-dev Non-Commercial</td>
+<td>❌</td>
+<td>Used here only as a baseline</td>
+</tr>
+<tr>
+<td>SDXL base 1.0</td>
+<td>CreativeML Open RAIL++-M</td>
+<td>✅ (with use restrictions)</td>
+<td>Carries an AUP with prohibited uses</td>
+</tr>
+<tr>
+<td><strong>Hunyuan3D 2.1</strong></td>
+<td>Tencent Hunyuan 3D 2.1 Community Licence</td>
+<td>⚠️ conditional</td>
+<td>Four hard constraints, see F.4</td>
+</tr>
+<tr>
+<td>HunyuanVideo 1.5</td>
+<td>Tencent Community Licence</td>
+<td>⚠️ conditional</td>
+<td>Also <strong>excludes the EU, UK and South Korea</strong></td>
+</tr>
+<tr>
+<td>LTX-Video 2B / LTX-2.3</td>
+<td>LTX Community Licence</td>
+<td>⚠️ conditional</td>
+<td>Free commercial use under <strong>$10M annual revenue</strong> (frequently mis-described as Apache 2.0)</td>
+</tr>
+<tr>
+<td><strong>YuE2</strong></td>
+<td><strong>CC-BY-NC 4.0</strong></td>
+<td>❌ <strong>no</strong></td>
+<td>&quot;The weights download&quot; ≠ &quot;the output is usable&quot;</td>
+</tr>
+<tr>
+<td>MiniMax Music 3</td>
+<td>see the official repo</td>
+<td>⚠️ unverified</td>
+<td>Check before use</td>
+</tr>
+<tr>
+<td>MiniMax H3</td>
+<td>see the official repo</td>
+<td>⚠️ unverified</td>
+<td>Check before use</td>
+</tr>
+<tr>
+<td>Stable Audio 3 Medium</td>
+<td>see the official repo</td>
+<td>⚠️ unverified</td>
+<td>Stability-family community licences usually carry a revenue threshold</td>
+</tr>
+<tr>
+<td>Lens / ERNIE-Image</td>
+<td>see the official repo</td>
+<td>⚠️ unverified</td>
+<td>Newer; the model card governs</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="f3-the-biggest-trap-flux2-kleins-4b-and-9b-have-opposite-licences">F.3 The biggest trap: FLUX.2 Klein's 4B and 9B have <strong>opposite</strong> licences</h3>
+<p>This is the easiest to trip over and the most consequential finding of this pass:</p>
+<ul>
+<li><strong>FLUX.2 Klein 4B → Apache 2.0</strong> (BFL's first fully Apache-2.0 FLUX-family model, commercial use allowed)</li>
+<li><strong>FLUX.2 Klein 9B → FLUX Non-Commercial Licence</strong> (no commercial use)</li>
+</ul>
+<p><strong>The names are nearly identical; the licences are opposites.</strong> And §11 happens to recommend the 9B
+for image editing, so it must be stated plainly:</p>
+<blockquote>
+<ul>
+<li><strong>Personal / research / non-commercial</strong> → use the 9B (18.9 s, better quality)</li>
+<li><strong>Commercial</strong> → switch to the <strong>4B</strong> (Apache 2.0, 42.3 s, still perfectly usable)</li>
+</ul>
+</blockquote>
+<p>Related: <strong>FLUX.1-dev is also non-commercial</strong> — it appears here only as a baseline and does not
+belong in a commercial pipeline.</p>
+<h3 id="f4-hunyuan3d-21--four-hard-constraints">F.4 Hunyuan3D 2.1 — four hard constraints</h3>
+<p>Tencent's community licence is not a permissive open-source licence; it carries four explicit limits
+(taken from the LICENSE text):</p>
+<ol>
+<li><strong>Territory</strong>: the licence <strong>does not apply in the European Union, the United Kingdom, or South
+Korea</strong> (capitalised in the original; use outside the territory is unlicensed)</li>
+<li><strong>Commercial scale</strong>: above <strong>1 million monthly active users</strong> you must request a licence from
+Tencent (<code>hunyuan3d@tencent.com</code>), granted at Tencent's sole discretion</li>
+<li><strong>Attribution</strong>: distributions must include a Notice file with the specified wording, and products
+must be marked <strong>&quot;Powered by Tencent Hunyuan&quot;</strong></li>
+<li><strong>Non-competeness</strong>: <strong>you must not use the model or its outputs to train or improve any other AI
+model</strong> (other than Hunyuan3D itself and its derivatives)</li>
+</ol>
+<p>One more that is easy to miss: <strong>the licence on the weights is not the licence on your input.</strong> If the
+photo you feed it for 3D reconstruction is not yours to use, the output is still a problem.</p>
+<h3 id="f5-two-general-conclusions">F.5 Two general conclusions</h3>
+<ol>
+<li><strong>Music and video licences are far messier than image licences.</strong>
+CC-BY-NC is common among popular music models (YuE2, MusicGen, early Stable Audio Open); video
+models tend to ship &quot;community licence + revenue threshold + territory exclusion&quot; as a set.
+<strong>Treat the licence as a hard requirement on the same level as quality</strong> — which is why §11 puts
+ACE-Step (Apache 2.0) first for music and marks YuE2 non-commercial.</li>
+<li><strong>&quot;The weights download&quot; does not mean &quot;the output is commercially usable&quot;.</strong>
+Every performance number in this document was measured under the premise that the weights are
+downloadable; <strong>whether you may use the output commercially is answered in F.2</strong>. Anything marked
+❌ should stay out of a commercial pipeline no matter how good it is.</li>
+</ol>
 <hr />
 <h2 id="appendix-a-complete-model-manifest-100-files--4584-gb">Appendix A: Complete model manifest (100 files / 458.4 GB)</h2>
 <blockquote>

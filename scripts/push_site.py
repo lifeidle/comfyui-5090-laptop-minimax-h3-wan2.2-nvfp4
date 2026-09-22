@@ -19,13 +19,15 @@
 import base64
 import json
 import os
+import tempfile
+import shutil
 import subprocess
 import sys
 import time
 
-GH = r"C:\Users\chenhua\Desktop\1\gh_cli\bin\gh.exe"
+os.environ.get("GH_CLI") or shutil.which("gh") or "gh"
 GIT = r"C:\Program Files\Git\cmd\git.exe"
-SCRATCH = os.path.join(os.environ.get("TEMP", r"C:\Users\chenhua\AppData\Local\Temp"),
+SCRATCH = os.path.join(tempfile.gettempdir(),
                        "keelpush", "py_scratch")
 SKIP = {".git", "node_modules", ".DS_Store"}
 TRANSIENT = ("Bad Gateway", "502", "503", "504", "timeout", "timed out",

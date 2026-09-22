@@ -27,7 +27,7 @@ CAPTION = ("Chinese folk pop song, warm female vocal, guzheng and bamboo flute, 
 
 
 def convert(t):
-    tmp = os.path.join(os.environ.get("TEMP", r"C:\Users\chenhua\AppData\Local\Temp"), "_m2.json")
+    tmp = os.path.join(tempfile.gettempdir(), "_m2.json")
     r = subprocess.run([PY, UI2API, t, "-o", tmp], capture_output=True, text=True, encoding="utf-8")
     if not os.path.exists(tmp):
         raise RuntimeError((r.stdout or "")[:600] + (r.stderr or "")[:600])

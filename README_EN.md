@@ -26,7 +26,7 @@ reproducible method.
 | [0](#0-hardware-and-starting-point) | Hardware and starting point | Where the real constraint is |
 | [1](#1-tldr-the-verdict) | **The verdict first** | Every choice in one table |
 | [2](#2-how-we-reasoned-framing-the-constraint) | How we reasoned | A complete mental model of quantization |
-| [3](#3-how-we-downloaded-moving-1256-gb) | How we downloaded | Multi-source download engineering |
+| [3](#3-how-we-downloaded-moving-several-hundred-gb) | How we downloaded | Multi-source download engineering |
 | [4](#4-how-we-built-comfyui-node-constraints) | How we built | Node constraints bought with pain |
 | [5](#5-how-we-measured-the-controlled-ab-the-core-of-this-document) | **How we measured** | The methodology (the core) |
 | [6](#6-how-we-chose-eight-model-lines-in-practice) | **How we chose** | Image / editing / video / music / 3D — eight lines, measured |
@@ -35,7 +35,8 @@ reproducible method.
 | [9](#9-toolchain) | Toolchain | Reusable scripts + **a template→API converter** |
 | [10](#10-conclusion-and-what-is-next) | Conclusion | What is still open |
 | [11](#11-final-verdict-one-best-choice) | **Final verdict** | **The one best pick per domain, with the evidence chain** |
-| [Appendix E](#appendix-e-coverage-audit-what-we-ran-what-we-did-not-and-why) | **Coverage audit** | **What was run, what was not, and the exact reason for every skip** |
+| [Appendix E](#appendix-e-coverage-audit--what-we-ran-what-we-did-not-and-why) | **Coverage audit** | **What was run, what was not, and the exact reason for every skip** |
+| [Appendix F](#appendix-f-licences-and-legal-boundaries-read-this) | **Licences & legal boundaries** | **Each model's licence, commercial usability, four hard constraints** |
 
 ---
 
@@ -999,7 +1000,7 @@ to Python (`scripts/push_site.py`), matching the original line by line:
 |---|---|---|---|
 | **Image** | **Qwen-Image 2512 + Lightning** | **12.2 s** @1328²/4 steps | **68% more pixels than Lens turbo (13.6 s @1024²) and faster**; the only model with **character-exact verified Chinese rendering**. Sole cost is 30.06 GB needing offload — and 12.2 s already includes that |
 | Image (resident-VRAM tier) | Z-Image-Turbo nvfp4 | 13.8 s @1024²/8 steps | 8.33 GB fully resident, zero offload — least fussy for heavy use |
-| **Image editing** | **FLUX.2 Klein 9B fp8** | **18.9 s** | Two-pass 9B fits in 18.3 GB; 4B (42.3 s) is both lower quality and slower |
+| **Image editing** | **FLUX.2 Klein 9B fp8** (⚠️ non-commercial licence — use the 4B commercially, see Appendix F.3) | **18.9 s** | Two-pass 9B fits in 18.3 GB; 4B (42.3 s) is both lower quality and slower |
 | **Video (quality first)** | **Wan 2.2 14B MoE + 4-step LoRA** | **93.8 s** @832×480/81 frames | Flagship MoE quality; 4 steps is **7.9× faster than 20** (which takes 739 s — not worth it) |
 | Video (speed first) | LTX-Video 2B distilled | **19.2 s** @1216×704/121 frames | 4.9× faster than Wan 14B; accept subtler motion |
 | **Video + audio** | **MiniMax H3 + 4-step LoRA** | **286.2 s** | 4 steps is **1.81× faster than 8**; the only line with a native audio track |
@@ -1029,6 +1030,88 @@ The chain of reasons, each backed by a measurement:
 Across five same-model dual-format comparisons on this machine, NVFP4 was always faster and
 smaller, with the quality delta below the noise floor. And §5's "22% faster" was measured with the
 optimized kernels disabled — a **lower bound** (see Appendix E ④).
+
+---
+
+## Appendix F: Licences and legal boundaries (read this)
+
+> **This is not legal advice.** The table below is our own verification pass, marked "verified" or
+> "not verified". **Licences change — always re-check each model's HuggingFace / official page
+> before use.** Also keep three things apart: **the licence of this repository's code**, **the licence
+> of the model weights**, and **the licence of whatever you feed the model** — they are three
+> different questions.
+
+### F.1 This repository's licence
+
+The **code, scripts, charts and prose** in this repo are [MIT](LICENSE). **It does not cover any
+model weights** — weights carry their own licences (table below). You may freely use, modify and
+redistribute these scripts, but **which model you run, and whether you may use it commercially, is
+decided by that model's own licence**.
+
+### F.2 Licence of every model in this document
+
+| Model | Licence | Commercial? | Notes |
+|---|---|---|---|
+| **Qwen-Image 2512** | Apache 2.0 | ✅ | §11's image pick, clean |
+| **Wan 2.2 (5B / 14B)** | Apache 2.0 | ✅ | §11's video pick, clean |
+| **ACE-Step 1.5** | Apache 2.0 | ✅ | §11's music pick, clean |
+| **FLUX.2 Klein 4B** | **Apache 2.0** | ✅ | ⚠️ **opposite** of the 9B, see F.3 |
+| **FLUX.2 Klein 9B** | **FLUX Non-Commercial Licence** | ❌ **no** | ⚠️ §11 recommends it for editing — **non-commercial only**; use 4B for commercial work |
+| FLUX.1-dev | FLUX.1-dev Non-Commercial | ❌ | Used here only as a baseline |
+| SDXL base 1.0 | CreativeML Open RAIL++-M | ✅ (with use restrictions) | Carries an AUP with prohibited uses |
+| **Hunyuan3D 2.1** | Tencent Hunyuan 3D 2.1 Community Licence | ⚠️ conditional | Four hard constraints, see F.4 |
+| HunyuanVideo 1.5 | Tencent Community Licence | ⚠️ conditional | Also **excludes the EU, UK and South Korea** |
+| LTX-Video 2B / LTX-2.3 | LTX Community Licence | ⚠️ conditional | Free commercial use under **$10M annual revenue** (frequently mis-described as Apache 2.0) |
+| **YuE2** | **CC-BY-NC 4.0** | ❌ **no** | "The weights download" ≠ "the output is usable" |
+| MiniMax Music 3 | see the official repo | ⚠️ unverified | Check before use |
+| MiniMax H3 | see the official repo | ⚠️ unverified | Check before use |
+| Stable Audio 3 Medium | see the official repo | ⚠️ unverified | Stability-family community licences usually carry a revenue threshold |
+| Lens / ERNIE-Image | see the official repo | ⚠️ unverified | Newer; the model card governs |
+
+### F.3 The biggest trap: FLUX.2 Klein's 4B and 9B have **opposite** licences
+
+This is the easiest to trip over and the most consequential finding of this pass:
+
+- **FLUX.2 Klein 4B → Apache 2.0** (BFL's first fully Apache-2.0 FLUX-family model, commercial use allowed)
+- **FLUX.2 Klein 9B → FLUX Non-Commercial Licence** (no commercial use)
+
+**The names are nearly identical; the licences are opposites.** And §11 happens to recommend the 9B
+for image editing, so it must be stated plainly:
+
+> - **Personal / research / non-commercial** → use the 9B (18.9 s, better quality)
+> - **Commercial** → switch to the **4B** (Apache 2.0, 42.3 s, still perfectly usable)
+
+Related: **FLUX.1-dev is also non-commercial** — it appears here only as a baseline and does not
+belong in a commercial pipeline.
+
+### F.4 Hunyuan3D 2.1 — four hard constraints
+
+Tencent's community licence is not a permissive open-source licence; it carries four explicit limits
+(taken from the LICENSE text):
+
+1. **Territory**: the licence **does not apply in the European Union, the United Kingdom, or South
+   Korea** (capitalised in the original; use outside the territory is unlicensed)
+2. **Commercial scale**: above **1 million monthly active users** you must request a licence from
+   Tencent (`hunyuan3d@tencent.com`), granted at Tencent's sole discretion
+3. **Attribution**: distributions must include a Notice file with the specified wording, and products
+   must be marked **"Powered by Tencent Hunyuan"**
+4. **Non-competeness**: **you must not use the model or its outputs to train or improve any other AI
+   model** (other than Hunyuan3D itself and its derivatives)
+
+One more that is easy to miss: **the licence on the weights is not the licence on your input.** If the
+photo you feed it for 3D reconstruction is not yours to use, the output is still a problem.
+
+### F.5 Two general conclusions
+
+1. **Music and video licences are far messier than image licences.**
+   CC-BY-NC is common among popular music models (YuE2, MusicGen, early Stable Audio Open); video
+   models tend to ship "community licence + revenue threshold + territory exclusion" as a set.
+   **Treat the licence as a hard requirement on the same level as quality** — which is why §11 puts
+   ACE-Step (Apache 2.0) first for music and marks YuE2 non-commercial.
+2. **"The weights download" does not mean "the output is commercially usable".**
+   Every performance number in this document was measured under the premise that the weights are
+   downloadable; **whether you may use the output commercially is answered in F.2**. Anything marked
+   ❌ should stay out of a commercial pipeline no matter how good it is.
 
 ---
 

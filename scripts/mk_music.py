@@ -26,7 +26,7 @@ TAGS = ("Chinese folk pop, guzheng and bamboo flute, warm female vocal, "
 
 
 def convert(template):
-    tmp = os.path.join(os.environ.get("TEMP", r"C:\Users\chenhua\AppData\Local\Temp"), "_m.json")
+    tmp = os.path.join(tempfile.gettempdir(), "_m.json")
     r = subprocess.run([PY, UI2API, template, "-o", tmp],
                        capture_output=True, text=True, encoding="utf-8")
     if not os.path.exists(tmp):
