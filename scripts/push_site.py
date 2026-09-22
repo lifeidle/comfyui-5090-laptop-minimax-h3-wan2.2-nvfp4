@@ -29,7 +29,7 @@ os.environ.get("GH_CLI") or shutil.which("gh") or "gh"
 GIT = r"C:\Program Files\Git\cmd\git.exe"
 SCRATCH = os.path.join(tempfile.gettempdir(),
                        "keelpush", "py_scratch")
-SKIP = {".git", "node_modules", ".DS_Store"}
+SKIP = {".git", "node_modules", ".DS_Store", "__pycache__"}
 TRANSIENT = ("Bad Gateway", "502", "503", "504", "timeout", "timed out",
              "ECONNRESET", "ETIMEDOUT", "TLS", "EOF", "Empty reply")
 
