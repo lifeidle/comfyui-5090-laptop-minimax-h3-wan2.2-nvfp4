@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 444" width="920" height="444" role="img" aria-label="Option 3 · Scenario matrix (look up by need)">
+<rect x="0.0" y="0.0" width="920.0" height="444.0" rx="12" fill="#ffffff"/>
+<text x="24" y="34" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="19" fill="#0f172a" font-weight="700">Option 3 · Scenario matrix (look up by need)</text>
+<text x="24" y="56" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#64748b">Your scenario on the left; the current best answer and its licence boundary on the right. ✅ commercial ⚠️ conditional ❌ non-commercial</text>
+<text x="30" y="88" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#94a3b8" font-weight="700">Scenario</text>
+<text x="320" y="88" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#94a3b8" font-weight="700">Pick</text>
+<text x="600" y="88" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#94a3b8" font-weight="700">Time</text>
+<text x="700" y="88" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#94a3b8" font-weight="700">Licence</text>
+<rect x="24.0" y="91.0" width="872.0" height="30.0" rx="4" fill="#f8fafc"/>
+<text x="30" y="108" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">Chinese poster / dense in-image text</text>
+<text x="320" y="108" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="600">Qwen-Image 2512 + Lightning</text>
+<text x="600" y="108" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">12.2 s s</text>
+<text x="700" y="108" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#059669" font-weight="600">✅ Apache 2.0</text>
+<text x="30" y="142" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">Fast drafts / frequent iteration</text>
+<text x="320" y="142" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="600">Z-Image-Turbo nvfp4</text>
+<text x="600" y="142" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">13.8 s s</text>
+<text x="700" y="142" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#059669" font-weight="600">✅ Apache 2.0</text>
+<rect x="24.0" y="159.0" width="872.0" height="30.0" rx="4" fill="#f8fafc"/>
+<text x="30" y="176" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">Most accurate structured text</text>
+<text x="320" y="176" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="600">ERNIE-Image Turbo</text>
+<text x="600" y="176" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">37.3 s s</text>
+<text x="700" y="176" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#059669" font-weight="600">✅ Apache 2.0</text>
+<text x="30" y="210" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">Short clip + native audio (China)</text>
+<text x="320" y="210" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="600">MiniMax H3 4-step LoRA</text>
+<text x="600" y="210" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">286.2 s s</text>
+<text x="700" y="210" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#d97706" font-weight="600">⚠ excludes US/EU/UK/KR</text>
+<rect x="24.0" y="227.0" width="872.0" height="30.0" rx="4" fill="#f8fafc"/>
+<text x="30" y="244" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">Short clip (global commercial)</text>
+<text x="320" y="244" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="600">Wan 2.2 14B MoE 4-step</text>
+<text x="600" y="244" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">93.8 s s</text>
+<text x="700" y="244" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#059669" font-weight="600">✅ Apache 2.0</text>
+<text x="30" y="278" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">Full song with vocals</text>
+<text x="320" y="278" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="600">ACE-Step 1.5 XL turbo</text>
+<text x="600" y="278" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">28.6 s s</text>
+<text x="700" y="278" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#059669" font-weight="600">✅ Apache 2.0</text>
+<rect x="24.0" y="295.0" width="872.0" height="30.0" rx="4" fill="#f8fafc"/>
+<text x="30" y="312" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">Instrumental / SFX / backing</text>
+<text x="320" y="312" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="600">Stable Audio 3 Medium</text>
+<text x="600" y="312" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">13.8 s s</text>
+<text x="700" y="312" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#059669" font-weight="600">✅ under $1M revenue</text>
+<text x="30" y="346" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">Highest-scoring song (non-comm.)</text>
+<text x="320" y="346" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="600">YuE2-3B</text>
+<text x="600" y="346" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">93.7 s s</text>
+<text x="700" y="346" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#dc2626" font-weight="600">❌ CC BY-NC</text>
+<rect x="24.0" y="363.0" width="872.0" height="30.0" rx="4" fill="#f8fafc"/>
+<text x="30" y="380" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">Image → 3D asset (GLB)</text>
+<text x="320" y="380" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="600">Hunyuan3D 2.1</text>
+<text x="600" y="380" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">54.7 s s</text>
+<text x="700" y="380" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#d97706" font-weight="600">⚠ ≤1M MAU · excludes EU/UK/KR</text>
+<line x1="24.0" y1="428.0" x2="896.0" y2="428.0" stroke="#e2e8f0" stroke-width="1"/>
+<text x="24" y="442" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#94a3b8">⚠ = conditional: territory exclusion or revenue threshold — read the model's LICENSE first</text>
+</svg>

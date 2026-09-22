@@ -16,6 +16,37 @@
 
 ---
 
+## 🎯 三套现成方案（看图即选）
+
+> 下面三张图 + 一张授权矩阵，覆盖全部 21 组实测配置。
+> **每套方案都只包含可商用（或明确标注条件）的模型**——禁商用的 YuE2、FLUX.2 Klein 9B、FLUX.1-dev 已从推荐位剔除，只在授权矩阵里标 ❌。
+
+### 方案一 · 画质 / 音质优先
+
+产出最好的那个。如果你在欧美四地（US/EU/UK/KR）之外，视频选 MiniMax H3；否则选 Wan 2.2 5B。
+
+![方案一 · 画质优先](assets/zh/chart7-recommend-quality.svg)
+
+### 方案二 · 效率优先（综合性价比）
+
+时间 ÷ 质量最优。全部 Apache 2.0、无地域限制、无营收门槛——最省心的一套。
+
+![方案二 · 效率优先](assets/zh/chart8-recommend-efficient.svg)
+
+### 方案三 · 分场景选择
+
+按你的具体场景直接查。左侧是需求，右侧是当前最优解与它的授权边界。
+
+![方案三 · 分场景矩阵](assets/zh/chart9-recommend-scenario.svg)
+
+### 授权矩阵
+
+商用前必查。「权重能下载」≠「产出能商用」。
+
+![授权矩阵](assets/zh/chart10-licence-matrix.svg)
+
+---
+
 ## 目录
 
 | 章节 | 内容 | 你会得到 |
@@ -1014,7 +1045,7 @@ Error: spawnSync C:\Program Files\Git\cmd\git.exe EBUSY
 | LTX-Video 2B / LTX-2.3 | LTX Community License | ⚠️ 有条件 | 年营收 **< 1000 万美元**可免费商用（网上常被误写成 Apache 2.0） |
 | **YuE2** | **CC-BY-NC 4.0** | ❌ **禁止商用** | 权重能下载 ≠ 产出能用 |
 | **MiniMax Music 3** | ⚠️ **信源冲突** | ⚠️ 需自查 | 一说 **CC BY-NC 4.0（禁商用）**，一说 MiniMax-Music3 Community License（可商用 + 界面标注 + 2000 万美元门槛）。**两说并存，用前必须直接读仓库里的 LICENSE 文件** |
-| **MiniMax H3** | MiniMax Community License | ⚠️ **有条件** | **排除地区含美国**（EU/UK/韩国/美国四地不可本地部署）；商用 < 2000 万美元年收入可用，须显著标注「MiniMax H3」；官方称地域排除源于与好莱坞的生成式视频版权诉讼 |
+| **MiniMax H3** | MiniMax Community License | ⚠️ **有条件，中国大陆在范围内** | 排除地区 = US/EU/UK/KR 四地；**中国大陆在授权范围内**。商用 < 2000 万美元年收入即可，须在产品界面显著标注「MiniMax H3」。超过门槛须另行申请。**个人与小团队的实际限制几乎为零** |
 | **Stable Audio 3 Medium** | Stability AI Community License | ✅ **< 100 万美元年收入** | 训练数据全部授权（AudioSparx 80.6 万 + Freesound 47.3 万，另有 UMG/华纳合作）；超过 100 万美元需 Enterprise 授权。**注意：只生成器乐，不生成人声/歌词** |
 | **ERNIE-Image** | **Apache 2.0** ✅ 已核实 | ✅ | 8B DiT + Turbo 8 步版；GenEval 0.8856 / LongTextBench 0.9733，**文字渲染与排版在开源里排第一** |
 | **Lens** | 见官方仓库 | ⚠️ 未核实 | Comfy-Org/Lens 是 repackage，**原始厂商与授权待查**；编码器是 gpt_oss_20b nvfp4 |
@@ -1054,6 +1085,12 @@ Error: spawnSync C:\Program Files\Git\cmd\git.exe EBUSY
 2. **「权重能下载」不等于「产出能商用」。**
    本手册所有性能数据都是在「权重可下载」的前提下测的；**能否商用请回查 F.2**。
    凡是标 ❌ 的，性能再好也不该进入商用管线。
+
+3. **地域排除限制的是「部署地」，不是「用户国籍」。**
+   MiniMax H3 排除 US/EU/UK/KR 四地，但**中国大陆在授权范围内**。
+   $2000 万美元的营收门槛对个人和小团队不构成实际限制。
+   实际义务只有一条：在产品界面显著标注「MiniMax H3」。
+   所以 **MiniMax H3 是中国大陆用户的合法画质首选**，不必因授权而排除。
 
 ---
 

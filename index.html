@@ -150,6 +150,24 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:22px 0 0;color:v
 本文把我们的完整决策链摊开：怎么想、怎么下、怎么搭、怎么测、怎么选。所有数字都是本机实测，
 所有结论都附带可复现的测量方法。</p>
 <hr />
+<h2 id="-三套现成方案看图即选">🎯 三套现成方案（看图即选）</h2>
+<blockquote>
+<p>下面三张图 + 一张授权矩阵，覆盖全部 21 组实测配置。
+<strong>每套方案都只包含可商用（或明确标注条件）的模型</strong>——禁商用的 YuE2、FLUX.2 Klein 9B、FLUX.1-dev 已从推荐位剔除，只在授权矩阵里标 ❌。</p>
+</blockquote>
+<h3 id="方案一--画质--音质优先">方案一 · 画质 / 音质优先</h3>
+<p>产出最好的那个。如果你在欧美四地（US/EU/UK/KR）之外，视频选 MiniMax H3；否则选 Wan 2.2 5B。</p>
+<p><img src="assets/zh/chart7-recommend-quality.svg" alt="方案一 · 画质优先" /></p>
+<h3 id="方案二--效率优先综合性价比">方案二 · 效率优先（综合性价比）</h3>
+<p>时间 ÷ 质量最优。全部 Apache 2.0、无地域限制、无营收门槛——最省心的一套。</p>
+<p><img src="assets/zh/chart8-recommend-efficient.svg" alt="方案二 · 效率优先" /></p>
+<h3 id="方案三--分场景选择">方案三 · 分场景选择</h3>
+<p>按你的具体场景直接查。左侧是需求，右侧是当前最优解与它的授权边界。</p>
+<p><img src="assets/zh/chart9-recommend-scenario.svg" alt="方案三 · 分场景矩阵" /></p>
+<h3 id="授权矩阵">授权矩阵</h3>
+<p>商用前必查。「权重能下载」≠「产出能商用」。</p>
+<p><img src="assets/zh/chart10-licence-matrix.svg" alt="授权矩阵" /></p>
+<hr />
 <h2 id="目录">目录</h2>
 <div class="tw"><table>
 <thead>
@@ -2047,8 +2065,8 @@ python tools/ab_metrics.py
 <tr>
 <td><strong>MiniMax H3</strong></td>
 <td>MiniMax Community License</td>
-<td>⚠️ <strong>有条件</strong></td>
-<td><strong>排除地区含美国</strong>（EU/UK/韩国/美国四地不可本地部署）；商用 &lt; 2000 万美元年收入可用，须显著标注「MiniMax H3」；官方称地域排除源于与好莱坞的生成式视频版权诉讼</td>
+<td>⚠️ <strong>有条件，中国大陆在范围内</strong></td>
+<td>排除地区 = US/EU/UK/KR 四地；<strong>中国大陆在授权范围内</strong>。商用 &lt; 2000 万美元年收入即可，须在产品界面显著标注「MiniMax H3」。超过门槛须另行申请。<strong>个人与小团队的实际限制几乎为零</strong></td>
 </tr>
 <tr>
 <td><strong>Stable Audio 3 Medium</strong></td>
@@ -2095,14 +2113,25 @@ python tools/ab_metrics.py
 <p>另有一条容易忽略的：<strong>模型权重的授权 ≠ 你输入素材的授权</strong>。喂给它做 3D 重建的图片如果不是你有权使用的，产出仍有风险。</p>
 <h3 id="f5-两条通用结论">F.5 两条通用结论</h3>
 <ol>
-<li><strong>音乐与视频模型的授权，比图像模型乱得多。</strong>
+<li>
+<p><strong>音乐与视频模型的授权，比图像模型乱得多。</strong>
 流行的音乐模型里 CC-BY-NC 很常见（YuE2、MusicGen、早期 Stable Audio Open）；
 视频模型则常用「社区授权 + 营收门槛 + 地域排除」三件套。
 <strong>结论：选型时把授权当成与画质同级的硬指标</strong>，这也是 §11 把 ACE-Step（Apache 2.0）
-排在音乐第一、而把 YuE2 标成非商用的原因。</li>
-<li><strong>「权重能下载」不等于「产出能商用」。</strong>
+排在音乐第一、而把 YuE2 标成非商用的原因。</p>
+</li>
+<li>
+<p><strong>「权重能下载」不等于「产出能商用」。</strong>
 本手册所有性能数据都是在「权重可下载」的前提下测的；<strong>能否商用请回查 F.2</strong>。
-凡是标 ❌ 的，性能再好也不该进入商用管线。</li>
+凡是标 ❌ 的，性能再好也不该进入商用管线。</p>
+</li>
+<li>
+<p><strong>地域排除限制的是「部署地」，不是「用户国籍」。</strong>
+MiniMax H3 排除 US/EU/UK/KR 四地，但<strong>中国大陆在授权范围内</strong>。
+$2000 万美元的营收门槛对个人和小团队不构成实际限制。
+实际义务只有一条：在产品界面显著标注「MiniMax H3」。
+所以 <strong>MiniMax H3 是中国大陆用户的合法画质首选</strong>，不必因授权而排除。</p>
+</li>
 </ol>
 <hr />
 <h2 id="附录-a完整模型清单100-文件--4584-gb">附录 A：完整模型清单（100 文件 / 458.4 GB）</h2>
@@ -2858,6 +2887,24 @@ it is <strong>deciding which of dozens of quantization variants to pick</strong>
 decision chain bare: how we reasoned, how we downloaded, how we built the graphs, how we measured,
 how we chose. Every number is measured on the machine, and every conclusion ships with a
 reproducible method.</p>
+<hr />
+<h2 id="-three-ready-made-plans-pick-from-the-charts">🎯 Three ready-made plans (pick from the charts)</h2>
+<blockquote>
+<p>Four charts covering all 21 measured configurations.
+<strong>Every recommendation below uses only commercially usable (or clearly flagged conditional) models</strong> — the non-commercial YuE2, FLUX.2 Klein 9B and FLUX.1-dev have been removed from the recommendation slots and are only marked ❌ in the licence matrix.</p>
+</blockquote>
+<h3 id="plan-1--best-quality">Plan 1 · Best quality</h3>
+<p>The best producer per domain. If you are outside the US/EU/UK/KR block, video goes to MiniMax H3; otherwise Wan 2.2 5B.</p>
+<p><img src="assets/en/chart7-recommend-quality.svg" alt="Plan 1 · Quality first" /></p>
+<h3 id="plan-2--efficiency-first-best-overall-value">Plan 2 · Efficiency first (best overall value)</h3>
+<p>Best time-per-quality. All Apache 2.0, no territory limits, no revenue threshold — the zero-friction set.</p>
+<p><img src="assets/en/chart8-recommend-efficient.svg" alt="Plan 2 · Efficiency first" /></p>
+<h3 id="plan-3--scenario-matrix">Plan 3 · Scenario matrix</h3>
+<p>Look up your specific scenario. Your need on the left; the current best answer and its licence boundary on the right.</p>
+<p><img src="assets/en/chart9-recommend-scenario.svg" alt="Plan 3 · Scenario matrix" /></p>
+<h3 id="licence-matrix">Licence matrix</h3>
+<p>Check before commercial use. &quot;The weights download&quot; ≠ &quot;the output is commercially usable&quot;.</p>
+<p><img src="assets/en/chart10-licence-matrix.svg" alt="Licence matrix" /></p>
 <hr />
 <h2 id="contents">Contents</h2>
 <div class="tw"><table>
@@ -4847,8 +4894,8 @@ decided by that model's own licence</strong>.</p>
 <tr>
 <td><strong>MiniMax H3</strong></td>
 <td>MiniMax Community Licence</td>
-<td>⚠️ <strong>conditional</strong></td>
-<td><strong>Excluded territories include the United States</strong> (EU/UK/Korea/US may not deploy locally); commercial use allowed under $20M annual revenue with prominent &quot;MiniMax H3&quot; attribution; MiniMax states the regional carve-out stems from its ongoing generative-video copyright litigation with major Hollywood studios</td>
+<td>⚠️ <strong>conditional; mainland China IS licensed</strong></td>
+<td>Excluded territories = US/EU/UK/KR; <strong>mainland China is inside the licensed territory</strong>. Commercial use under $20M annual revenue, with prominent &quot;MiniMax H3&quot; attribution in the product UI. Above the threshold, a separate agreement is required. <strong>For individuals and small teams the practical limit is effectively zero</strong></td>
 </tr>
 <tr>
 <td><strong>Stable Audio 3 Medium</strong></td>
@@ -4903,15 +4950,27 @@ model</strong> (other than Hunyuan3D itself and its derivatives)</li>
 photo you feed it for 3D reconstruction is not yours to use, the output is still a problem.</p>
 <h3 id="f5-two-general-conclusions">F.5 Two general conclusions</h3>
 <ol>
-<li><strong>Music and video licences are far messier than image licences.</strong>
+<li>
+<p><strong>Music and video licences are far messier than image licences.</strong>
 CC-BY-NC is common among popular music models (YuE2, MusicGen, early Stable Audio Open); video
 models tend to ship &quot;community licence + revenue threshold + territory exclusion&quot; as a set.
 <strong>Treat the licence as a hard requirement on the same level as quality</strong> — which is why §11 puts
-ACE-Step (Apache 2.0) first for music and marks YuE2 non-commercial.</li>
-<li><strong>&quot;The weights download&quot; does not mean &quot;the output is commercially usable&quot;.</strong>
+ACE-Step (Apache 2.0) first for music and marks YuE2 non-commercial.</p>
+</li>
+<li>
+<p><strong>&quot;The weights download&quot; does not mean &quot;the output is commercially usable&quot;.</strong>
 Every performance number in this document was measured under the premise that the weights are
 downloadable; <strong>whether you may use the output commercially is answered in F.2</strong>. Anything marked
-❌ should stay out of a commercial pipeline no matter how good it is.</li>
+❌ should stay out of a commercial pipeline no matter how good it is.</p>
+</li>
+<li>
+<p><strong>Territory exclusion restricts the deployment location, not the user's nationality.</strong>
+MiniMax H3 excludes US/EU/UK/KR, but <strong>mainland China is inside the licensed territory</strong>.
+The $20M revenue threshold is unreachable for individuals and small teams.
+The only practical obligation is a prominent &quot;MiniMax H3&quot; attribution in the product UI.
+So <strong>MiniMax H3 is a legitimate quality-first pick for mainland China users</strong> — do not exclude
+it on licence grounds.</p>
+</li>
 </ol>
 <hr />
 <h2 id="appendix-a-complete-model-manifest-100-files--4584-gb">Appendix A: Complete model manifest (100 files / 458.4 GB)</h2>

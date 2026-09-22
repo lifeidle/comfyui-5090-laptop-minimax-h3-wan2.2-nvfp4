@@ -19,6 +19,37 @@ reproducible method.
 
 ---
 
+## 🎯 Three ready-made plans (pick from the charts)
+
+> Four charts covering all 21 measured configurations.
+> **Every recommendation below uses only commercially usable (or clearly flagged conditional) models** — the non-commercial YuE2, FLUX.2 Klein 9B and FLUX.1-dev have been removed from the recommendation slots and are only marked ❌ in the licence matrix.
+
+### Plan 1 · Best quality
+
+The best producer per domain. If you are outside the US/EU/UK/KR block, video goes to MiniMax H3; otherwise Wan 2.2 5B.
+
+![Plan 1 · Quality first](assets/en/chart7-recommend-quality.svg)
+
+### Plan 2 · Efficiency first (best overall value)
+
+Best time-per-quality. All Apache 2.0, no territory limits, no revenue threshold — the zero-friction set.
+
+![Plan 2 · Efficiency first](assets/en/chart8-recommend-efficient.svg)
+
+### Plan 3 · Scenario matrix
+
+Look up your specific scenario. Your need on the left; the current best answer and its licence boundary on the right.
+
+![Plan 3 · Scenario matrix](assets/en/chart9-recommend-scenario.svg)
+
+### Licence matrix
+
+Check before commercial use. "The weights download" ≠ "the output is commercially usable".
+
+![Licence matrix](assets/en/chart10-licence-matrix.svg)
+
+---
+
 ## Contents
 
 | Section | Topic | What you get |
@@ -1097,7 +1128,7 @@ decided by that model's own licence**.
 | LTX-Video 2B / LTX-2.3 | LTX Community Licence | ⚠️ conditional | Free commercial use under **$10M annual revenue** (frequently mis-described as Apache 2.0) |
 | **YuE2** | **CC-BY-NC 4.0** | ❌ **no** | "The weights download" ≠ "the output is usable" |
 | **MiniMax Music 3** | ⚠️ **sources conflict** | ⚠️ check yourself | One source reports **CC BY-NC 4.0 (no commercial use)**; others report the MiniMax-Music3 Community Licence (commercial with on-screen attribution + a $20M threshold). **Both claims exist — read the LICENSE file in the repo directly before use** |
-| **MiniMax H3** | MiniMax Community Licence | ⚠️ **conditional** | **Excluded territories include the United States** (EU/UK/Korea/US may not deploy locally); commercial use allowed under $20M annual revenue with prominent "MiniMax H3" attribution; MiniMax states the regional carve-out stems from its ongoing generative-video copyright litigation with major Hollywood studios |
+| **MiniMax H3** | MiniMax Community Licence | ⚠️ **conditional; mainland China IS licensed** | Excluded territories = US/EU/UK/KR; **mainland China is inside the licensed territory**. Commercial use under $20M annual revenue, with prominent "MiniMax H3" attribution in the product UI. Above the threshold, a separate agreement is required. **For individuals and small teams the practical limit is effectively zero** |
 | **Stable Audio 3 Medium** | Stability AI Community Licence | ✅ **under $1M annual revenue** | Trained entirely on licensed audio (806k AudioSparx + 473k Freesound, plus UMG/Warner partnerships); above $1M needs an Enterprise licence. **Note: instrumental only — no vocals or lyrics** |
 | **ERNIE-Image** | **Apache 2.0** ✅ verified | ✅ | 8B DiT + an 8-step Turbo build; GenEval 0.8856 / LongTextBench 0.9733 — **best-in-class text rendering and layout among open models** |
 | **Lens** | see the official repo | ⚠️ unverified | Comfy-Org/Lens is a repackage; **the original vendor and licence are still unverified**; the encoder is gpt_oss_20b nvfp4 |
@@ -1146,6 +1177,13 @@ photo you feed it for 3D reconstruction is not yours to use, the output is still
    Every performance number in this document was measured under the premise that the weights are
    downloadable; **whether you may use the output commercially is answered in F.2**. Anything marked
    ❌ should stay out of a commercial pipeline no matter how good it is.
+
+3. **Territory exclusion restricts the deployment location, not the user's nationality.**
+   MiniMax H3 excludes US/EU/UK/KR, but **mainland China is inside the licensed territory**.
+   The $20M revenue threshold is unreachable for individuals and small teams.
+   The only practical obligation is a prominent "MiniMax H3" attribution in the product UI.
+   So **MiniMax H3 is a legitimate quality-first pick for mainland China users** — do not exclude
+   it on licence grounds.
 
 ---
 

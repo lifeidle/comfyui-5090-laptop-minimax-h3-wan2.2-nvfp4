@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 590" width="920" height="590" role="img" aria-label="Licence matrix (check before commercial use)">
+<rect x="0.0" y="0.0" width="920.0" height="590.0" rx="12" fill="#ffffff"/>
+<text x="24" y="34" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="19" fill="#0f172a" font-weight="700">Licence matrix (check before commercial use)</text>
+<text x="24" y="56" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#64748b">"The weights download" ≠ "the output is commercial". ✅ allowed · ⚠️ conditional · ❌ forbidden · ? unverified</text>
+<text x="30" y="90" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#94a3b8" font-weight="700">Model</text>
+<text x="330" y="90" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#94a3b8" font-weight="700">Commercial</text>
+<text x="470" y="90" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#94a3b8" font-weight="700">Territory</text>
+<text x="640" y="90" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#94a3b8" font-weight="700">Threshold</text>
+<text x="760" y="90" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#94a3b8" font-weight="700">Licence</text>
+<rect x="24.0" y="95.0" width="872.0" height="26.0" rx="4" fill="#f8fafc"/>
+<text x="30" y="112" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">Qwen-Image 2512</text>
+<text x="330" y="112" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="14" fill="#059669" font-weight="700">✅</text>
+<text x="470" y="112" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">none</text>
+<text x="640" y="112" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">none</text>
+<text x="760" y="112" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">Apache 2.0</text>
+<text x="30" y="142" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">Z-Image-Turbo</text>
+<text x="330" y="142" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="14" fill="#059669" font-weight="700">✅</text>
+<text x="470" y="142" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">none</text>
+<text x="640" y="142" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">none</text>
+<text x="760" y="142" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">Apache 2.0</text>
+<rect x="24.0" y="155.0" width="872.0" height="26.0" rx="4" fill="#f8fafc"/>
+<text x="30" y="172" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">ERNIE-Image / Turbo</text>
+<text x="330" y="172" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="14" fill="#059669" font-weight="700">✅</text>
+<text x="470" y="172" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">none</text>
+<text x="640" y="172" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">none</text>
+<text x="760" y="172" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">Apache 2.0</text>
+<text x="30" y="202" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">Wan 2.2 (5B / 14B)</text>
+<text x="330" y="202" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="14" fill="#059669" font-weight="700">✅</text>
+<text x="470" y="202" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">none</text>
+<text x="640" y="202" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">none</text>
+<text x="760" y="202" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">Apache 2.0</text>
+<rect x="24.0" y="215.0" width="872.0" height="26.0" rx="4" fill="#f8fafc"/>
+<text x="30" y="232" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">ACE-Step 1.5</text>
+<text x="330" y="232" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="14" fill="#059669" font-weight="700">✅</text>
+<text x="470" y="232" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">none</text>
+<text x="640" y="232" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">none</text>
+<text x="760" y="232" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">Apache 2.0</text>
+<text x="30" y="262" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">FLUX.2 Klein 4B</text>
+<text x="330" y="262" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="14" fill="#059669" font-weight="700">✅</text>
+<text x="470" y="262" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">none</text>
+<text x="640" y="262" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">none</text>
+<text x="760" y="262" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">Apache 2.0</text>
+<rect x="24.0" y="275.0" width="872.0" height="26.0" rx="4" fill="#f8fafc"/>
+<text x="30" y="292" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">FLUX.2 Klein 9B</text>
+<text x="330" y="292" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="14" fill="#dc2626" font-weight="700">❌</text>
+<text x="470" y="292" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">—</text>
+<text x="640" y="292" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">—</text>
+<text x="760" y="292" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">FLUX Non-Commercial</text>
+<text x="30" y="322" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">FLUX.1-dev</text>
+<text x="330" y="322" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="14" fill="#dc2626" font-weight="700">❌</text>
+<text x="470" y="322" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">—</text>
+<text x="640" y="322" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">—</text>
+<text x="760" y="322" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">FLUX.1-dev Non-Commercial</text>
+<rect x="24.0" y="335.0" width="872.0" height="26.0" rx="4" fill="#f8fafc"/>
+<text x="30" y="352" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">Stable Audio 3 Medium</text>
+<text x="330" y="352" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="14" fill="#059669" font-weight="700">✅</text>
+<text x="470" y="352" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">none</text>
+<text x="640" y="352" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">&lt; $1M revenue</text>
+<text x="760" y="352" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">Stability Community</text>
+<text x="30" y="382" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">LTX-Video / LTX-2.3</text>
+<text x="330" y="382" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="14" fill="#d97706" font-weight="700">⚠</text>
+<text x="470" y="382" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">none</text>
+<text x="640" y="382" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">&lt; $10M revenue</text>
+<text x="760" y="382" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">LTX Community</text>
+<rect x="24.0" y="395.0" width="872.0" height="26.0" rx="4" fill="#f8fafc"/>
+<text x="30" y="412" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">MiniMax H3</text>
+<text x="330" y="412" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="14" fill="#d97706" font-weight="700">⚠</text>
+<text x="470" y="412" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">excl. US/EU/UK/KR</text>
+<text x="640" y="412" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">&lt; $20M revenue</text>
+<text x="760" y="412" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">MiniMax Community</text>
+<text x="30" y="442" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">MiniMax Music 3</text>
+<text x="330" y="442" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="14" fill="#d97706" font-weight="700">?</text>
+<text x="470" y="442" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">?</text>
+<text x="640" y="442" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">?</text>
+<text x="760" y="442" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">conflicting: CC BY-NC vs Community</text>
+<rect x="24.0" y="455.0" width="872.0" height="26.0" rx="4" fill="#f8fafc"/>
+<text x="30" y="472" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">HunyuanVideo 1.5</text>
+<text x="330" y="472" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="14" fill="#d97706" font-weight="700">⚠</text>
+<text x="470" y="472" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">excl. EU/UK/KR</text>
+<text x="640" y="472" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">—</text>
+<text x="760" y="472" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">Tencent Community</text>
+<text x="30" y="502" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">Hunyuan3D 2.1</text>
+<text x="330" y="502" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="14" fill="#d97706" font-weight="700">⚠</text>
+<text x="470" y="502" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">excl. EU/UK/KR</text>
+<text x="640" y="502" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">≤ 1M MAU</text>
+<text x="760" y="502" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">Tencent Community</text>
+<rect x="24.0" y="515.0" width="872.0" height="26.0" rx="4" fill="#f8fafc"/>
+<text x="30" y="532" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">YuE2-3B</text>
+<text x="330" y="532" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="14" fill="#dc2626" font-weight="700">❌</text>
+<text x="470" y="532" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">—</text>
+<text x="640" y="532" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">—</text>
+<text x="760" y="532" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">CC BY-NC 4.0</text>
+<line x1="24.0" y1="576.0" x2="896.0" y2="576.0" stroke="#e2e8f0" stroke-width="1"/>
+<text x="24" y="590" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#94a3b8">This table only summarises published terms and is not legal advice; re-check each model page before commercial use.</text>
+</svg>
