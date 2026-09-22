@@ -6,8 +6,9 @@
 
 ---
 
-> **The one-line verdict**: On a 24 GB laptop GPU we got four of the newest open-weight generative
-> model lines running (six workflows in total) — and proved with a **controlled experiment** that
+> **The one-line verdict**: On a 24 GB laptop GPU we got **12 of the newest open-weight generative
+> model lines running across 21 measured configurations** (image / image editing / video / video+audio
+> / music / image-to-3D) — and proved with a **controlled experiment** that
 > **NVFP4 is the best quantization format for this machine**: **22% faster** and **27% smaller** than
 > INT8, with a quality difference that sits **below the random seed noise floor**.
 

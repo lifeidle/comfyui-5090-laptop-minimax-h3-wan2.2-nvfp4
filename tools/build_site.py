@@ -83,8 +83,12 @@ PAGE = """<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ComfyUI on an RTX 5090 Laptop — image, video and audio models</title>
-<meta name="description" content="A field manual for running the newest image, video and audio generation models on a 24 GB RTX 5090 Laptop with ComfyUI, including a controlled A/B proving NVFP4 is the best quantization format.">
+<title>ComfyUI 24GB 实战手册 · RTX 5090 Laptop — MiniMax H3 / Wan 2.2 / Qwen-Image / HunyuanVideo / ACE-Step</title>
+<meta name="description" content="RTX 5090 Laptop (24GB) + ComfyUI field manual: 12 model lines, 21 measured configs. MiniMax H3, Wan 2.2, Qwen-Image 2512, HunyuanVideo 1.5, FLUX.2 Klein, Z-Image-Turbo, LTX-Video, ACE-Step 1.5, YuE2, Stable Audio 3, Hunyuan3D 2.1, ERNIE-Image. A controlled A/B proves NVFP4 beats INT8. Bilingual 中文/English, licence-verified.">
+<meta name="keywords" content="ComfyUI, RTX 5090, 5090 Laptop, 24GB VRAM, NVFP4, quantization, MiniMax H3, Wan 2.2, Qwen-Image 2512, HunyuanVideo 1.5, FLUX.2 Klein, Z-Image-Turbo, LTX-Video, ACE-Step, YuE2, Stable Audio 3, Hunyuan3D 2.1, text-to-video, text-to-image, music generation, image to 3D, ComfyUI workflow, 显存, 量化, 实战手册">
+<meta property="og:title" content="ComfyUI 24GB 实战手册 · RTX 5090 Laptop — 12 条模型线 / 21 组实测">
+<meta property="og:description" content="MiniMax H3 / Wan 2.2 / Qwen-Image / HunyuanVideo 1.5 / FLUX.2 Klein / Z-Image / LTX / ACE-Step / YuE2 / Stable Audio 3 / Hunyuan3D — 全部在 24GB 笔记本上实测跑通，含受控 A/B 证明 NVFP4 最优。">
+<meta property="og:type" content="article">
 <style>
 :root{
   --bg:#ffffff; --bg2:#f8fafc; --bg3:#f1f5f9;
@@ -256,8 +260,8 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:22px 0 0;color:v
     document.getElementById('btn-zh').setAttribute('aria-pressed', l===ZH);
     document.getElementById('btn-en').setAttribute('aria-pressed', l===EN);
     document.title = l===ZH
-      ? 'RTX 5090 笔记本 · ComfyUI 图像/视频/音频生成模型实战手册'
-      : 'ComfyUI on an RTX 5090 Laptop — image, video and audio models';
+      ? 'ComfyUI 24GB 实战手册 · RTX 5090 Laptop — MiniMax H3 / Wan 2.2 / Qwen-Image / HunyuanVideo / ACE-Step'
+      : 'ComfyUI on a 24GB RTX 5090 Laptop — MiniMax H3, Wan 2.2, Qwen-Image, HunyuanVideo, ACE-Step playbook';
   };
   window.__theme=function(){
     var cur=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
