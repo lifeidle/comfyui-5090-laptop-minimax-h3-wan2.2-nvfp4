@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 250" width="920" height="250" role="img" aria-label="NVFP4 gains in speed and size">
+<rect x="0.0" y="0.0" width="920.0" height="250.0" rx="12" fill="#ffffff"/>
+<text x="24" y="34" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="19" fill="#0f172a" font-weight="700">What NVFP4 actually buys you</text>
+<text x="24" y="56" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#64748b">Z-Image-Turbo, same encoder, same 1024x1024 / 8 steps, same seed</text>
+<text x="24" y="90" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13.5" fill="#0f172a" font-weight="600">Generation time</text>
+<text x="24" y="110" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#64748b">INT8 + ConvRot</text>
+<rect x="268.0" y="98.0" width="380.0" height="18.0" rx="4" fill="#94a3b8" opacity="0.5"/>
+<text x="656.0" y="112" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="700">17.70 seconds</text>
+<text x="24" y="134" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#64748b">NVFP4</text>
+<rect x="268.0" y="122.0" width="296.3" height="18.0" rx="4" fill="#059669"/>
+<text x="572.271186440678" y="136" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="700">13.80 seconds</text>
+<text x="694" y="124" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="20" fill="#059669" font-weight="700">22%</text>
+<text x="746" y="124" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#64748b">better</text>
+<text x="24" y="168" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13.5" fill="#0f172a" font-weight="600">DiT weight file</text>
+<text x="24" y="188" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#64748b">INT8 + ConvRot</text>
+<rect x="268.0" y="176.0" width="380.0" height="18.0" rx="4" fill="#94a3b8" opacity="0.5"/>
+<text x="656.0" y="190" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="700">6.20 GB</text>
+<text x="24" y="212" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#64748b">NVFP4</text>
+<rect x="268.0" y="200.0" width="276.4" height="18.0" rx="4" fill="#059669"/>
+<text x="552.4193548387096" y="214" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="700">4.51 GB</text>
+<text x="694" y="202" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="20" fill="#059669" font-weight="700">27%</text>
+<text x="746" y="202" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#64748b">better</text>
+<text x="24" y="236" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#64748b">Both time and size improve, and the measured quality gap stays below the seed-noise floor (see chart 3).</text>
+</svg>

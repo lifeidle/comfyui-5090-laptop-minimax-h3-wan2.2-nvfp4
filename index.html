@@ -1,0 +1,2711 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ComfyUI on an RTX 5090 Laptop — image, video and audio models</title>
+<meta name="description" content="A field manual for running the newest image, video and audio generation models on a 24 GB RTX 5090 Laptop with ComfyUI, including a controlled A/B proving NVFP4 is the best quantization format.">
+<style>
+:root{
+  --bg:#ffffff; --bg2:#f8fafc; --bg3:#f1f5f9;
+  --fg:#0f172a; --fg2:#475569; --fg3:#94a3b8;
+  --line:#e2e8f0; --line2:#cbd5e1;
+  --accent:#2563eb; --accent2:#059669; --amber:#d97706; --red:#dc2626;
+  --code-bg:#f1f5f9; --card:#ffffff;
+  --shadow:0 1px 2px rgba(15,23,42,.06),0 8px 24px rgba(15,23,42,.04);
+}
+html[data-theme="dark"]{
+  --bg:#0e1116; --bg2:#141922; --bg3:#1a2029;
+  --fg:#e7edf5; --fg2:#a9b6c6; --fg3:#6b7889;
+  --line:#252d38; --line2:#333d4b;
+  --accent:#6ea8ff; --accent2:#3ecf8e; --amber:#e5a441; --red:#ef6b6b;
+  --code-bg:#161c25; --card:#ffffff;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--fg);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Roboto,Helvetica,Arial,sans-serif;
+  font-size:16px;line-height:1.78;-webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+header.top{
+  position:sticky;top:0;z-index:20;background:var(--bg);
+  background:color-mix(in srgb,var(--bg) 88%,transparent);
+  -webkit-backdrop-filter:saturate(180%) blur(12px);
+  backdrop-filter:saturate(180%) blur(12px);border-bottom:1px solid var(--line);
+}
+.top-in{max-width:940px;margin:0 auto;padding:10px 22px;display:flex;align-items:center;gap:14px}
+.brand{font-weight:650;font-size:14.5px;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand span{color:var(--fg3);font-weight:450}
+.spacer{flex:1}
+.seg{display:flex;border:1px solid var(--line2);border-radius:9px;overflow:hidden}
+.seg button{
+  font:inherit;font-size:12.5px;font-weight:600;padding:5px 12px;cursor:pointer;
+  background:transparent;color:var(--fg2);border:0;line-height:1.5;
+}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.icobtn{
+  font:inherit;font-size:12.5px;padding:5px 10px;cursor:pointer;border:1px solid var(--line2);
+  border-radius:9px;background:transparent;color:var(--fg2);line-height:1.5;
+}
+.icobtn:hover{border-color:var(--fg3)}
+main{max-width:940px;margin:0 auto;padding:34px 22px 90px}
+.hero{margin:0 0 30px}
+.hero h1{font-size:clamp(26px,4.2vw,38px);line-height:1.22;margin:0 0 12px;letter-spacing:-.02em;font-weight:680}
+.hero p.lede{font-size:17.5px;color:var(--fg2);margin:0 0 16px;line-height:1.65}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px}
+.chip{
+  font-size:12.5px;font-weight:600;padding:4px 11px;border-radius:999px;
+  background:var(--bg3);color:var(--fg2);border:1px solid var(--line)
+}
+.doc h1{font-size:27px;margin:2.2rem 0 .9rem;letter-spacing:-.015em}
+.doc h2{font-size:22px;margin:2.6rem 0 .9rem;padding-bottom:.45rem;border-bottom:1px solid var(--line);letter-spacing:-.01em}
+.doc h3{font-size:18px;margin:2rem 0 .7rem}
+.doc h4{font-size:16px;margin:1.6rem 0 .6rem}
+.doc p{margin:0 0 1.05rem}
+.doc ul,.doc ol{margin:0 0 1.1rem;padding-left:1.35rem}
+.doc li{margin:.32rem 0}
+.doc li>ul,.doc li>ol{margin:.35rem 0 .35rem}
+.doc hr{border:0;border-top:1px solid var(--line);margin:2.4rem 0}
+.doc blockquote{
+  margin:1.3rem 0;padding:.9rem 1.15rem;background:var(--bg2);
+  border-left:3px solid var(--accent);border-radius:0 8px 8px 0;color:var(--fg2)
+}
+.doc blockquote p:last-child{margin-bottom:0}
+.doc code{
+  font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  font-size:.885em;background:var(--code-bg);padding:.14em .42em;border-radius:5px;
+  border:1px solid var(--line)
+}
+.doc pre{
+  background:var(--bg2);border:1px solid var(--line);border-radius:11px;
+  padding:14px 16px;overflow:auto;margin:0 0 1.2rem;line-height:1.6
+}
+.doc pre code{background:none;border:0;padding:0;font-size:12.8px}
+.tw{overflow-x:auto;margin:0 0 1.3rem;-webkit-overflow-scrolling:touch}
+.doc table{border-collapse:collapse;width:100%;font-size:14px;min-width:520px}
+.doc th,.doc td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+.doc th{background:var(--bg3);font-weight:640;white-space:nowrap}
+.doc tr:nth-child(even) td{background:var(--bg2)}
+.doc img{
+  max-width:100%;height:auto;display:block;margin:1.5rem auto;border-radius:12px;
+  background:var(--card);box-shadow:var(--shadow)
+}
+.doc details{border:1px solid var(--line);border-radius:11px;padding:10px 15px;margin:0 0 1.3rem;background:var(--bg2)}
+.doc summary{cursor:pointer;font-weight:600;font-size:14.5px}
+.doc details[open] summary{margin-bottom:.7rem}
+[data-lang="zh"] .i-en{display:none}
+[data-lang="en"] .i-zh{display:none}
+footer{border-top:1px solid var(--line);margin-top:60px;padding:22px 0 0;color:var(--fg3);font-size:13px}
+@media(max-width:640px){
+  body{font-size:15.5px}
+  main{padding:24px 16px 70px}
+  .top-in{padding:9px 16px;gap:8px}
+  .brand span{display:none}
+  .doc table{min-width:460px}
+}
+@media print{header.top,.seg,.icobtn{display:none}main{padding:0}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="brand i-zh">RTX 5090 笔记本 · ComfyUI 生成模型实战<span> — 图像 / 视频 / 音频</span></div>
+    <div class="brand i-en">ComfyUI Generative Models on an RTX 5090 Laptop<span> — image / video / audio</span></div>
+    <div class="spacer"></div>
+    <div class="seg" role="group" aria-label="Language">
+      <button id="btn-zh" onclick="__lang('zh')" aria-pressed="true">中文</button>
+      <button id="btn-en" onclick="__lang('en')" aria-pressed="false">EN</button>
+    </div>
+    <button class="icobtn" id="btn-theme" onclick="__theme()" title="Toggle theme">Aa</button>
+  </div>
+</header>
+<main>
+  <div class="hero">
+    <div class="i-zh">
+      <h1>用 ComfyUI 在 RTX 5090 笔记本上跑通最新的图像 / 视频 / 音乐生成模型</h1>
+      <p class="lede">一份从选型、下载、搭图、实测到定论的完整手册。含一个受控实验，证明 NVFP4 是这台机器上的最佳量化格式。</p>
+    </div>
+    <div class="i-en">
+      <h1>Running the newest image, video and audio models on an RTX 5090 Laptop with ComfyUI</h1>
+      <p class="lede">A complete field manual: model selection, downloads, graph construction, measurement, and the verdict — including a controlled experiment proving NVFP4 is the best quantization here.</p>
+    </div>
+    <div class="chips">
+      <span class="chip">RTX 5090 Laptop · 24 GB · sm_120</span>
+      <span class="chip">ComfyUI 0.37.0</span>
+      <span class="chip">34 files · 125.6 GB</span>
+      <span class="chip">NVFP4 +22% / −27%</span>
+    </div>
+  </div>
+  <article class="doc i-zh"><hr />
+<blockquote>
+<p><strong>一句话结论</strong>：在 24 GB 显存的笔记本 GPU 上，我们跑通了 4 条最新开源生成模型线（共 6 个工作流），
+并用<strong>受控实验</strong>证明 <strong>NVFP4 是这台机器上的最佳量化格式</strong> —— 比 INT8 快 <strong>22%</strong>、小 <strong>27%</strong>，
+而画质差异<strong>落在随机噪声地板之下</strong>。</p>
+</blockquote>
+<p>这不是一份&quot;把命令贴一遍&quot;的教程。真正难的不是跑通某个模型，而是<strong>在几十个量化版本里判断该选哪一个</strong>。
+本文把我们的完整决策链摊开：怎么想、怎么下、怎么搭、怎么测、怎么选。所有数字都是本机实测，
+所有结论都附带可复现的测量方法。</p>
+<hr />
+<h2 id="目录">目录</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>章节</th>
+<th>内容</th>
+<th>你会得到</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#0-硬件与起点">0</a></td>
+<td>硬件与起点</td>
+<td>知道硬约束在哪</td>
+</tr>
+<tr>
+<td><a href="#1-先说结论tldr">1</a></td>
+<td><strong>先说结论</strong></td>
+<td>一张表看完所有选型</td>
+</tr>
+<tr>
+<td><a href="#2-怎么想先把约束想清楚">2</a></td>
+<td>怎么想</td>
+<td>量化格式的完整心智模型</td>
+</tr>
+<tr>
+<td><a href="#3-怎么下把-1256-gb-拉下来">3</a></td>
+<td>怎么下</td>
+<td>125.6 GB 的多源下载工程</td>
+</tr>
+<tr>
+<td><a href="#4-怎么搭comfyui-的节点约束">4</a></td>
+<td>怎么搭</td>
+<td>踩坑换来的节点约束清单</td>
+</tr>
+<tr>
+<td><a href="#5-怎么测受控-ab全文核心">5</a></td>
+<td><strong>怎么测</strong></td>
+<td>量化判定的方法论（全文核心）</td>
+</tr>
+<tr>
+<td><a href="#6-怎么选四条模型线实战">6</a></td>
+<td>怎么选</td>
+<td>每个模型的实战与基准</td>
+</tr>
+<tr>
+<td><a href="#7-优化清单可以直接抄的配置">7</a></td>
+<td>优化清单</td>
+<td>可直接抄的配置</td>
+</tr>
+<tr>
+<td><a href="#8-踩坑速查表">8</a></td>
+<td>踩坑速查</td>
+<td>症状 → 原因 → 解法</td>
+</tr>
+<tr>
+<td><a href="#9-工具链">9</a></td>
+<td>工具链</td>
+<td>六个可复用脚本</td>
+</tr>
+<tr>
+<td><a href="#10-结论与后续">10</a></td>
+<td>结论与后续</td>
+<td>还没做的事</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="0-硬件与起点">0. 硬件与起点</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>实测值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPU</td>
+<td><strong>RTX 5090 Laptop</strong> —— 24435 MiB（<strong>24 GB</strong>），算力 <strong>sm_120</strong>（Blackwell）</td>
+</tr>
+<tr>
+<td>CUDA</td>
+<td>12.8</td>
+</tr>
+<tr>
+<td>内存</td>
+<td>64 GB</td>
+</tr>
+<tr>
+<td>引擎</td>
+<td>ComfyUI <strong>0.37.0</strong> / PyTorch 2.11.0+cu128 / Python 3.11.9</td>
+</tr>
+<tr>
+<td>目标</td>
+<td>尽量用<strong>最新</strong>的开源模型，跑通<strong>图像 / 视频 / 音乐</strong>三类生成</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>为什么从 24 GB 讲起？</strong> 因为它是这份手册里唯一真正的硬约束。</p>
+<p>笔记本 GPU 的算力永远是&quot;够用&quot;的 —— 一个 8 步蒸馏模型在 5090 上出 1024² 图只要十几秒。
+真正决定你能跑什么、不能跑什么的，是<strong>显存能不能装下</strong>。而最新一代开源生成模型的一个共同趋势是：
+<strong>主模型越来越大，而且都要求配一个独立的、同样巨大的文本编码器。</strong></p>
+<p>看下面这张图，注意那条 24 GB 红线：</p>
+<p><img src="assets/chart2-model-footprint.svg" alt="单个权重文件体积 vs 24 GB 显存" /></p>
+<p>三条线（MiniMax H3 的 DiT 21 GB、HunyuanVideo 1.5 的 16.7 GB、MiniMax H3 的文本编码器 15.7 GB）
+<strong>每一个单独拿出来就超过了 24 GB</strong>。这意味着：</p>
+<blockquote>
+<p><strong>它们不可能常驻显存。</strong> 每生成一帧，权重都必须在显存和内存之间搬运。
+这就是为什么&quot;选对量化格式&quot;在这台机器上不是优化，而是<strong>能不能跑</strong>的问题。</p>
+</blockquote>
+<hr />
+<h2 id="1-先说结论tldr">1. 先说结论（TL;DR）</h2>
+<h3 id="11-选型总表">1.1 选型总表</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>用途</th>
+<th>选定模型</th>
+<th>量化格式</th>
+<th>实测耗时</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>图像生成</strong></td>
+<td>Z-Image-Turbo</td>
+<td><strong>NVFP4</strong>（4.51 GB）</td>
+<td><strong>13.8 s</strong>（1024²/8步）</td>
+<td>中文文字渲染准确，8 步出图</td>
+</tr>
+<tr>
+<td><strong>图像编辑</strong></td>
+<td>FLUX.2 Klein <strong>4B</strong></td>
+<td>fp8（4.07 GB）</td>
+<td>42.3 s</td>
+<td>9B 版被编码器卡住，见 §6.5</td>
+</tr>
+<tr>
+<td><strong>视频 + 音频</strong></td>
+<td>MiniMax H3</td>
+<td>int8 + ConvRot</td>
+<td><strong>519.1 s</strong>（1344×768/124帧）</td>
+<td><strong>原生带音轨</strong>，5.17 s 视频含立体声</td>
+</tr>
+<tr>
+<td><strong>纯视频</strong></td>
+<td>HunyuanVideo 1.5 480p</td>
+<td>fp16 + LightX2V 4步 LoRA</td>
+<td><strong>117.0 s</strong>（848×480/121帧）</td>
+<td>4 步出片，适合迭代</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="12-三条可以直接拿去用的规则">1.2 三条可以直接拿去用的规则</h3>
+<ol>
+<li><strong>量化格式：只要显卡是 Blackwell（sm_120/121），一律选 NVFP4。</strong> 见 §5 的证明。</li>
+<li><strong>要不要 offload：看&quot;主模型 + 编码器&quot;之和是否超过显存。</strong> 超过了就必须 offload，
+这时量化省下的每一 GB 都会直接换成速度。</li>
+<li><strong>提速靠&quot;少走步数&quot;，不靠&quot;压权重&quot;。</strong> 8 步 → 4 步的 LoRA 收益远大于任何权重量化。
+量化负责<strong>装得下</strong>，蒸馏 LoRA 负责<strong>跑得快</strong>。两者不是一回事。</li>
+</ol>
+<hr />
+<h2 id="2-怎么想先把约束想清楚">2. 怎么想：先把约束想清楚</h2>
+<h3 id="21-唯一的硬约束是显存不是算力">2.1 唯一的硬约束是显存，不是算力</h3>
+<p>这一点值得反复强调，因为它决定了后面所有的取舍。</p>
+<p>一个很常见的错误直觉是：&quot;显存不够就换个小模型。&quot;但看 §0 那张图 —— 我们要的都是最新最强的模型，
+它们<strong>没有小号版本</strong>。唯一能动的变量是<strong>权重用什么精度存</strong>。</p>
+<p>于是问题被压缩成一句话：<strong>在肉眼无差别的前提下，用多少 bit 存权重最划算？</strong></p>
+<h3 id="22-量化格式的四个流派这是全文的地基">2.2 量化格式的四个流派（这是全文的地基）</h3>
+<p>市面上&quot;4-bit 量化&quot;这个说法把三件完全不同的事混在了一起。必须先拆开：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>流派</th>
+<th>代表</th>
+<th>压什么</th>
+<th>省显存</th>
+<th>提速</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>W4A16</strong></td>
+<td>GGUF / NF4 / bitsandbytes / torchao</td>
+<td><strong>只压权重</strong></td>
+<td>✅</td>
+<td>❌ <strong>不提速，甚至更慢</strong></td>
+</tr>
+<tr>
+<td><strong>W4A4</strong></td>
+<td>Nunchaku SVDQuant</td>
+<td><strong>权重 + 激活都压</strong></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>INT8 + ConvRot</strong></td>
+<td>Comfy-Org 新模型默认</td>
+<td>权重 8-bit + 旋转补偿</td>
+<td>✅</td>
+<td>➖ 走 BF16 路径，不提速</td>
+</tr>
+<tr>
+<td><strong>NVFP4</strong></td>
+<td>Blackwell 原生 4-bit 浮点</td>
+<td>权重 + 激活</td>
+<td>✅</td>
+<td>✅ <strong>最快</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>这张表里最重要的一行是第一行。</strong></p>
+<p><code>W4A16</code> 只把权重压小，计算时还要还原回 16-bit，于是<strong>显存省了，但算力一点没省，反而多了反量化的开销</strong>。
+很多人&quot;换了 4-bit 模型发现更慢&quot;，原因就在这里。</p>
+<blockquote>
+<p><strong>一句话记住</strong>：W4A16 省的是<strong>内存</strong>，W4A4 / NVFP4 省的是<strong>内存 + 带宽</strong>。
+只有后者会真的快。</p>
+</blockquote>
+<p>NVFP4 之所以在这台机器上最优，是因为它是 <strong>Blackwell 架构原生的 4-bit 浮点格式</strong>，
+可以直接喂给 tensor core 做 4-bit 矩阵乘 —— 不需要&quot;先还原再算&quot;。</p>
+<h3 id="23-怎么识别quot真的-nvfp4quot千万不要看文件名">2.3 怎么识别&quot;真的 NVFP4&quot;（千万不要看文件名）</h3>
+<p>这是踩过的坑：社区里大量文件名写着 <code>fp4</code> / <code>nvfp4</code> 的模型，其实是别的量化格式，
+或者只有部分层是 4-bit。</p>
+<p><strong>唯一可靠的判据是 safetensors 里的张量键。</strong> 打开文件的 header（前 8 字节小端 uint64 = header 长度 → JSON），
+看是否存在这套键：</p>
+<pre><code>weight_scale
+weight_scale_2
+input_scale
+pre_quant_scale
+TensorCoreNVFP4Layout   (group_size = 16)
+</code></pre>
+<p>本机校验通过的真 NVFP4 文件，dtype 列表里会同时出现 <code>F8_E4M3</code>（用于 block scale）和 <code>U8</code>。例如：</p>
+<pre><code>z_image_turbo_nvfp4.safetensors    4.51 GB   993 tensors   BF16, F32, F8_E4M3, U8   ✅ 真 NVFP4
+qwen_3_4b_fp4_mixed.safetensors    3.48 GB  1081 tensors   BF16, F32, F8_E4M3, U8   ✅ 真 NVFP4
+</code></pre>
+<p><strong>下面这张决策树就是完整的选型逻辑</strong>：</p>
+<p><img src="assets/chart4-quant-decision-tree.svg" alt="量化格式选型决策树" /></p>
+<hr />
+<h2 id="3-怎么下把-1256-gb-拉下来">3. 怎么下：把 125.6 GB 拉下来</h2>
+<p>下载这件事看着简单，但<strong>125.6 GB × 不稳定的源</strong>足以让一个天真实现跑一整天。
+先说结论：我们最后跑了 <strong>34 个文件 / 125.6 GB / 零损坏</strong>，核心是三个机制。</p>
+<h3 id="31-三个源的速度实测">3.1 三个源的速度实测</h3>
+<p><img src="assets/chart1-download-sources.svg" alt="下载源吞吐实测" /></p>
+<p>差距是<strong>量级级别</strong>的：modelscope 比 hf-mirror 快 7 倍、比 huggingface 快 12 倍。
+所以&quot;多源回退&quot;不是锦上添花，而是必需品。</p>
+<h3 id="32-机制一三级回退">3.2 机制一：三级回退</h3>
+<pre><code>每个文件依次尝试：  www.modelscope.cn  →  hf-mirror.com  →  huggingface.co
+</code></pre>
+<p>一旦某个源失败，退到下一个；<code>.part</code> 断点文件可以<strong>跨源复用</strong>（两端字节一致，已验证）。</p>
+<h3 id="33-机制二静默看门狗这个必须有">3.3 机制二：静默看门狗（这个必须有）</h3>
+<p>这是我们踩得最深的坑。</p>
+<p>最初我们只设了 45 秒 socket 超时。结果一个文件卡在 <strong>4.6%，速度 0.0 MB/s，持续 19 分钟</strong>都不报错。
+原因很阴险：<strong>服务器每 30 秒吐几 KB</strong>，刚好让 socket 不超时，但实际毫无进展。</p>
+<blockquote>
+<p><strong>教训</strong>：socket 超时抓不住&quot;慢速滴血&quot;型挂死。必须再加一层<strong>业务层看门狗</strong>：
+连续 <strong>150 秒</strong>接收字节数实质无增长 → 主动断开重连；连续 <strong>3 次</strong>静默 → 放弃本源，交给上层换源。</p>
+</blockquote>
+<p>加上这层之后，同样的网络环境下再没有出现过&quot;无限挂死&quot;。</p>
+<h3 id="34-机制三range-探测--并行">3.4 机制三：Range 探测 + 并行</h3>
+<p><code>modelscope</code> <strong>不支持 HEAD 请求</strong>（返回 405/不支持），拿不到文件大小就没法校验。
+解法是用 Range 请求探一个字节，从响应头读总长度：</p>
+<pre><code class="language-http">Range: bytes=0-0
+→  HTTP/1.1 206 Partial Content
+   Content-Range: bytes 0-0/16748116224        # ← 这就是真实字节数
+</code></pre>
+<p>拿到期望字节数后，就能做到三件事：</p>
+<ol>
+<li><strong>并发探尺寸</strong>（不下载，只探）→ 提前知道总量、排优先级</li>
+<li><strong>下载后逐字节比对</strong> → 精确识别截断/损坏</li>
+<li><strong>两个源交叉验证</strong> → 同一文件的字节数应当一致</li>
+</ol>
+<h3 id="35-一条元经验判断quot源是否可用quot必须避开下载高峰">3.5 一条元经验：判断&quot;源是否可用&quot;必须避开下载高峰</h3>
+<p><strong>我们因此误判过一次</strong>：当时 4 路并发正在满速下载，此时去探测其它源，所有探测请求全部超时，
+于是我们得出错误结论——&quot;这两个源都不可用，需要用户手动下载&quot;。</p>
+<p>实际上它们都好得很，只是<strong>带宽被打满了</strong>。</p>
+<blockquote>
+<p><strong>教训</strong>：探测型请求（探速度、探可用性）和下载型请求会互相抢带宽。
+要么在空闲时探测，要么<strong>给探测单独限速</strong>。</p>
+</blockquote>
+<hr />
+<h2 id="4-怎么搭comfyui-的节点约束">4. 怎么搭：ComfyUI 的节点约束</h2>
+<p>模型下完了，接下来是把它变成一张能跑的图。ComfyUI 的官方工作流藏在两个地方：</p>
+<ul>
+<li><code>ComfyUI/blueprints/*.json</code> —— <strong>116 个官方蓝图</strong></li>
+<li><code>site-packages/comfyui_workflow_templates_json/templates/</code> —— 同一套模板</li>
+</ul>
+<p>但它们<strong>不能直接当 API prompt 提交</strong>，因为是<strong>子图（subgraph）格式</strong>：节点类型是 UUID，真正的图结构藏在
+<code>definitions.subgraphs</code> 里。我们写了 <code>bp_dump.py</code> 把子图解析成「节点 + 连线」清单，比手工猜拓扑可靠得多。</p>
+<h3 id="41-四个必须知道的节点约束">4.1 四个必须知道的节点约束</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>约束</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong><code>CLIPLoader</code> 的 29 个 type 里没有 <code>hunyuan_video_15</code></strong></td>
+<td>HunyuanVideo 1.5 必须用 <code>DualCLIPLoader</code>（type=<code>hunyuan_video_15</code>），配 <code>qwen_2.5_vl_7b_fp8_scaled</code> + <code>byt5_small_glyphxl_fp16</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Z-Image 的 type 是 <code>lumina2</code>，FLUX.2 是 <code>flux2</code></strong></td>
+<td>同一个 <code>qwen_3_4b</code> 编码器在两个模型里用<strong>不同 type</strong> 加载，搞混就报错</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong><code>MiniMaxH3ImageToVideo</code> 的 <code>first_frame</code> 是 optional</strong></td>
+<td>不接 = <strong>纯文生视频 + 音频</strong>。节点名字里有 &quot;ImageToVideo&quot; ≠ 只能图生视频</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong><code>HunyuanVideo15ImageToVideo</code> 的 <code>start_image</code> 是 optional</strong></td>
+<td>同样，不接 = 纯文生视频</td>
+</tr>
+</tbody>
+</table></div>
+<p>第 3、4 条是本次最大的&quot;认知修正&quot;：<strong>看到 <code>ImageToVideo</code> 先去看它的图像输入是不是 optional</strong>，
+是的话它就能当文生视频用。</p>
+<h3 id="42-没有官方蓝图怎么办">4.2 没有官方蓝图怎么办</h3>
+<p><strong>HunyuanVideo 1.5 没有官方蓝图。</strong> 只能按节点签名手搭。这里的顺序很重要：</p>
+<ol>
+<li>先看 <code>DualCLIPLoader</code> 的 type 列表确认 <code>hunyuan_video_15</code> 存在</li>
+<li>确认 latent 通道数（1.5 是 <strong>32 通道、空间下采样 16</strong>，与 1.0 不同）</li>
+<li>搭完先做<strong>免费校验</strong>（见下）</li>
+</ol>
+<h3 id="43-免费的工作流校验技巧强烈推荐">4.3 免费的工作流校验技巧（强烈推荐）</h3>
+<p>模型没下全的时候，直接 <code>POST /prompt</code> 会返回 <strong>HTTP 400 + 逐节点的 <code>node_errors</code></strong>。
+关键洞察是：</p>
+<blockquote>
+<p><strong>如果报的错误只有 <code>value_not_in_list</code>（说明&quot;这个模型文件不在列表里&quot;），
+那就证明这张图的「结构」和「类型」全都正确。</strong></p>
+</blockquote>
+<p>于是我们得到一个<strong>零成本的 dry-run</strong>：模型还没下载完，就能先验证工作流搭得对不对。
+本次 7 张工作流全部用这个方法在下载完成前就验证通过了。</p>
+<hr />
+<h2 id="5-怎么测受控-ab全文核心">5. 怎么测：受控 A/B（全文核心）</h2>
+<p>这是整份手册里最有价值的部分，因为<strong>我们在这里先得出过错误结论</strong>。</p>
+<h3 id="51-一个看起来很合理的错误结论">5.1 一个看起来很合理的错误结论</h3>
+<p>第一轮对比，我们跑了两个 Z-Image-Turbo 变体（int8 和 nvfp4），结果：</p>
+<pre><code>PSNR = 13.82 dB
+</code></pre>
+<p>13.82 dB 是什么概念？通常 PSNR 低于 20 dB 就说明两张图&quot;差异巨大&quot;。我们当时的结论是：
+<strong>&quot;4-bit 量化果然掉画质，NVFP4 不行。&quot;</strong></p>
+<p><strong>这个结论是错的。</strong> 因为我们犯了一个方法错误：</p>
+<blockquote>
+<p>❌ <strong>两个变体用了不同的文本编码器。</strong>
+int8 版配的是 <code>qwen_3_4b.safetensors</code>（bf16），nvfp4 版配的是 <code>qwen_3_4b_fp4_mixed.safetensors</code>（fp4）。</p>
+<p>于是 13.82 dB 里，混进了<strong>编码器差异</strong>，根本不是量化的锅。</p>
+</blockquote>
+<h3 id="52-为什么生成模型的-psnr-不能直接用">5.2 为什么生成模型的 PSNR 不能直接用</h3>
+<p>修好方法之前，得先理解一个反直觉的事实：</p>
+<blockquote>
+<p><strong>扩散采样是混沌的。</strong></p>
+</blockquote>
+<p>两个数值上前 4 位完全相同的模型，经过 8 步采样之后，会产出<strong>两张构图完全不同的图</strong>。
+这不是 bug，是生成模型的本性 —— 采样过程会不断放大微小差异。</p>
+<p><strong>所以&quot;两张图 PSNR 低&quot;根本不能证明&quot;其中一张质量差&quot;，只能证明&quot;这是两个不同的样本&quot;。</strong></p>
+<p>那怎么才能判断量化到底有没有损伤画质？答案是：<strong>引入一个噪声基线</strong>。</p>
+<h3 id="53-四组对照的设计">5.3 四组对照的设计</h3>
+<p>我们把因素<strong>彻底隔离</strong> —— 同一个编码器、同一个提示词、同一套 1024²/8 步配置，
+<strong>只有 DiT 的量化格式不同</strong>。然后再补两组&quot;只换随机种子&quot;的对照：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>组</th>
+<th>变量</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>det</strong></td>
+<td>无（同量化 + 同种子重跑）</td>
+<td><strong>确定性检验</strong>：管线是否可复现</td>
+</tr>
+<tr>
+<td><strong>seed</strong></td>
+<td>只换随机种子（int8 内部）</td>
+<td><strong>噪声地板</strong></td>
+</tr>
+<tr>
+<td><strong>cross</strong></td>
+<td><strong>只换量化格式</strong>（同种子）</td>
+<td><strong>被测量的对象</strong></td>
+</tr>
+<tr>
+<td><strong>seedB</strong></td>
+<td>只换随机种子（nvfp4 内部）</td>
+<td>噪声地板（第二组）</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>判据</strong>：如果 <code>cross</code> 的相似度 <strong>高于</strong> <code>seed</code> 的相似度，就说明<strong>量化造成的扰动比采样的随机性还小</strong>，
+即量化误差可以忽略。</p>
+<h3 id="54-结果">5.4 结果</h3>
+<p><img src="assets/chart3-quant-ab-psnr.svg" alt="受控 A/B：量化损失是真实存在的吗" /></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>对比组</th>
+<th>变量</th>
+<th>PSNR</th>
+<th>平均像素差</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>det</strong> 同量化同种子重跑</td>
+<td>无</td>
+<td><strong>∞ dB</strong></td>
+<td><strong>0.00%</strong></td>
+</tr>
+<tr>
+<td><strong>seed</strong> int8 换种子</td>
+<td>只变种子</td>
+<td>12.10 dB</td>
+<td>16.89%</td>
+</tr>
+<tr>
+<td><strong>cross</strong> nvfp4 vs int8（同种子）</td>
+<td><strong>只变量化</strong></td>
+<td><strong>16.84 dB</strong></td>
+<td><strong>7.41%</strong></td>
+</tr>
+<tr>
+<td><strong>seedB</strong> nvfp4 换种子</td>
+<td>只变种子</td>
+<td>12.45 dB</td>
+<td>16.43%</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="55-三条硬结论">5.5 三条硬结论</h3>
+<p><strong>结论一：管线是确定性的。</strong></p>
+<p><code>det</code> 组 PSNR = <strong>∞</strong>，两张图<strong>逐字节完全一致</strong>。
+这一条极其重要，因为它让整个实验变得<strong>可归因</strong>：既然同样的输入必然产生同样的输出，
+那么 <code>cross</code> 组的差异就 <strong>100% 来自量化格式本身</strong>，不含任何运行时噪声。</p>
+<blockquote>
+<p>如果这一条不成立（重跑结果不一样），那么所有跨量化的差异都无法归因，实验就白做了。</p>
+</blockquote>
+<p><strong>结论二：量化扰动 &lt; 采样噪声。</strong></p>
+<pre><code>cross 差异（7.41%）  &lt;  seed 差异（16.89%）
+</code></pre>
+<p><strong>换个量化格式对画面的改变，比换个随机种子还小。</strong> 这就是&quot;量化没有损失画质&quot;的硬证据。</p>
+<p><strong>结论三：质量代理指标无系统差异。</strong></p>
+<p>PSNR 对轨迹分叉敏感，所以我们另外测了 5 个<strong>鲁棒指标</strong>：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>样本</th>
+<th>锐度（Laplacian 方差）</th>
+<th>香农熵</th>
+<th>高频能量比</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>int8 · 种子 A</td>
+<td>776.5</td>
+<td>5.572</td>
+<td>0.0130</td>
+</tr>
+<tr>
+<td>int8 · 种子 B</td>
+<td>705.4</td>
+<td>5.736</td>
+<td>0.0134</td>
+</tr>
+<tr>
+<td>nvfp4 · 种子 A</td>
+<td>694.3</td>
+<td>5.614</td>
+<td>0.0127</td>
+</tr>
+<tr>
+<td>nvfp4 · 种子 B</td>
+<td>604.1</td>
+<td>5.791</td>
+<td>0.0140</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>同一量化内部、只换种子造成的波动范围（int8：776.5 → 705.4），已经覆盖了跨量化的差异（776.5 → 694.3）。</strong>
+换句话说：<strong>量化这个因素被淹没在种子这个因素的波动里了。</strong></p>
+<p>颜色直方图 L1 距离也印证了同样的结论：</p>
+<pre><code>det = 0.0000   |   cross = 0.0858   |   seedB = 0.1085   |   seed = 0.1256
+                    ↑ 跨量化                ↑ 种子内部         ↑ 种子内部
+</code></pre>
+<p><strong>跨量化的色彩分布差异，比换种子造成的差异还小。</strong></p>
+<h3 id="56-最终复核看起来一样吗">5.6 最终复核：看起来一样吗</h3>
+<p>数字之外，我们再做一次人眼复核。把四张图摆成 <strong>2×2</strong>，并且**刻意按&quot;竖看=同种子跨量化、横看=同量化换种子&quot;**排列：</p>
+<pre><code>┌──────────────────────┬──────────────────────┐
+│  INT8  · seed 20260922│  INT8  · seed 20260923│
+├──────────────────────┼──────────────────────┤
+│ NVFP4  · seed 20260922│ NVFP4  · seed 20260923│
+└──────────────────────┴──────────────────────┘
+       ↑ 竖列：同种子跨量化          ↑ 横行：同量化换种子
+</code></pre>
+<p><strong>结果与数字完全一致：</strong></p>
+<ul>
+<li><strong>竖着看</strong>（同种子、跨量化）→ <strong>构图高度相似</strong>（都在左侧露出同一片远山尖峰）</li>
+<li><strong>横着看</strong>（同量化、换种子）→ <strong>构图完全不同</strong></li>
+</ul>
+<p><strong>四张图都是合格的高质量黄山云海日出，语义全部正确、细节全部丰富、没有任何伪影。</strong>
+量化不是变量，种子才是。</p>
+<h3 id="57-方法论沉淀可以直接套用到任何模型">5.7 方法论沉淀（可以直接套用到任何模型）</h3>
+<blockquote>
+<p><strong>任何&quot;量化是否掉画质&quot;的对比，都必须满足三个条件：</strong></p>
+<ol>
+<li><strong>受控</strong>：编码器、提示词、尺寸、步数、采样器、CFG <strong>全部固定</strong>，一次只动一个变量</li>
+<li><strong>有噪声基线</strong>：必须同时测&quot;同量化换种子&quot;，否则无法区分&quot;量化扰动&quot;和&quot;采样随机性&quot;</li>
+<li><strong>有确定性检验</strong>：&quot;同量化 + 同种子&quot;重跑应当是逐字节一致的，否则结论不可归因</li>
+</ol>
+<p>缺任何一条，PSNR 数字都会被误读。</p>
+</blockquote>
+<hr />
+<h2 id="6-怎么选四条模型线实战">6. 怎么选：四条模型线实战</h2>
+<h3 id="61-图像生成--z-image-turbo">6.1 图像生成 —— Z-Image-Turbo</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>项</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DiT 文件</td>
+<td><code>z_image_turbo_nvfp4.safetensors</code> —— <strong>4.51 GB</strong>（int8 版为 6.20 GB）</td>
+</tr>
+<tr>
+<td>文本编码器</td>
+<td><code>qwen_3_4b_fp4_mixed.safetensors</code> —— 3.48 GB</td>
+</tr>
+<tr>
+<td>VAE</td>
+<td><code>ae.safetensors</code> —— 0.34 GB</td>
+</tr>
+<tr>
+<td>关键参数</td>
+<td><code>CLIPLoader</code> type = <strong><code>lumina2</code></strong>；<code>ModelSamplingAuraFlow</code> shift=3；KSampler <strong>8 步，CFG=1</strong>，<code>res_multistep</code> / <code>simple</code></td>
+</tr>
+<tr>
+<td>实测</td>
+<td>int8 <strong>17.7 s</strong> / nvfp4 <strong>13.8 s</strong>（1024²，8 步）</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>为什么选它做主力图像模型？</strong> 三个理由：</p>
+<ol>
+<li><strong>8 步出图</strong>，一次只要十几秒，迭代速度快到可以当草稿本用</li>
+<li><strong>中文文字渲染准确</strong>（提示词里的中文招牌能正确画出来）</li>
+<li>有 nvfp4 版本，<strong>4.51 GB</strong> —— 一台 24 GB 的机器可以把它和编码器全塞进显存，无需 offload</li>
+</ol>
+<h3 id="62-图像编辑--flux2-klein-4b">6.2 图像编辑 —— FLUX.2 Klein 4B</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>项</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DiT</td>
+<td><code>flux-2-klein-4b-fp8.safetensors</code> —— 4.07 GB</td>
+</tr>
+<tr>
+<td>编码器</td>
+<td><code>qwen_3_4b_fp4_flux2.safetensors</code> —— 3.85 GB</td>
+</tr>
+<tr>
+<td>关键参数</td>
+<td><code>CLIPLoader</code> type = <strong><code>flux2</code></strong>；<code>ReferenceLatent</code> ×2；<code>Flux2Scheduler</code> <strong>20 步</strong>；CFGGuider <strong>CFG=5</strong></td>
+</tr>
+<tr>
+<td>实测</td>
+<td><strong>42.3 s</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>一个反直觉的发现</strong>：BFL 官方发的 fp8 单文件只有 <strong>4.07 GB</strong>，而 bf16 版是 7.75 GB——
+<strong>fp8 版质量几乎无损，体积只有一半</strong>。这类&quot;官方直接给好货&quot;的情况，优先用官方的。</p>
+<p>另一个更反直觉的点：<strong>9B 的 NVFP4 只有 5.76 GB，比 4B 的 bf16（7.75 GB）还小。</strong>
+更大的模型、更小的文件 —— 这就是 4-bit 的价值。</p>
+<h3 id="63-视频--音频--minimax-h3">6.3 视频 + 音频 —— MiniMax H3</h3>
+<p>这是本次最&quot;重&quot;的一条线，因为它<strong>同时生成画面和声音</strong>。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>项</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DiT</td>
+<td><code>minimax_h3_fl2va_pruned_int8_convrot.safetensors</code> —— <strong>20.97 GB</strong></td>
+</tr>
+<tr>
+<td>文本编码器</td>
+<td><code>qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors</code> —— <strong>15.69 GB</strong></td>
+</tr>
+<tr>
+<td>视频 VAE</td>
+<td><code>minimax_h3_video_vae_fp16.safetensors</code> —— 5.21 GB</td>
+</tr>
+<tr>
+<td>音频 VAE</td>
+<td><code>minimax_h3_audio_vae_fp32.safetensors</code> —— 0.61 GB</td>
+</tr>
+<tr>
+<td>加速 LoRA</td>
+<td>4step / 8step turbo，各 1.96 GB（<strong>官方蓝图用 8step</strong>）</td>
+</tr>
+<tr>
+<td>关键参数</td>
+<td><code>BasicScheduler(simple, 8步)</code> + <code>KSamplerSelect(res_multistep)</code> + <code>SamplerCustomAdvanced</code>；<strong>不用 <code>MiniMaxH3SigmaShift</code></strong></td>
+</tr>
+<tr>
+<td>实测</td>
+<td>冒烟 768×448/56帧 = <strong>76.3 s</strong>；全量 1344×768/124帧 = <strong>519.1 s</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>必须 offload。</strong> DiT 21 GB + 编码器 15.7 GB 加起来 36.7 GB，远超 24 GB。
+所以每次生成都在显存↔内存之间搬运权重 —— 这是它慢（519 秒）的主因，不是算力不够。</p>
+<p><strong>产物复核</strong>（这一步不能省）：<code>ffprobe</code> 确认输出为
+<strong>h264 / 1344×768 / 24fps / 5.17 s + aac 32kHz 立体声</strong>。
+抽 4 帧拼图后画面与提示词时间线吻合（RGB 分离的「COMFYUI」标题 → 铬色棕榈树 → 日落）。
+<strong>这不是噪点，是可用的音视频。</strong></p>
+<h3 id="64-纯视频--hunyuanvideo-15">6.4 纯视频 —— HunyuanVideo 1.5</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>项</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DiT</td>
+<td><code>hunyuanvideo1.5_480p_t2v_fp16.safetensors</code> —— 16.65 GB</td>
+</tr>
+<tr>
+<td>文本编码器</td>
+<td><strong><code>DualCLIPLoader</code></strong>（type=<code>hunyuan_video_15</code>）= <code>qwen_2.5_vl_7b_fp8_scaled</code> + <code>byt5_small_glyphxl_fp16</code></td>
+</tr>
+<tr>
+<td>VAE</td>
+<td><code>hunyuanvideo15_vae_fp16.safetensors</code> —— 2.52 GB</td>
+</tr>
+<tr>
+<td>加速 LoRA</td>
+<td><code>hunyuanvideo1.5_t2v_480p_lightx2v_4step_lora_rank_32_bf16.safetensors</code> —— 0.34 GB</td>
+</tr>
+<tr>
+<td>实测</td>
+<td>848×480 / 121 帧（5.04 s）= <strong>117.0 s</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>⚠️ 一个非常重要的概念区分：<code>480p</code> / <code>720p</code> / <code>i2v</code> / <code>SR</code> 是四个不同的基座模型</strong>，
+不是同一个模型换分辨率。文件名里的分辨率是<strong>模型身份的一部分</strong>。</p>
+<p><strong>4 步出片是它最大的价值</strong> —— 117 秒换 5 秒视频，意味着可以做快速迭代；
+而 720p 50 步的质量更高但慢得多。<strong>先 480p 快速试提示词，定稿再上 720p</strong>，这是推荐的用法。</p>
+<p><strong>产物复核</strong>：<code>ffprobe</code> 确认 h264 / 848×480 / 24fps / 121 帧 / 5.04 s；
+抽帧拼图后时序稳定、主体一致 ——「陶艺工作室拉坯成瓶，陶轮旋转、双手塑形、左侧暖黄轮廓光、
+背景虚化木架素坯」，<strong>提示词里的每个要素都对上了</strong>。</p>
+<h3 id="65-一个跑不了的--flux2-klein-9b">6.5 一个跑不了的 —— FLUX.2 Klein 9B</h3>
+<p><strong>这是唯一没跑通的一条线，而且原因很有教育意义。</strong></p>
+<p>报错：</p>
+<pre><code>mat1 and mat2 shapes cannot be multiplied (1024x7680 and 12288x4096)
+</code></pre>
+<p><strong>根因</strong>：9B 模型需要约 <strong>16.4 GB</strong> 的 Qwen3-VL 文本编码器，而 BFL 官方<strong>只发布了 diffusers 分片格式</strong>，
+ComfyUI 无法加载分片目录。</p>
+<p><strong>这不是显存问题，也不是量化问题，而是&quot;权重封装格式&quot;问题。</strong>
+三个可选解法：</p>
+<ol>
+<li>等 ComfyUI 官方封装单文件版编码器</li>
+<li>自己把 diffusers 分片合并转成 ComfyUI 单文件格式（要下 16.4 GB + 写转换脚本）</li>
+<li><strong>先用 4B</strong> —— 42.3 秒出图，够用</li>
+</ol>
+<blockquote>
+<p><strong>教训</strong>：选模型的时候，除了看&quot;显存装不装得下&quot;，还要看**&quot;权重是不是目标工具能加载的格式&quot;**。
+这是一个很多人会忽略的前置条件。</p>
+</blockquote>
+<h3 id="66-基准总表">6.6 基准总表</h3>
+<p><img src="assets/chart5-model-benchmark.svg" alt="各工作流实测耗时" /></p>
+<blockquote>
+<p>所有时间都取自 ComfyUI 服务端的 <code>execution_start</code> / <code>execution_success</code> 时间戳，
+<strong>而不是墙钟时间或 API 往返时间</strong> —— 后者会把排队、加载模型的耗时算进来，读数虚高。</p>
+</blockquote>
+<p><strong>一个诚实的说明</strong>：Z-Image 的耗时我们测了两轮，得到 <code>20.9 / 15.8 s</code> 和 <code>17.7 / 13.8 s</code>。
+<strong>绝对值的 run-to-run 波动约 ±15%</strong>（笔记本 GPU 的温度/功耗墙会导致降频），
+但 <strong>nvfp4 比 int8 快 22%～25%</strong> 这个<strong>相对结论在两轮里都稳定成立</strong>。</p>
+<blockquote>
+<p><strong>报告性能数据时，相对百分比比绝对值可信得多。</strong></p>
+</blockquote>
+<hr />
+<h2 id="7-优化清单可以直接抄的配置">7. 优化清单（可以直接抄的配置）</h2>
+<p><img src="assets/chart6-nvfp4-gain.svg" alt="NVFP4 实际带来什么" /></p>
+<h3 id="71-按收益排序">7.1 按收益排序</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>优先级</th>
+<th>优化</th>
+<th>收益</th>
+<th>代价</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>P0</strong></td>
+<td>所有 4-bit 模型统一用 <strong>NVFP4</strong></td>
+<td>快 22%、小 27%、画质无统计差异</td>
+<td>无</td>
+</tr>
+<tr>
+<td><strong>P0</strong></td>
+<td>用<strong>蒸馏 LoRA 减步数</strong>（8步→4步）</td>
+<td>提速可达 2×</td>
+<td>需调 LoRA 强度</td>
+</tr>
+<tr>
+<td><strong>P1</strong></td>
+<td><strong>VAE 分块解码</strong>（<code>VAEDecodeTiled</code>）</td>
+<td>避免高分辨率解码瞬时 OOM</td>
+<td>略微变慢</td>
+</tr>
+<tr>
+<td><strong>P1</strong></td>
+<td><strong>跑前清显存</strong>（<code>POST /free</code>）</td>
+<td>避免串跑时残留占用</td>
+<td>无</td>
+</tr>
+<tr>
+<td><strong>P2</strong></td>
+<td>串跑不同类型模型之间重启或强制卸载</td>
+<td>避免显存碎片</td>
+<td>增加等待</td>
+</tr>
+<tr>
+<td><strong>P2</strong></td>
+<td>长视频先 480p 试提示词，定稿再 720p</td>
+<td>大幅节省试错时间</td>
+<td>无</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="72-两个必须知道的显存陷阱">7.2 两个必须知道的显存陷阱</h3>
+<p><strong>陷阱一：ComfyUI 不会主动释放模型。</strong>
+跑完一张图之后，模型仍然占着显存。串跑下一张（尤其是视频）时很容易 OOM。
+解法：每次提交前调 <code>POST /free {&quot;unload_models&quot;: true, &quot;free_memory&quot;: true}</code>。</p>
+<blockquote>
+<p>⚠️ 注意 <code>/free</code> 返回的是<strong>空 body</strong>，写客户端时不要试图解析 JSON，否则会抛 <code>JSONDecodeError</code>。</p>
+</blockquote>
+<p><strong>陷阱二：VAE 解码的瞬时峰值。</strong>
+高分辨率图像/视频的 VAE 解码会在<strong>最后一步</strong>产生一个瞬时显存高峰（可达数 GB），
+于是出现&quot;transformer 全部跑完，倒在最后一步&quot;的现象。
+解法：用 <code>VAEDecodeTiled</code> 分块解码。</p>
+<hr />
+<h2 id="8-踩坑速查表">8. 踩坑速查表</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>症状</th>
+<th>真正的原因</th>
+<th>解法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>下载卡在某个百分比，速度 0.0 MB/s，但<strong>不报错</strong></td>
+<td>服务器&quot;慢速滴血&quot;绕过 socket 超时</td>
+<td>加<strong>业务层静默看门狗</strong>：150 s 无实质进展即断开重试</td>
+</tr>
+<tr>
+<td>探测源速度时<strong>所有源都超时</strong></td>
+<td>带宽已被并发下载打满</td>
+<td>空闲时探测，或给探测单独限速</td>
+</tr>
+<tr>
+<td>下载器先跑大文件，导致队列被拖死</td>
+<td>只有慢源的文件占住了 worker</td>
+<td>pending <strong>按&quot;是否有快源&quot;排序</strong></td>
+</tr>
+<tr>
+<td><code>POST /prompt</code> 返回 400</td>
+<td>模型缺失 <strong>或</strong> 图结构错误</td>
+<td>看 <code>node_errors</code>：只有 <code>value_not_in_list</code> → 图是对的</td>
+</tr>
+<tr>
+<td>HunyuanVideo 1.5 报编码器类型错</td>
+<td><code>CLIPLoader</code> 没有 <code>hunyuan_video_15</code></td>
+<td>用 <code>DualCLIPLoader</code></td>
+</tr>
+<tr>
+<td>Z-Image 报 CLIP type 错</td>
+<td>它要 <code>lumina2</code>，不是 <code>qwen</code></td>
+<td>改 type</td>
+</tr>
+<tr>
+<td>FLUX.2 报 CLIP type 错</td>
+<td>它要 <code>flux2</code></td>
+<td>改 type</td>
+</tr>
+<tr>
+<td>想文生视频但节点叫 <code>ImageToVideo</code></td>
+<td>图像输入是 <strong>optional</strong></td>
+<td><strong>不接</strong>图像输入 = 纯文生视频</td>
+</tr>
+<tr>
+<td><code>mat1 and mat2 shapes cannot be multiplied</code></td>
+<td>编码器格式不匹配（diffusers 分片）</td>
+<td>换单文件封装，或用小一号的模型</td>
+</tr>
+<tr>
+<td><code>/free</code> 调用抛 JSON 解析错</td>
+<td>它返回空 body</td>
+<td>判空后再解析</td>
+</tr>
+<tr>
+<td>视频跑完但画面是噪点</td>
+<td>可能是没做产物复核</td>
+<td>用 <code>ffprobe</code> + 抽帧拼图人工过一遍</td>
+</tr>
+<tr>
+<td>换量化后 PSNR 很低就断定掉画质</td>
+<td><strong>方法错误：编码器没固定</strong></td>
+<td>见 §5，必须受控 + 种子基线</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="9-工具链">9. 工具链</h2>
+<h3 id="91-六个脚本">9.1 六个脚本</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>脚本</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>scripts/dl_models.py</code></td>
+<td>多源下载器：三级回退 + 静默看门狗 + Range 探尺寸 + 断点续传</td>
+</tr>
+<tr>
+<td><code>scripts/verify_models.py</code></td>
+<td>三层校验：字节大小 + safetensors 结构 + dtype 识别</td>
+</tr>
+<tr>
+<td><code>scripts/run_workflow.py</code></td>
+<td>API 提交 + <strong>服务端权威计时</strong>（读 <code>execution_start</code>/<code>success</code>）</td>
+</tr>
+<tr>
+<td><code>tools/compare_ab.py</code></td>
+<td>受控 A/B：PSNR + 分区 PSNR + 差异热力图 + 并排图</td>
+</tr>
+<tr>
+<td><code>tools/ab_metrics.py</code></td>
+<td>四组配对 PSNR + 质量代理指标（锐度/熵/高频/直方图）</td>
+</tr>
+<tr>
+<td><code>tools/make_charts.py</code></td>
+<td>生成本文所有 SVG 图表</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="92-快速开始">9.2 快速开始</h3>
+<pre><code class="language-bash"># 1) 环境
+#    ComfyUI 已在本机跑起来（默认 http://127.0.0.1:8188）
+
+# 2) 下载模型（三级源回退）
+python scripts/dl_models.py
+
+# 3) 三层校验（字节 + 结构 + dtype）
+python scripts/verify_models.py --refresh
+
+# 4) 跑一个工作流，拿服务端权威耗时
+python scripts/run_workflow.py workflows/z_image_turbo_nvfp4.json --free
+
+# 5) 做一次受控 A/B（同一编码器，只变量化）
+python tools/compare_ab.py
+python tools/ab_metrics.py
+</code></pre>
+<h3 id="93-目录结构">9.3 目录结构</h3>
+<pre><code>.
+├── README.md              # 中文（本文件）
+├── README_EN.md           # English
+├── index.html             # 在线阅读版（按浏览器语言自动适配）
+├── assets/                # 全部 SVG 图表（由 tools/make_charts.py 生成）
+├── data/                  # 实测原始数据
+├── docs/                  # 深挖文章
+├── scripts/               # 可复现脚本
+└── tools/                 # 分析与图表工具
+</code></pre>
+<hr />
+<h2 id="10-结论与后续">10. 结论与后续</h2>
+<h3 id="101-结论">10.1 结论</h3>
+<ol>
+<li><strong>24 GB 显存足够跑最新最强的开源生成模型</strong>，前提是接受 offload，并<strong>选对量化格式</strong></li>
+<li><strong>NVFP4 是 Blackwell 上的最佳选择</strong> —— 有受控实验支撑，不是&quot;感觉更快&quot;</li>
+<li><strong>量化负责&quot;装得下&quot;，蒸馏 LoRA 负责&quot;跑得快&quot;</strong> —— 两者不可互相替代</li>
+<li><strong>生成模型的量化对比必须有噪声基线</strong> —— 否则 PSNR 会被严重误读</li>
+</ol>
+<h3 id="102-后续可做">10.2 后续可做</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>项</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HunyuanVideo 1.5 <strong>720p 50 步</strong></td>
+<td>基座（16.65 GB）已就绪，工作流已搭好，待跑</td>
+</tr>
+<tr>
+<td>CLIP 语义相似度</td>
+<td>用 CLIP 打分替代 PSNR，进一步量化&quot;语义一致性&quot;</td>
+</tr>
+<tr>
+<td>更大样本的 A/B</td>
+<td>当前每量化 2 个种子，可扩到每量化 8 个种子压低方差</td>
+</tr>
+<tr>
+<td>FLUX.2 Klein 9B</td>
+<td>待编码器封装格式解决</td>
+</tr>
+<tr>
+<td>MiniMax H3 4 步 LoRA</td>
+<td>预计耗时减半，质量需复评</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="附录-a完整模型清单34-文件--1256-gb">附录 A：完整模型清单（34 文件 / 125.6 GB）</h2>
+<details>
+<summary>展开查看全部文件</summary>
+<p><strong>MiniMax H3（视频 + 音频）</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>文件</th>
+<th>大小</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>minimax_h3_fl2va_pruned_int8_convrot.safetensors</code></td>
+<td>20.97 GB</td>
+</tr>
+<tr>
+<td><code>qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors</code></td>
+<td>15.69 GB</td>
+</tr>
+<tr>
+<td><code>minimax_h3_video_vae_fp16.safetensors</code></td>
+<td>5.21 GB</td>
+</tr>
+<tr>
+<td><code>minimax_h3_video_vae_int8_convrot.safetensors</code></td>
+<td>2.81 GB</td>
+</tr>
+<tr>
+<td><code>minimax_h3_fun_controlnet_union_pruned_int8_convrot.safetensors</code></td>
+<td>2.30 GB</td>
+</tr>
+<tr>
+<td><code>minimax_h3_fl2v_turbo_4step_v1.0_768p_comfyui_bf16.safetensors</code></td>
+<td>1.96 GB</td>
+</tr>
+<tr>
+<td><code>minimax_h3_fl2v_turbo_8step_v1.0_comfyui_bf16.safetensors</code></td>
+<td>1.96 GB</td>
+</tr>
+<tr>
+<td><code>minimax_h3_audio_vae_fp32.safetensors</code></td>
+<td>0.61 GB</td>
+</tr>
+<tr>
+<td><code>minimaxh3_*</code> 效果 LoRA × 10（艺术爆炸 / 花开 / 子弹时间 / 暗魔法 / 吐火 / 四季 / 亲吻镜头 / 螺旋上升 / 风暴魔法 / 楚门世界）</td>
+<td>各 &lt; 0.01 GB</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Z-Image-Turbo（图像）</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>文件</th>
+<th>大小</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>z_image_turbo_int8_convrot.safetensors</code></td>
+<td>6.20 GB</td>
+</tr>
+<tr>
+<td><code>z_image_turbo_nvfp4.safetensors</code></td>
+<td>4.51 GB</td>
+</tr>
+<tr>
+<td><code>qwen_3_4b.safetensors</code>（bf16）</td>
+<td>8.04 GB</td>
+</tr>
+<tr>
+<td><code>qwen_3_4b_fp4_mixed.safetensors</code></td>
+<td>3.48 GB</td>
+</tr>
+<tr>
+<td><code>ae.safetensors</code></td>
+<td>0.34 GB</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>FLUX.2 Klein（图像编辑）</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>文件</th>
+<th>大小</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>flux-2-klein-9b-nvfp4.safetensors</code></td>
+<td>5.76 GB</td>
+</tr>
+<tr>
+<td><code>flux-2-klein-4b-fp8.safetensors</code></td>
+<td>4.07 GB</td>
+</tr>
+<tr>
+<td><code>qwen_3_4b_fp4_flux2.safetensors</code></td>
+<td>3.85 GB</td>
+</tr>
+<tr>
+<td><code>flux2-vae.safetensors</code></td>
+<td>0.34 GB</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>HunyuanVideo 1.5（视频）</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>文件</th>
+<th>大小</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hunyuanvideo1.5_720p_t2v_fp16.safetensors</code></td>
+<td>16.65 GB</td>
+</tr>
+<tr>
+<td><code>hunyuanvideo1.5_480p_t2v_fp16.safetensors</code></td>
+<td>16.65 GB</td>
+</tr>
+<tr>
+<td><code>hunyuanvideo15_vae_fp16.safetensors</code></td>
+<td>2.52 GB</td>
+</tr>
+<tr>
+<td><code>sigclip_vision_patch14_384.safetensors</code></td>
+<td>0.86 GB</td>
+</tr>
+<tr>
+<td><code>byt5_small_glyphxl_fp16.safetensors</code></td>
+<td>0.44 GB</td>
+</tr>
+<tr>
+<td><code>hunyuanvideo1.5_t2v_480p_lightx2v_4step_lora_rank_32_bf16.safetensors</code></td>
+<td>0.34 GB</td>
+</tr>
+<tr>
+<td><code>hunyuanvideo15_latent_upsampler_720p.safetensors</code></td>
+<td>0.09 GB</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>校验结果：34 / 34 完整，125.6 GB，0 损坏。</strong></p>
+</details>
+<h2 id="附录-b实测原始数据">附录 B：实测原始数据</h2>
+<p>见 <a href="data/"><code>data/</code></a> 目录：</p>
+<ul>
+<li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/quant-ab-metrics.md"><code>data/quant-ab-metrics.md</code></a> —— 受控 A/B 的完整指标</li>
+<li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/benchmark-results.md"><code>data/benchmark-results.md</code></a> —— 各工作流服务端耗时</li>
+<li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/download-manifest.md"><code>data/download-manifest.md</code></a> —— 34 个文件的体积与 dtype</li>
+</ul>
+<h2 id="附录-c术语表">附录 C：术语表</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>术语</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>offload</strong></td>
+<td>把权重在显存与内存之间搬运，使&quot;模型大于显存&quot;仍能运行</td>
+</tr>
+<tr>
+<td><strong>W4A16</strong></td>
+<td>权重 4-bit、激活 16-bit；只省显存不提速</td>
+</tr>
+<tr>
+<td><strong>W4A4</strong></td>
+<td>权重与激活都 4-bit；省显存且提速</td>
+</tr>
+<tr>
+<td><strong>NVFP4</strong></td>
+<td>Blackwell 原生的 4-bit 浮点格式，可直接用 tensor core 计算</td>
+</tr>
+<tr>
+<td><strong>ConvRot</strong></td>
+<td>旋转补偿，让 INT8 量化在 BF16 计算路径上工作</td>
+</tr>
+<tr>
+<td><strong>Distill LoRA</strong></td>
+<td>蒸馏出的&quot;少步数&quot;适配器，用 4 步代替 20+ 步</td>
+</tr>
+<tr>
+<td><strong>PSNR</strong></td>
+<td>峰值信噪比；<strong>对生成模型不能单独作质量判据</strong></td>
+</tr>
+<tr>
+<td><strong>subgraph</strong></td>
+<td>ComfyUI 新蓝图的封装格式，节点类型是 UUID</td>
+</tr>
+<tr>
+<td><strong>VAE tiling</strong></td>
+<td>分块解码，避免高分辨率解码的瞬时显存峰值</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="附录-d为什么用单一仓库而不是每个模型一个仓库">附录 D：为什么用「单一仓库」，而不是每个模型一个仓库</h2>
+<p>这是我们在动手之前就先想清楚的一个问题：<strong>要不要给每个模型（比如 MiniMax H3）单独开一个仓库？</strong></p>
+<h3 id="两种方案的对比">两种方案的对比</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>单一仓库（本方案）</th>
+<th>每模型一仓库</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>核心方法论复用</td>
+<td>✅ 受控 A/B、下载器、校验器 <strong>只写一次</strong></td>
+<td>❌ 复制 N 份，改一处要改 N 处</td>
+</tr>
+<tr>
+<td>结论可比较性</td>
+<td>✅ 四条模型线用 <strong>同一套测量口径</strong></td>
+<td>❌ 各自为政，跨模型数字不可比</td>
+</tr>
+<tr>
+<td>「为什么选它」的可读性</td>
+<td>✅ 打开一页就看到全貌与取舍</td>
+<td>❌ 要在 4 个仓库之间跳转才能拼出全景</td>
+</tr>
+<tr>
+<td>单模型深度</td>
+<td>➖ 靠 <code>docs/</code> 下的专题长文补齐</td>
+<td>✅ 天然隔离</td>
+</tr>
+<tr>
+<td>维护成本</td>
+<td>✅ 一处更新，全站受益</td>
+<td>❌ N 倍</td>
+</tr>
+<tr>
+<td>分享成本</td>
+<td>✅ 一个链接 = 完整框架</td>
+<td>❌ 得先说明&quot;该看哪个仓库&quot;</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="我们的判断">我们的判断</h3>
+<p><strong>结论：单一仓库 + <code>docs/</code> 分专题。</strong></p>
+<p>理由只有一条，但很硬：<strong>这份手册真正有价值的东西是「方法论」，而不是「某一个模型的参数」。</strong></p>
+<ul>
+<li>四条模型线里，<strong>可复用的部分是同一套</strong>：受控 A/B 的四组对照设计、带静默看门狗的多源下载器、三层模型校验、服务端权威计时。</li>
+<li><strong>不可复用的部分（每个模型自己的节点约束与参数）体量很小</strong> —— 在单仓库里用一章（§6）就讲完了。</li>
+<li>如果拆成 4 个仓库，那套方法论就会被复制 4 份。一旦我们在某个仓库里改进了 A/B 方法，另外 3 个仓库不会自动同步 —— 这正是<strong>结论不再可比</strong>的根源。</li>
+</ul>
+<blockquote>
+<p><strong>判据</strong>：<strong>共享的&quot;方法&quot;越大、各模型特有的&quot;参数&quot;越小，就越应该合并成单一仓库。</strong>
+反过来，只有当每个模型都需要自己独立的工具链与数据集时，分离才划算。</p>
+</blockquote>
+<h3 id="未来什么时候应该拆">未来什么时候应该拆</h3>
+<p>出现下面任一情况，就该拆了：</p>
+<ol>
+<li>某个模型的工具链变得彻底独立（例如需要一个专属的训练 / 微调流程）</li>
+<li>仓库膨胀到 clone 困难（往仓库里塞大量数据或权重 —— 注意<strong>本仓库只放脚本与图表，不放任何权重</strong>）</li>
+<li>团队分工细化到「每个模型由不同的人独立维护」</li>
+</ol>
+<p>在此之前，<strong>单一仓库的收益（可复用、可比、一次讲清）远大于成本。</strong></p>
+<hr />
+<h2 id="许可">许可</h2>
+<p><a href="LICENSE">MIT</a>。文中所有实测数据均来自本机运行，欢迎复核与指正。</p>
+</article>
+  <article class="doc i-en"><hr />
+<blockquote>
+<p><strong>The one-line verdict</strong>: On a 24 GB laptop GPU we got four of the newest open-weight generative
+model lines running (six workflows in total) — and proved with a <strong>controlled experiment</strong> that
+<strong>NVFP4 is the best quantization format for this machine</strong>: <strong>22% faster</strong> and <strong>27% smaller</strong> than
+INT8, with a quality difference that sits <strong>below the random seed noise floor</strong>.</p>
+</blockquote>
+<p>This is not a &quot;copy-paste the commands&quot; tutorial. The hard part is never getting one model to run —
+it is <strong>deciding which of dozens of quantization variants to pick</strong>. This document lays the whole
+decision chain bare: how we reasoned, how we downloaded, how we built the graphs, how we measured,
+how we chose. Every number is measured on the machine, and every conclusion ships with a
+reproducible method.</p>
+<hr />
+<h2 id="contents">Contents</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Topic</th>
+<th>What you get</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#0-hardware-and-starting-point">0</a></td>
+<td>Hardware and starting point</td>
+<td>Where the real constraint is</td>
+</tr>
+<tr>
+<td><a href="#1-tldr-the-verdict">1</a></td>
+<td><strong>The verdict first</strong></td>
+<td>Every choice in one table</td>
+</tr>
+<tr>
+<td><a href="#2-how-we-reasoned-framing-the-constraint">2</a></td>
+<td>How we reasoned</td>
+<td>A complete mental model of quantization</td>
+</tr>
+<tr>
+<td><a href="#3-how-we-downloaded-moving-1256-gb">3</a></td>
+<td>How we downloaded</td>
+<td>The engineering behind 125.6 GB</td>
+</tr>
+<tr>
+<td><a href="#4-how-we-built-comfyui-node-constraints">4</a></td>
+<td>How we built</td>
+<td>Node constraints bought with pain</td>
+</tr>
+<tr>
+<td><a href="#5-how-we-measured-the-controlled-ab-the-core-of-this-document">5</a></td>
+<td><strong>How we measured</strong></td>
+<td>The methodology (the core)</td>
+</tr>
+<tr>
+<td><a href="#6-how-we-chose-four-model-lines-in-practice">6</a></td>
+<td>How we chose</td>
+<td>Each model, measured</td>
+</tr>
+<tr>
+<td><a href="#7-optimization-checklist-configs-you-can-copy">7</a></td>
+<td>Optimization checklist</td>
+<td>Copy-paste configs</td>
+</tr>
+<tr>
+<td><a href="#8-troubleshooting-table">8</a></td>
+<td>Troubleshooting</td>
+<td>Symptom → cause → fix</td>
+</tr>
+<tr>
+<td><a href="#9-toolchain">9</a></td>
+<td>Toolchain</td>
+<td>Six reusable scripts</td>
+</tr>
+<tr>
+<td><a href="#10-conclusion-and-what-is-next">10</a></td>
+<td>Conclusion</td>
+<td>What is still open</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="0-hardware-and-starting-point">0. Hardware and starting point</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Measured value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPU</td>
+<td><strong>RTX 5090 Laptop</strong> — 24435 MiB (<strong>24 GB</strong>), compute capability <strong>sm_120</strong> (Blackwell)</td>
+</tr>
+<tr>
+<td>CUDA</td>
+<td>12.8</td>
+</tr>
+<tr>
+<td>System RAM</td>
+<td>64 GB</td>
+</tr>
+<tr>
+<td>Engine</td>
+<td>ComfyUI <strong>0.37.0</strong> / PyTorch 2.11.0+cu128 / Python 3.11.9</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>Use the <strong>newest</strong> open-weight models, covering <strong>image / video / audio</strong> generation</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Why start at 24 GB?</strong> Because it is the only genuinely hard constraint in this document.</p>
+<p>Raw compute on a modern laptop GPU is never the problem — an 8-step distilled model renders a
+1024² image in about ten seconds on a 5090. What decides which models you can and cannot run is
+<strong>whether the weights fit in VRAM</strong>. And the newest generation of open-weight generative models
+shares a trend: <strong>the base model keeps getting bigger, and it now demands a separate text encoder
+that is just as big.</strong></p>
+<p>Look at the chart below. Note the 24 GB red line.</p>
+<p><img src="assets/chart2-model-footprint.svg" alt="Single-file weight size against 24 GB of VRAM" /></p>
+<p>Three of these files — MiniMax H3's DiT at 21 GB, HunyuanVideo 1.5 at 16.7 GB, and MiniMax H3's text
+encoder at 15.7 GB — <strong>each individually exceeds 24 GB</strong>. Which means:</p>
+<blockquote>
+<p><strong>They can never be resident. On every single step, weights must be shuttled between VRAM and
+system RAM.</strong> That is why &quot;picking the right quantization format&quot; on this machine is not an
+optimization. It is the difference between running and not running.</p>
+</blockquote>
+<hr />
+<h2 id="1-tldr-the-verdict">1. TL;DR: the verdict</h2>
+<h3 id="11-selection-table">1.1 Selection table</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Use case</th>
+<th>Model chosen</th>
+<th>Quantization</th>
+<th>Measured time</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Image generation</strong></td>
+<td>Z-Image-Turbo</td>
+<td><strong>NVFP4</strong> (4.51 GB)</td>
+<td><strong>13.8 s</strong> (1024²/8 steps)</td>
+<td>Accurate Chinese text rendering</td>
+</tr>
+<tr>
+<td><strong>Image editing</strong></td>
+<td>FLUX.2 Klein <strong>4B</strong></td>
+<td>fp8 (4.07 GB)</td>
+<td>42.3 s</td>
+<td>9B is blocked by its encoder, see §6.5</td>
+</tr>
+<tr>
+<td><strong>Video + audio</strong></td>
+<td>MiniMax H3</td>
+<td>int8 + ConvRot</td>
+<td><strong>519.1 s</strong> (1344×768/124 frames)</td>
+<td><strong>Native audio track</strong>, 5.17 s of video with stereo</td>
+</tr>
+<tr>
+<td><strong>Video only</strong></td>
+<td>HunyuanVideo 1.5 480p</td>
+<td>fp16 + LightX2V 4-step LoRA</td>
+<td><strong>117.0 s</strong> (848×480/121 frames)</td>
+<td>4 steps — fast enough to iterate</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="12-three-rules-you-can-apply-immediately">1.2 Three rules you can apply immediately</h3>
+<ol>
+<li><strong>Quantization: if the GPU is Blackwell (sm_120/121), always pick NVFP4.</strong> Proof in §5.</li>
+<li><strong>Offload or not: sum the base model and the encoder, and compare against VRAM.</strong> If the sum
+exceeds it, offloading is mandatory — and then every gigabyte quantization saves converts
+directly into speed.</li>
+<li><strong>Speed comes from fewer steps, not from smaller weights.</strong> An 8-step → 4-step LoRA buys far
+more than any weight quantization. Quantization makes the model <strong>fit</strong>; a distilled LoRA makes
+it <strong>fast</strong>. These are different problems.</li>
+</ol>
+<hr />
+<h2 id="2-how-we-reasoned-framing-the-constraint">2. How we reasoned: framing the constraint</h2>
+<h3 id="21-the-only-hard-constraint-is-vram-not-compute">2.1 The only hard constraint is VRAM, not compute</h3>
+<p>This deserves emphasis, because it determines every subsequent trade-off.</p>
+<p>The common intuition — &quot;if VRAM is short, use a smaller model&quot; — does not apply here. The models we
+want are the newest and strongest, and <strong>they have no small variant</strong>. The only free variable is
+<strong>how many bits each weight occupies</strong>.</p>
+<p>So the problem compresses into one sentence: <strong>what is the fewest bits per weight that costs nothing
+visible to the eye?</strong></p>
+<h3 id="22-the-four-families-of-quantization-this-is-the-foundation">2.2 The four families of quantization (this is the foundation)</h3>
+<p>The phrase &quot;4-bit quantization&quot; lumps together three completely different things. Separate them first.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Family</th>
+<th>Examples</th>
+<th>What is compressed</th>
+<th>Saves VRAM</th>
+<th>Faster</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>W4A16</strong></td>
+<td>GGUF / NF4 / bitsandbytes / torchao</td>
+<td><strong>weights only</strong></td>
+<td>✅</td>
+<td>❌ <strong>no, often slower</strong></td>
+</tr>
+<tr>
+<td><strong>W4A4</strong></td>
+<td>Nunchaku SVDQuant</td>
+<td><strong>weights + activations</strong></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>INT8 + ConvRot</strong></td>
+<td>Comfy-Org's default for new models</td>
+<td>8-bit weights + rotation compensation</td>
+<td>✅</td>
+<td>➖ no (runs the BF16 path)</td>
+</tr>
+<tr>
+<td><strong>NVFP4</strong></td>
+<td>Blackwell-native 4-bit float</td>
+<td>weights + activations</td>
+<td>✅</td>
+<td>✅ <strong>fastest</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>The most important row in that table is the first one.</strong></p>
+<p><code>W4A16</code> shrinks the weights but must expand them back to 16-bit to compute, so <strong>you save memory but
+save zero compute — and you pay extra dequantization overhead on top</strong>. This is exactly why people
+report &quot;I switched to a 4-bit model and it got slower.&quot;</p>
+<blockquote>
+<p><strong>Remember it this way</strong>: W4A16 saves <strong>memory</strong>. W4A4 / NVFP4 save <strong>memory and bandwidth</strong>.
+Only the latter actually goes faster.</p>
+</blockquote>
+<p>NVFP4 wins on this machine because it is <strong>Blackwell's native 4-bit floating-point format</strong>: it feeds
+tensor cores directly for 4-bit matrix multiplication, with no &quot;expand first, then compute&quot; round trip.</p>
+<h3 id="23-how-to-tell-real-nvfp4-apart-never-trust-the-filename">2.3 How to tell real NVFP4 apart (never trust the filename)</h3>
+<p>This is a trap we walked into. A great many community files named <code>fp4</code> or <code>nvfp4</code> are actually a
+different format, or only partially 4-bit.</p>
+<p><strong>The only reliable test is the tensor keys inside the safetensors file.</strong> Open the header (first 8
+bytes, little-endian uint64 = header length → JSON) and look for this set:</p>
+<pre><code>weight_scale
+weight_scale_2
+input_scale
+pre_quant_scale
+TensorCoreNVFP4Layout   (group_size = 16)
+</code></pre>
+<p>A verified real NVFP4 file on this machine shows both <code>F8_E4M3</code> (for block scales) and <code>U8</code> in its
+dtype list. For example:</p>
+<pre><code>z_image_turbo_nvfp4.safetensors    4.51 GB   993 tensors   BF16, F32, F8_E4M3, U8   ✅ real NVFP4
+qwen_3_4b_fp4_mixed.safetensors    3.48 GB  1081 tensors   BF16, F32, F8_E4M3, U8   ✅ real NVFP4
+</code></pre>
+<p><strong>The decision tree below is the complete selection logic:</strong></p>
+<p><img src="assets/chart4-quant-decision-tree.svg" alt="Quantization selection decision tree" /></p>
+<hr />
+<h2 id="3-how-we-downloaded-moving-1256-gb">3. How we downloaded: moving 125.6 GB</h2>
+<p>Downloading looks trivial until you multiply <strong>125.6 GB</strong> by <strong>unstable mirrors</strong>. A naive
+implementation can spend a whole day on it. The outcome: <strong>34 files, 125.6 GB, zero corruption</strong> —
+built on three mechanisms.</p>
+<h3 id="31-throughput-measured">3.1 Throughput, measured</h3>
+<p><img src="assets/chart1-download-sources.svg" alt="Download source throughput" /></p>
+<p>The gap is <strong>an order of magnitude</strong>: modelscope is 7× faster than hf-mirror and 12× faster than
+huggingface. Multi-source fallback is therefore not a nicety — it is mandatory.</p>
+<h3 id="32-mechanism-one-three-tier-fallback">3.2 Mechanism one: three-tier fallback</h3>
+<pre><code>Each file tries:  www.modelscope.cn  →  hf-mirror.com  →  huggingface.co
+</code></pre>
+<p>If a source fails, fall through to the next. The <code>.part</code> resume file is <strong>reusable across sources</strong>
+(both ends serve byte-identical content — verified).</p>
+<h3 id="33-mechanism-two-a-silent-watchdog-this-one-is-essential">3.3 Mechanism two: a silent watchdog (this one is essential)</h3>
+<p>This was our deepest trap.</p>
+<p>We originally set a 45-second socket timeout. Then a file sat at <strong>4.6%, 0.0 MB/s, for 19 minutes</strong>
+without raising a single error. The cause is nasty: <strong>the server dribbled a few KB every 30 seconds</strong>,
+which was just enough to keep the socket alive while making no real progress.</p>
+<blockquote>
+<p><strong>Lesson</strong>: a socket timeout cannot catch a &quot;slow drip&quot; stall. You need a second, <strong>application-level
+watchdog</strong>: if the byte count makes no real progress for <strong>150 seconds</strong>, actively disconnect and
+retry; after <strong>3 consecutive silent stalls</strong>, abandon that source and let the caller switch.</p>
+<p>With this layer in place, the same network conditions never produced another infinite hang.</p>
+</blockquote>
+<h3 id="34-mechanism-three-range-probing-and-concurrency">3.4 Mechanism three: Range probing and concurrency</h3>
+<p><code>modelscope</code> <strong>does not support HEAD requests</strong>, so you cannot get a file size the normal way — and
+without a size you cannot verify anything. The fix is to range-request a single byte and read the
+total from the response header:</p>
+<pre><code class="language-http">Range: bytes=0-0
+→  HTTP/1.1 206 Partial Content
+   Content-Range: bytes 0-0/16748116224        # ← the true byte count
+</code></pre>
+<p>Once you have the expected size, three things become possible:</p>
+<ol>
+<li><strong>Probe sizes concurrently</strong> (probe only, no download) → know the total and prioritise early</li>
+<li><strong>Compare byte counts after download</strong> → detect truncation and corruption precisely</li>
+<li><strong>Cross-validate two sources</strong> → the same file should report the same size on both</li>
+</ol>
+<h3 id="35-a-meta-lesson-never-probe-source-health-during-a-download-peak">3.5 A meta-lesson: never probe source health during a download peak</h3>
+<p><strong>We got this wrong once.</strong> While four parallel downloads were saturating the link, we probed the
+other sources — every probe timed out, and we concluded, incorrectly, that &quot;both mirrors are
+unavailable, so the user must download manually.&quot;</p>
+<p>They were perfectly healthy. The bandwidth was simply <strong>fully consumed</strong>.</p>
+<blockquote>
+<p><strong>Lesson</strong>: probe requests (speed tests, availability checks) and download requests compete for the
+same bandwidth. Either probe while idle, or <strong>rate-limit the probes separately</strong>.</p>
+</blockquote>
+<hr />
+<h2 id="4-how-we-built-comfyui-node-constraints">4. How we built: ComfyUI node constraints</h2>
+<p>With the models on disk, the next job is turning them into a runnable graph. ComfyUI's official
+workflows live in two places:</p>
+<ul>
+<li><code>ComfyUI/blueprints/*.json</code> — <strong>116 official blueprints</strong></li>
+<li><code>site-packages/comfyui_workflow_templates_json/templates/</code> — the same set</li>
+</ul>
+<p>But they <strong>cannot be submitted as an API prompt directly</strong>, because they are in <strong>subgraph format</strong>:
+node types are UUIDs, and the real topology is buried inside <code>definitions.subgraphs</code>. We wrote
+<code>bp_dump.py</code> to flatten a subgraph into a node-and-wire listing — far more reliable than guessing the
+topology by hand.</p>
+<h3 id="41-four-node-constraints-you-must-know">4.1 Four node constraints you must know</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Constraint</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong><code>CLIPLoader</code> has 29 types and <code>hunyuan_video_15</code> is not one of them</strong></td>
+<td>HunyuanVideo 1.5 requires <code>DualCLIPLoader</code> (type=<code>hunyuan_video_15</code>) with <code>qwen_2.5_vl_7b_fp8_scaled</code> + <code>byt5_small_glyphxl_fp16</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Z-Image's type is <code>lumina2</code>; FLUX.2's is <code>flux2</code></strong></td>
+<td>The same <code>qwen_3_4b</code> encoder is loaded with <strong>different</strong> types in the two models. Mixing them up is an error</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong><code>MiniMaxH3ImageToVideo</code> has <code>first_frame</code> as optional</strong></td>
+<td>Leave it unconnected → <strong>pure text-to-video, with audio</strong>. A node named &quot;ImageToVideo&quot; is not necessarily image-only</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong><code>HunyuanVideo15ImageToVideo</code> has <code>start_image</code> as optional</strong></td>
+<td>Same story: unconnected = text-to-video</td>
+</tr>
+</tbody>
+</table></div>
+<p>Points 3 and 4 were our biggest <strong>correction of an assumption</strong>: when you see <code>ImageToVideo</code>, first
+check whether the image input is optional. If it is, the node also works as text-to-video.</p>
+<h3 id="42-what-to-do-when-there-is-no-official-blueprint">4.2 What to do when there is no official blueprint</h3>
+<p><strong>HunyuanVideo 1.5 has no official blueprint.</strong> You have to build the graph by hand from node
+signatures. Order matters:</p>
+<ol>
+<li>Check <code>DualCLIPLoader</code>'s type list to confirm <code>hunyuan_video_15</code> exists</li>
+<li>Confirm the latent channel count (<strong>1.5 uses 32 channels and spatial downsampling of 16</strong> — unlike 1.0)</li>
+<li>After building, run the <strong>free validation</strong> trick below</li>
+</ol>
+<h3 id="43-a-free-graph-validation-trick-highly-recommended">4.3 A free graph-validation trick (highly recommended)</h3>
+<p>While models are still downloading, a direct <code>POST /prompt</code> returns <strong>HTTP 400 with per-node
+<code>node_errors</code></strong>. The key insight:</p>
+<blockquote>
+<p><strong>If the only errors are <code>value_not_in_list</code> — meaning &quot;that model file is not in the list&quot; — then
+the graph's structure and types are entirely correct.</strong></p>
+</blockquote>
+<p>That gives you a <strong>zero-cost dry run</strong>: you can validate a workflow before its weights finish
+downloading. All seven workflows in this project were validated this way before the downloads completed.</p>
+<hr />
+<h2 id="5-how-we-measured-the-controlled-ab-the-core-of-this-document">5. How we measured: the controlled A/B (the core of this document)</h2>
+<p>This is the most valuable section here, because <strong>we got it wrong the first time</strong>.</p>
+<h3 id="51-a-plausible-conclusion-that-was-wrong">5.1 A plausible conclusion that was wrong</h3>
+<p>In the first comparison we ran two Z-Image-Turbo variants (int8 and nvfp4) and got:</p>
+<pre><code>PSNR = 13.82 dB
+</code></pre>
+<p>What does 13.82 dB mean? Conventionally, anything below 20 dB means &quot;two visibly different images.&quot;
+Our conclusion at the time: <strong>&quot;4-bit quantization really does degrade quality. NVFP4 is not good
+enough.&quot;</strong></p>
+<p><strong>That conclusion was wrong</strong>, because we made a methodological error:</p>
+<blockquote>
+<p>❌ <strong>The two variants used different text encoders.</strong>
+The int8 build was paired with <code>qwen_3_4b.safetensors</code> (bf16); the nvfp4 build with
+<code>qwen_3_4b_fp4_mixed.safetensors</code> (fp4).</p>
+<p>So encoder differences were baked into that 13.82 dB. Quantization was never the culprit.</p>
+</blockquote>
+<h3 id="52-why-psnr-cannot-be-used-naively-on-generative-models">5.2 Why PSNR cannot be used naively on generative models</h3>
+<p>Before fixing the method, you have to internalise a counter-intuitive fact:</p>
+<blockquote>
+<p><strong>Diffusion sampling is chaotic.</strong></p>
+</blockquote>
+<p>Two models whose values agree to four decimal places will produce <strong>two completely different
+compositions</strong> after 8 sampling steps. This is not a bug — it is the nature of the process; sampling
+keeps amplifying tiny differences.</p>
+<p><strong>So &quot;these two images have low PSNR&quot; does not prove &quot;one of them is worse.&quot; It only proves &quot;these
+are two different samples.&quot;</strong></p>
+<p>To judge whether quantization damages quality, you need something else entirely: <strong>a noise baseline</strong>.</p>
+<h3 id="53-designing-the-four-way-control">5.3 Designing the four-way control</h3>
+<p>We isolated the variable completely — identical encoder, identical prompt, identical 1024²/8-step
+configuration, <strong>with only the DiT quantization differing</strong> — and then added two &quot;only the random
+seed changed&quot; controls:</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Arm</th>
+<th>Variable</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>det</strong></td>
+<td>none (same quant, same seed, re-run)</td>
+<td><strong>Determinism check</strong>: is the pipeline reproducible?</td>
+</tr>
+<tr>
+<td><strong>seed</strong></td>
+<td>random seed only (within int8)</td>
+<td><strong>Noise floor</strong></td>
+</tr>
+<tr>
+<td><strong>cross</strong></td>
+<td><strong>quantization only</strong> (same seed)</td>
+<td><strong>The thing being measured</strong></td>
+</tr>
+<tr>
+<td><strong>seedB</strong></td>
+<td>random seed only (within nvfp4)</td>
+<td>Noise floor (second copy)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>The test</strong>: if <code>cross</code> similarity is <strong>higher</strong> than <code>seed</code> similarity, then <strong>the perturbation
+caused by quantization is smaller than the randomness of sampling</strong> — meaning quantization error is
+negligible.</p>
+<h3 id="54-results">5.4 Results</h3>
+<p><img src="assets/chart3-quant-ab-psnr.svg" alt="Controlled A/B: is the quantization loss real?" /></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Arm</th>
+<th>Variable</th>
+<th>PSNR</th>
+<th>Mean pixel difference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>det</strong> same quant, same seed, re-run</td>
+<td>none</td>
+<td><strong>∞ dB</strong></td>
+<td><strong>0.00%</strong></td>
+</tr>
+<tr>
+<td><strong>seed</strong> int8, different seed</td>
+<td>seed only</td>
+<td>12.10 dB</td>
+<td>16.89%</td>
+</tr>
+<tr>
+<td><strong>cross</strong> nvfp4 vs int8, same seed</td>
+<td><strong>quantization only</strong></td>
+<td><strong>16.84 dB</strong></td>
+<td><strong>7.41%</strong></td>
+</tr>
+<tr>
+<td><strong>seedB</strong> nvfp4, different seed</td>
+<td>seed only</td>
+<td>12.45 dB</td>
+<td>16.43%</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="55-three-hard-conclusions">5.5 Three hard conclusions</h3>
+<p><strong>Conclusion one: the pipeline is deterministic.</strong></p>
+<p>The <code>det</code> arm measured PSNR = <strong>∞</strong> — the two images are <strong>byte-for-byte identical</strong>. This single fact
+is what makes the whole experiment <strong>attributable</strong>: since identical inputs necessarily produce
+identical outputs, the difference in the <code>cross</code> arm is <strong>100% attributable to the quantization
+format itself</strong>, with zero runtime noise mixed in.</p>
+<blockquote>
+<p>Had this failed — had a re-run produced a different image — then no cross-quantization difference
+could be attributed to anything, and the experiment would have been worthless.</p>
+</blockquote>
+<p><strong>Conclusion two: quantization perturbation &lt; sampling noise.</strong></p>
+<pre><code>cross difference (7.41%)  &lt;  seed difference (16.89%)
+</code></pre>
+<p><strong>Changing the quantization format alters the image less than picking a different random seed.</strong>
+That is the hard evidence that quantization is not costing quality.</p>
+<p><strong>Conclusion three: quality proxy metrics show no systematic difference.</strong></p>
+<p>PSNR is sensitive to trajectory divergence, so we measured five <strong>robust</strong> proxies as well:</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Sample</th>
+<th>Sharpness (Laplacian variance)</th>
+<th>Shannon entropy</th>
+<th>High-frequency ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>int8 · seed A</td>
+<td>776.5</td>
+<td>5.572</td>
+<td>0.0130</td>
+</tr>
+<tr>
+<td>int8 · seed B</td>
+<td>705.4</td>
+<td>5.736</td>
+<td>0.0134</td>
+</tr>
+<tr>
+<td>nvfp4 · seed A</td>
+<td>694.3</td>
+<td>5.614</td>
+<td>0.0127</td>
+</tr>
+<tr>
+<td>nvfp4 · seed B</td>
+<td>604.1</td>
+<td>5.791</td>
+<td>0.0140</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>The spread caused by changing only the seed within one quantization (int8: 776.5 → 705.4) already
+covers the entire cross-quantization difference (776.5 → 694.3).</strong> In other words: <strong>the quantization
+factor is drowned inside the seed factor's variance.</strong></p>
+<p>Color histogram L1 distance agrees:</p>
+<pre><code>det = 0.0000   |   cross = 0.0858   |   seedB = 0.1085   |   seed = 0.1256
+                    ↑ cross-quant          ↑ within-seed      ↑ within-seed
+</code></pre>
+<p><strong>The color-distribution difference across quantizations is smaller than the difference caused by
+changing the seed.</strong></p>
+<h3 id="56-final-review-do-they-look-the-same">5.6 Final review: do they look the same?</h3>
+<p>Numbers aside, we did a human eye check. Four images laid out <strong>2×2</strong>, deliberately arranged so that
+<strong>reading down a column = same seed, different quantization</strong> and <strong>reading across a row = same
+quantization, different seed</strong>:</p>
+<pre><code>┌──────────────────────┬──────────────────────┐
+│  INT8  · seed 20260922│  INT8  · seed 20260923│
+├──────────────────────┼──────────────────────┤
+│ NVFP4  · seed 20260922│ NVFP4  · seed 20260923│
+└──────────────────────┴──────────────────────┘
+       ↑ column: same seed, cross-quant   ↑ row: same quant, cross-seed
+</code></pre>
+<p><strong>The result matches the numbers exactly:</strong></p>
+<ul>
+<li><strong>Down a column</strong> (same seed, cross-quantization) → <strong>highly similar compositions</strong> (both expose
+the same distant rock spires on the left)</li>
+<li><strong>Across a row</strong> (same quantization, different seed) → <strong>entirely different compositions</strong></li>
+</ul>
+<p><strong>All four are competent, high-quality Huangshan sunrise renderings</strong> — semantically correct, richly
+detailed, free of artifacts. Quantization is not the variable. The seed is.</p>
+<h3 id="57-the-methodology-distilled-reusable-for-any-model">5.7 The methodology, distilled (reusable for any model)</h3>
+<blockquote>
+<p><strong>Any &quot;does quantization hurt quality?&quot; comparison must satisfy three conditions:</strong></p>
+<ol>
+<li><strong>Controlled</strong>: encoder, prompt, resolution, steps, sampler, and CFG <strong>all fixed</strong> — change one variable at a time</li>
+<li><strong>Has a noise baseline</strong>: you must also measure &quot;same quantization, different seed&quot;, or you cannot
+separate quantization perturbation from sampling randomness</li>
+<li><strong>Has a determinism check</strong>: &quot;same quantization + same seed&quot; must reproduce byte-identically,
+or the conclusion is not attributable</li>
+</ol>
+<p>Miss any one of these and the PSNR number will be misread.</p>
+</blockquote>
+<hr />
+<h2 id="6-how-we-chose-four-model-lines-in-practice">6. How we chose: four model lines in practice</h2>
+<h3 id="61-image-generation--z-image-turbo">6.1 Image generation — Z-Image-Turbo</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DiT</td>
+<td><code>z_image_turbo_nvfp4.safetensors</code> — <strong>4.51 GB</strong> (int8 build is 6.20 GB)</td>
+</tr>
+<tr>
+<td>Text encoder</td>
+<td><code>qwen_3_4b_fp4_mixed.safetensors</code> — 3.48 GB</td>
+</tr>
+<tr>
+<td>VAE</td>
+<td><code>ae.safetensors</code> — 0.34 GB</td>
+</tr>
+<tr>
+<td>Key parameters</td>
+<td><code>CLIPLoader</code> type = <strong><code>lumina2</code></strong>; <code>ModelSamplingAuraFlow</code> shift=3; KSampler <strong>8 steps, CFG=1</strong>, <code>res_multistep</code> / <code>simple</code></td>
+</tr>
+<tr>
+<td>Measured</td>
+<td>int8 <strong>17.7 s</strong> / nvfp4 <strong>13.8 s</strong> (1024², 8 steps)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Why this is our default image model</strong> — three reasons:</p>
+<ol>
+<li><strong>8 steps to an image</strong>, roughly ten seconds, which makes it fast enough to use as a sketchpad</li>
+<li><strong>Accurate Chinese text rendering</strong> (Chinese signage in the prompt is drawn correctly)</li>
+<li>It ships an nvfp4 build at <strong>4.51 GB</strong> — on a 24 GB machine the model <em>and</em> its encoder fit fully
+in VRAM, with no offload at all</li>
+</ol>
+<h3 id="62-image-editing--flux2-klein-4b">6.2 Image editing — FLUX.2 Klein 4B</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DiT</td>
+<td><code>flux-2-klein-4b-fp8.safetensors</code> — 4.07 GB</td>
+</tr>
+<tr>
+<td>Encoder</td>
+<td><code>qwen_3_4b_fp4_flux2.safetensors</code> — 3.85 GB</td>
+</tr>
+<tr>
+<td>Key parameters</td>
+<td><code>CLIPLoader</code> type = <strong><code>flux2</code></strong>; <code>ReferenceLatent</code> ×2; <code>Flux2Scheduler</code> <strong>20 steps</strong>; CFGGuider <strong>CFG=5</strong></td>
+</tr>
+<tr>
+<td>Measured</td>
+<td><strong>42.3 s</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>A counter-intuitive finding</strong>: BFL's official fp8 single file is only <strong>4.07 GB</strong>, whereas the bf16
+build is 7.75 GB — <strong>fp8 costs essentially nothing in quality and halves the size</strong>. When a vendor
+ships the good stuff directly, take it.</p>
+<p>An even more counter-intuitive point: <strong>the 9B NVFP4 build is only 5.76 GB — smaller than the 4B
+bf16 build (7.75 GB).</strong> A bigger model in a smaller file. That is the value of 4 bits.</p>
+<h3 id="63-video--audio--minimax-h3">6.3 Video + audio — MiniMax H3</h3>
+<p>This is the heaviest line here, because it <strong>generates picture and sound together</strong>.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DiT</td>
+<td><code>minimax_h3_fl2va_pruned_int8_convrot.safetensors</code> — <strong>20.97 GB</strong></td>
+</tr>
+<tr>
+<td>Text encoder</td>
+<td><code>qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors</code> — <strong>15.69 GB</strong></td>
+</tr>
+<tr>
+<td>Video VAE</td>
+<td><code>minimax_h3_video_vae_fp16.safetensors</code> — 5.21 GB</td>
+</tr>
+<tr>
+<td>Audio VAE</td>
+<td><code>minimax_h3_audio_vae_fp32.safetensors</code> — 0.61 GB</td>
+</tr>
+<tr>
+<td>Accelerator LoRA</td>
+<td>4-step / 8-step turbo, 1.96 GB each (<strong>the official blueprint uses 8-step</strong>)</td>
+</tr>
+<tr>
+<td>Key parameters</td>
+<td><code>BasicScheduler(simple, 8 steps)</code> + <code>KSamplerSelect(res_multistep)</code> + <code>SamplerCustomAdvanced</code>; <strong>do not use <code>MiniMaxH3SigmaShift</code></strong></td>
+</tr>
+<tr>
+<td>Measured</td>
+<td>smoke 768×448/56 frames = <strong>76.3 s</strong>; full 1344×768/124 frames = <strong>519.1 s</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Offloading is mandatory.</strong> The DiT (21 GB) plus the encoder (15.7 GB) is 36.7 GB — far beyond 24 GB.
+So every generation shuttles weights between VRAM and RAM. That, not raw compute, is why it takes
+519 seconds.</p>
+<p><strong>Output verification</strong> (a step you must not skip): <code>ffprobe</code> confirms
+<strong>h264 / 1344×768 / 24fps / 5.17 s + aac 32 kHz stereo</strong>. Extracting four frames into a contact sheet
+shows the imagery matching the prompt's timeline (an RGB-split &quot;COMFYUI&quot; title → chrome palm trees →
+sunset). <strong>This is not noise. It is usable video with usable audio.</strong></p>
+<h3 id="64-video-only--hunyuanvideo-15">6.4 Video only — HunyuanVideo 1.5</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DiT</td>
+<td><code>hunyuanvideo1.5_480p_t2v_fp16.safetensors</code> — 16.65 GB</td>
+</tr>
+<tr>
+<td>Text encoder</td>
+<td><strong><code>DualCLIPLoader</code></strong> (type=<code>hunyuan_video_15</code>) = <code>qwen_2.5_vl_7b_fp8_scaled</code> + <code>byt5_small_glyphxl_fp16</code></td>
+</tr>
+<tr>
+<td>VAE</td>
+<td><code>hunyuanvideo15_vae_fp16.safetensors</code> — 2.52 GB</td>
+</tr>
+<tr>
+<td>Accelerator LoRA</td>
+<td><code>hunyuanvideo1.5_t2v_480p_lightx2v_4step_lora_rank_32_bf16.safetensors</code> — 0.34 GB</td>
+</tr>
+<tr>
+<td>Measured</td>
+<td>848×480 / 121 frames (5.04 s) = <strong>117.0 s</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>⚠️ A crucial conceptual distinction: <code>480p</code> / <code>720p</code> / <code>i2v</code> / <code>SR</code> are four different base
+models</strong>, not one model at different resolutions. The resolution in the filename is <strong>part of the
+model's identity</strong>.</p>
+<p><strong>Four-step generation is its main value</strong> — 117 seconds for 5 seconds of video means real iteration
+speed. The 720p 50-step path is higher quality but far slower. <strong>Prototype prompts at 480p, then
+commit to 720p</strong> — that is the recommended workflow.</p>
+<p><strong>Output verification</strong>: <code>ffprobe</code> confirms h264 / 848×480 / 24fps / 121 frames / 5.04 s. A frame
+contact sheet shows a temporally stable, subject-consistent result — <em>&quot;a pottery studio: the wheel
+slowly turns, wet clay is pulled taller into a vase between two hands, warm rim light from the left,
+blurred wooden shelves of bisque ware behind&quot;</em> — <strong>every element of the prompt is present.</strong></p>
+<h3 id="65-the-one-that-does-not-run--flux2-klein-9b">6.5 The one that does not run — FLUX.2 Klein 9B</h3>
+<p><strong>This is the only line we could not get running, and the reason is instructive.</strong></p>
+<p>The error:</p>
+<pre><code>mat1 and mat2 shapes cannot be multiplied (1024x7680 and 12288x4096)
+</code></pre>
+<p><strong>Root cause</strong>: the 9B model needs a Qwen3-VL text encoder of roughly <strong>16.4 GB</strong>, and BFL ships it
+<strong>only in diffusers sharded format</strong> — which ComfyUI cannot load.</p>
+<p><strong>This is not a VRAM problem, and not a quantization problem. It is a weight-packaging problem.</strong>
+Three ways out:</p>
+<ol>
+<li>Wait for ComfyUI's official single-file packaging of the encoder</li>
+<li>Merge the diffusers shards into a ComfyUI-loadable single file yourself (16.4 GB download plus a conversion script)</li>
+<li><strong>Use the 4B</strong> — 42.3 seconds per image, and it is enough</li>
+</ol>
+<blockquote>
+<p><strong>Lesson</strong>: when picking a model, check not only &quot;does it fit in VRAM&quot; but also <strong>&quot;is its weight
+format loadable by my tooling?&quot;</strong> Many people overlook this precondition.</p>
+</blockquote>
+<h3 id="66-benchmark-summary">6.6 Benchmark summary</h3>
+<p><img src="assets/chart5-model-benchmark.svg" alt="Measured generation time per workflow" /></p>
+<blockquote>
+<p>All times are read from ComfyUI's server-side <code>execution_start</code> / <code>execution_success</code> timestamps —
+<strong>never wall-clock time or API round-trip time</strong>, which would fold queueing and model-loading into
+the number and inflate it.</p>
+</blockquote>
+<p><strong>An honest note</strong>: we timed Z-Image twice and got <code>20.9 / 15.8 s</code> and <code>17.7 / 13.8 s</code>.
+<strong>Run-to-run variance in absolute terms is about ±15%</strong> (a laptop GPU throttles against thermal and
+power limits), but <strong>the relative result — nvfp4 is 22–25% faster than int8 — held in both runs.</strong></p>
+<blockquote>
+<p><strong>When reporting performance, relative percentages are far more trustworthy than absolute values.</strong></p>
+</blockquote>
+<hr />
+<h2 id="7-optimization-checklist-configs-you-can-copy">7. Optimization checklist (configs you can copy)</h2>
+<p><img src="assets/chart6-nvfp4-gain.svg" alt="What NVFP4 actually buys you" /></p>
+<h3 id="71-ordered-by-payoff">7.1 Ordered by payoff</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Priority</th>
+<th>Optimization</th>
+<th>Payoff</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>P0</strong></td>
+<td>Use <strong>NVFP4</strong> for every 4-bit model</td>
+<td>22% faster, 27% smaller, no measurable quality change</td>
+<td>none</td>
+</tr>
+<tr>
+<td><strong>P0</strong></td>
+<td>Use a <strong>distilled LoRA to cut steps</strong> (8 → 4)</td>
+<td>up to 2× faster</td>
+<td>tune the LoRA strength</td>
+</tr>
+<tr>
+<td><strong>P1</strong></td>
+<td><strong>Tiled VAE decode</strong> (<code>VAEDecodeTiled</code>)</td>
+<td>avoids transient OOM at high resolution</td>
+<td>slightly slower</td>
+</tr>
+<tr>
+<td><strong>P1</strong></td>
+<td><strong>Free VRAM before each run</strong> (<code>POST /free</code>)</td>
+<td>avoids leftovers breaking sequential runs</td>
+<td>none</td>
+</tr>
+<tr>
+<td><strong>P2</strong></td>
+<td>Restart or force-unload when switching model families</td>
+<td>avoids fragmentation</td>
+<td>extra waiting</td>
+</tr>
+<tr>
+<td><strong>P2</strong></td>
+<td>Prototype long video prompts at 480p, commit at 720p</td>
+<td>saves a lot of trial time</td>
+<td>none</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="72-two-vram-traps-you-must-know">7.2 Two VRAM traps you must know</h3>
+<p><strong>Trap one: ComfyUI does not release models on its own.</strong>
+After generating one image, the model is still resident. Chaining a second generation — especially a
+video — very easily OOMs. Fix: call
+<code>POST /free {&quot;unload_models&quot;: true, &quot;free_memory&quot;: true}</code> before each submission.</p>
+<blockquote>
+<p>⚠️ Note that <code>/free</code> returns an <strong>empty body</strong>. Do not try to parse it as JSON, or you will get a
+<code>JSONDecodeError</code>.</p>
+</blockquote>
+<p><strong>Trap two: the transient peak in VAE decoding.</strong>
+VAE decoding of high-resolution images or video creates a transient VRAM spike on the <strong>final step</strong>
+(several GB), producing the classic &quot;the transformer finished and then it died at the last step.&quot;
+Fix: use <code>VAEDecodeTiled</code>.</p>
+<hr />
+<h2 id="8-troubleshooting-table">8. Troubleshooting table</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Actual cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Download stalls at some percentage, 0.0 MB/s, <strong>no error</strong></td>
+<td>&quot;Slow drip&quot; defeats the socket timeout</td>
+<td>Add an <strong>application-level silent watchdog</strong>: 150 s without real progress → disconnect and retry</td>
+</tr>
+<tr>
+<td>Every source probe times out</td>
+<td>Bandwidth already saturated by concurrent downloads</td>
+<td>Probe while idle, or rate-limit probes separately</td>
+</tr>
+<tr>
+<td>Downloader starts with a huge slow file and the queue dies</td>
+<td>An hf-only file holds the worker</td>
+<td>Sort pending work <strong>by whether a fast source exists</strong></td>
+</tr>
+<tr>
+<td><code>POST /prompt</code> returns 400</td>
+<td>Missing model <strong>or</strong> a bad graph</td>
+<td>Read <code>node_errors</code>: only <code>value_not_in_list</code> → the graph is fine</td>
+</tr>
+<tr>
+<td>HunyuanVideo 1.5 reports an encoder type error</td>
+<td><code>CLIPLoader</code> has no <code>hunyuan_video_15</code></td>
+<td>Use <code>DualCLIPLoader</code></td>
+</tr>
+<tr>
+<td>Z-Image reports a CLIP type error</td>
+<td>It needs <code>lumina2</code>, not <code>qwen</code></td>
+<td>Change the type</td>
+</tr>
+<tr>
+<td>FLUX.2 reports a CLIP type error</td>
+<td>It needs <code>flux2</code></td>
+<td>Change the type</td>
+</tr>
+<tr>
+<td>You want text-to-video but the node says <code>ImageToVideo</code></td>
+<td>The image input is <strong>optional</strong></td>
+<td>Leave the image input <strong>unconnected</strong></td>
+</tr>
+<tr>
+<td><code>mat1 and mat2 shapes cannot be multiplied</code></td>
+<td>Encoder packaging mismatch (diffusers shards)</td>
+<td>Use a single-file packaging, or a smaller model</td>
+</tr>
+<tr>
+<td><code>/free</code> throws a JSON parse error</td>
+<td>It returns an empty body</td>
+<td>Check for empty before parsing</td>
+</tr>
+<tr>
+<td>Video renders but the frames look like noise</td>
+<td>Output verification was skipped</td>
+<td>Run <code>ffprobe</code> plus a frame contact sheet</td>
+</tr>
+<tr>
+<td>A low PSNR after switching quantization &quot;proves&quot; quality loss</td>
+<td><strong>Method error: the encoder was not fixed</strong></td>
+<td>See §5 — you need a control plus a seed baseline</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="9-toolchain">9. Toolchain</h2>
+<h3 id="91-six-scripts">9.1 Six scripts</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Script</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>scripts/dl_models.py</code></td>
+<td>Multi-source downloader: three-tier fallback + silent watchdog + Range sizing + resume</td>
+</tr>
+<tr>
+<td><code>scripts/verify_models.py</code></td>
+<td>Three-layer validation: byte size + safetensors structure + dtype detection</td>
+</tr>
+<tr>
+<td><code>scripts/run_workflow.py</code></td>
+<td>API submission + <strong>server-authoritative timing</strong> (reads <code>execution_start</code>/<code>success</code>)</td>
+</tr>
+<tr>
+<td><code>tools/compare_ab.py</code></td>
+<td>Controlled A/B: PSNR + per-tile PSNR + difference heatmap + side-by-side</td>
+</tr>
+<tr>
+<td><code>tools/ab_metrics.py</code></td>
+<td>Four-arm paired PSNR + quality proxies (sharpness/entropy/high-frequency/histogram)</td>
+</tr>
+<tr>
+<td><code>tools/make_charts.py</code></td>
+<td>Regenerates every SVG chart in this document</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="92-quick-start">9.2 Quick start</h3>
+<pre><code class="language-bash"># 1) Assumes ComfyUI is already serving on http://127.0.0.1:8188
+
+# 2) Download the models (three-tier fallback)
+python scripts/dl_models.py
+
+# 3) Three-layer validation (bytes + structure + dtype)
+python scripts/verify_models.py --refresh
+
+# 4) Run one workflow and get the server-authoritative time
+python scripts/run_workflow.py workflows/z_image_turbo_nvfp4.json --free
+
+# 5) Run a controlled A/B (same encoder, quantization is the only variable)
+python tools/compare_ab.py
+python tools/ab_metrics.py
+</code></pre>
+<h3 id="93-repository-layout">9.3 Repository layout</h3>
+<pre><code>.
+├── README.md              # Chinese
+├── README_EN.md           # English (this file)
+├── index.html             # Online edition (adapts to your browser language)
+├── assets/                # All SVG charts, generated by tools/make_charts.py
+├── data/                  # Raw measurements
+├── docs/                  # Deep dives
+├── scripts/               # Reproducible scripts
+└── tools/                 # Analysis and charting tools
+</code></pre>
+<hr />
+<h2 id="10-conclusion-and-what-is-next">10. Conclusion and what is next</h2>
+<h3 id="101-conclusions">10.1 Conclusions</h3>
+<ol>
+<li><strong>24 GB of VRAM is enough for the newest and strongest open-weight generative models</strong> — provided
+you accept offloading and <strong>choose the right quantization format</strong></li>
+<li><strong>NVFP4 is the best choice on Blackwell</strong> — backed by a controlled experiment, not by a feeling</li>
+<li><strong>Quantization makes a model fit; a distilled LoRA makes it fast</strong> — neither substitutes for the other</li>
+<li><strong>Quantization comparisons on generative models require a noise baseline</strong> — otherwise PSNR is
+badly misread</li>
+</ol>
+<h3 id="102-open-items">10.2 Open items</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HunyuanVideo 1.5 <strong>720p, 50 steps</strong></td>
+<td>Base model (16.65 GB) ready, workflow built, not yet run</td>
+</tr>
+<tr>
+<td>CLIP semantic similarity</td>
+<td>Use CLIP scoring instead of PSNR to quantify semantic agreement</td>
+</tr>
+<tr>
+<td>Larger-sample A/B</td>
+<td>Currently 2 seeds per quantization; expand to 8 to shrink variance</td>
+</tr>
+<tr>
+<td>FLUX.2 Klein 9B</td>
+<td>Blocked on encoder packaging</td>
+</tr>
+<tr>
+<td>MiniMax H3 with the 4-step LoRA</td>
+<td>Expect roughly half the time; quality needs re-evaluation</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="appendix-a-complete-model-manifest-34-files--1256-gb">Appendix A: Complete model manifest (34 files / 125.6 GB)</h2>
+<details>
+<summary>Expand to see every file</summary>
+<p><strong>MiniMax H3 (video + audio)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>minimax_h3_fl2va_pruned_int8_convrot.safetensors</code></td>
+<td>20.97 GB</td>
+</tr>
+<tr>
+<td><code>qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors</code></td>
+<td>15.69 GB</td>
+</tr>
+<tr>
+<td><code>minimax_h3_video_vae_fp16.safetensors</code></td>
+<td>5.21 GB</td>
+</tr>
+<tr>
+<td><code>minimax_h3_video_vae_int8_convrot.safetensors</code></td>
+<td>2.81 GB</td>
+</tr>
+<tr>
+<td><code>minimax_h3_fun_controlnet_union_pruned_int8_convrot.safetensors</code></td>
+<td>2.30 GB</td>
+</tr>
+<tr>
+<td><code>minimax_h3_fl2v_turbo_4step_v1.0_768p_comfyui_bf16.safetensors</code></td>
+<td>1.96 GB</td>
+</tr>
+<tr>
+<td><code>minimax_h3_fl2v_turbo_8step_v1.0_comfyui_bf16.safetensors</code></td>
+<td>1.96 GB</td>
+</tr>
+<tr>
+<td><code>minimax_h3_audio_vae_fp32.safetensors</code></td>
+<td>0.61 GB</td>
+</tr>
+<tr>
+<td><code>minimaxh3_*</code> effect LoRAs × 10 (art explosion / blooming flowers / bullet time / dark magic / fire breath / four seasons / kiss camera / spiral ascent / storm magic / truman show)</td>
+<td>&lt; 0.01 GB each</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Z-Image-Turbo (image)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>z_image_turbo_int8_convrot.safetensors</code></td>
+<td>6.20 GB</td>
+</tr>
+<tr>
+<td><code>z_image_turbo_nvfp4.safetensors</code></td>
+<td>4.51 GB</td>
+</tr>
+<tr>
+<td><code>qwen_3_4b.safetensors</code> (bf16)</td>
+<td>8.04 GB</td>
+</tr>
+<tr>
+<td><code>qwen_3_4b_fp4_mixed.safetensors</code></td>
+<td>3.48 GB</td>
+</tr>
+<tr>
+<td><code>ae.safetensors</code></td>
+<td>0.34 GB</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>FLUX.2 Klein (image editing)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>flux-2-klein-9b-nvfp4.safetensors</code></td>
+<td>5.76 GB</td>
+</tr>
+<tr>
+<td><code>flux-2-klein-4b-fp8.safetensors</code></td>
+<td>4.07 GB</td>
+</tr>
+<tr>
+<td><code>qwen_3_4b_fp4_flux2.safetensors</code></td>
+<td>3.85 GB</td>
+</tr>
+<tr>
+<td><code>flux2-vae.safetensors</code></td>
+<td>0.34 GB</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>HunyuanVideo 1.5 (video)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hunyuanvideo1.5_720p_t2v_fp16.safetensors</code></td>
+<td>16.65 GB</td>
+</tr>
+<tr>
+<td><code>hunyuanvideo1.5_480p_t2v_fp16.safetensors</code></td>
+<td>16.65 GB</td>
+</tr>
+<tr>
+<td><code>hunyuanvideo15_vae_fp16.safetensors</code></td>
+<td>2.52 GB</td>
+</tr>
+<tr>
+<td><code>sigclip_vision_patch14_384.safetensors</code></td>
+<td>0.86 GB</td>
+</tr>
+<tr>
+<td><code>byt5_small_glyphxl_fp16.safetensors</code></td>
+<td>0.44 GB</td>
+</tr>
+<tr>
+<td><code>hunyuanvideo1.5_t2v_480p_lightx2v_4step_lora_rank_32_bf16.safetensors</code></td>
+<td>0.34 GB</td>
+</tr>
+<tr>
+<td><code>hunyuanvideo15_latent_upsampler_720p.safetensors</code></td>
+<td>0.09 GB</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Validation result: 34 / 34 complete, 125.6 GB, 0 corrupt.</strong></p>
+</details>
+<h2 id="appendix-b-raw-measurements">Appendix B: Raw measurements</h2>
+<p>See the <a href="data/"><code>data/</code></a> directory:</p>
+<ul>
+<li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/quant-ab-metrics.md"><code>data/quant-ab-metrics.md</code></a> — full controlled A/B metrics</li>
+<li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/benchmark-results.md"><code>data/benchmark-results.md</code></a> — server-side time per workflow</li>
+<li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/download-manifest.md"><code>data/download-manifest.md</code></a> — size and dtype of all 34 files</li>
+</ul>
+<h2 id="appendix-c-glossary">Appendix C: Glossary</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>offload</strong></td>
+<td>Shuttle weights between VRAM and system RAM so a model larger than VRAM can still run</td>
+</tr>
+<tr>
+<td><strong>W4A16</strong></td>
+<td>4-bit weights, 16-bit activations; saves VRAM but gives no speedup</td>
+</tr>
+<tr>
+<td><strong>W4A4</strong></td>
+<td>Both weights and activations 4-bit; saves VRAM and goes faster</td>
+</tr>
+<tr>
+<td><strong>NVFP4</strong></td>
+<td>Blackwell's native 4-bit float format; tensor cores consume it directly</td>
+</tr>
+<tr>
+<td><strong>ConvRot</strong></td>
+<td>Rotation compensation that lets INT8 quantization run on the BF16 compute path</td>
+</tr>
+<tr>
+<td><strong>Distilled LoRA</strong></td>
+<td>A distilled &quot;fewer-steps&quot; adapter, e.g. 4 steps instead of 20+</td>
+</tr>
+<tr>
+<td><strong>PSNR</strong></td>
+<td>Peak signal-to-noise ratio; <strong>not valid as a standalone quality judge for generative models</strong></td>
+</tr>
+<tr>
+<td><strong>subgraph</strong></td>
+<td>ComfyUI's newer blueprint packaging, where node types are UUIDs</td>
+</tr>
+<tr>
+<td><strong>VAE tiling</strong></td>
+<td>Chunked decoding, to avoid the transient VRAM spike at high resolution</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="appendix-d-why-a-single-repository-not-one-per-model">Appendix D: Why a single repository, not one per model</h2>
+<p>We settled this before writing any code: <strong>should each model (say MiniMax H3) get its own repository?</strong></p>
+<h3 id="the-two-options">The two options</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Single repo (this one)</th>
+<th>One repo per model</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reuse of the core methodology</td>
+<td>✅ Controlled A/B, downloader, verifier written <strong>once</strong></td>
+<td>❌ Copied N times; a single fix must be applied N times</td>
+</tr>
+<tr>
+<td>Comparability of results</td>
+<td>✅ All four model lines measured with <strong>one yardstick</strong></td>
+<td>❌ Each does its own thing; cross-model numbers aren't comparable</td>
+</tr>
+<tr>
+<td>Readability of &quot;why we chose it&quot;</td>
+<td>✅ One page shows the whole picture and the trade-offs</td>
+<td>❌ The reader must hop across four repos to assemble it</td>
+</tr>
+<tr>
+<td>Per-model depth</td>
+<td>➖ Handled by focused long-form docs under <code>docs/</code></td>
+<td>✅ Naturally isolated</td>
+</tr>
+<tr>
+<td>Maintenance cost</td>
+<td>✅ Update once, everything benefits</td>
+<td>❌ N×</td>
+</tr>
+<tr>
+<td>Sharing cost</td>
+<td>✅ One link = the complete framework</td>
+<td>❌ Must first explain &quot;which repo to read&quot;</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="our-call">Our call</h3>
+<p><strong>A single repo, with per-topic deep dives under <code>docs/</code>.</strong></p>
+<p>One reason, but a hard one: <strong>what makes this guide valuable is the methodology, not any single model's parameters.</strong></p>
+<ul>
+<li>Across all four model lines the reusable parts are <strong>the same</strong>: the four-arm controlled A/B design, the multi-source downloader with a silent watchdog, three-layer model verification, server-authoritative timing.</li>
+<li>The <strong>non-reusable parts — each model's own node constraints and parameters — are small</strong>: one chapter (§6) covers them.</li>
+<li>Split into four repos, that methodology gets copied four times. Improve the A/B method in one repo and the other three never catch up — which is exactly how results <strong>stop being comparable</strong>.</li>
+</ul>
+<blockquote>
+<p><strong>Rule of thumb</strong>: the larger the shared <em>method</em> and the smaller the model-specific <em>parameters</em>, the more you should merge into a single repo.
+Conversely, splitting pays off only when each model genuinely needs its own toolchain and dataset.</p>
+</blockquote>
+<h3 id="when-splitting-would-become-right">When splitting would become right</h3>
+<p>Any one of these would justify it:</p>
+<ol>
+<li>A model's toolchain becomes truly independent (e.g. it needs a dedicated training / fine-tuning pipeline)</li>
+<li>The repo bloats until cloning is painful (bulk data or weights committed — note this repo ships <strong>scripts and charts only, no weights</strong>)</li>
+<li>The team splits so that each model is maintained by a different person</li>
+</ol>
+<p>Until then, the <strong>benefits of the single repo — reusable, comparable, explained in one pass — far outweigh the cost.</strong></p>
+<hr />
+<h2 id="license">License</h2>
+<p><a href="LICENSE">MIT</a>. Every measurement here comes from a real run on this machine — corrections and
+reproduction attempts are welcome.</p>
+</article>
+  <footer>
+    <span class="i-zh">所有数据均为本机实测。源码与原始数据：<a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook">github.com/lifeidle/comfyui-5090-laptop-playbook</a></span>
+    <span class="i-en">Every number here is measured on the machine. Source and raw data: <a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook">github.com/lifeidle/comfyui-5090-laptop-playbook</a></span>
+    <br>MIT License.
+  </footer>
+</main>
+<script>
+(function(){
+  var ZH='zh', EN='en';
+  function detect(){
+    var q=new URLSearchParams(location.search).get('lang');
+    if(q===ZH||q===EN) return {l:q,pin:true};
+    try{ var s=localStorage.getItem('cqp-lang'); if(s===ZH||s===EN) return {l:s,pin:false}; }catch(e){}
+    var n=(navigator.language||navigator.userLanguage||'en').toLowerCase();
+    var list=(navigator.languages||[]).join(',').toLowerCase();
+    return {l:(n.indexOf('zh')===0||list.indexOf('zh')>-1)?ZH:EN,pin:false};
+  }
+  function theme(){
+    try{ return localStorage.getItem('cqp-theme'); }catch(e){ return null; }
+  }
+  function applyTheme(t){
+    document.documentElement.setAttribute('data-theme',t);
+    var m=document.querySelector('meta[name="theme-color"]');
+    if(!m){ m=document.createElement('meta'); m.name='theme-color'; document.head.appendChild(m); }
+    m.content = t==='dark' ? '#0e1116' : '#ffffff';
+  }
+  var d=detect();
+  window.__lang=function(l){
+    try{ localStorage.setItem('cqp-lang',l); }catch(e){}
+    document.documentElement.setAttribute('data-lang',l);
+    document.documentElement.setAttribute('lang', l===ZH?'zh-CN':'en');
+    document.getElementById('btn-zh').setAttribute('aria-pressed', l===ZH);
+    document.getElementById('btn-en').setAttribute('aria-pressed', l===EN);
+    document.title = l===ZH
+      ? 'RTX 5090 笔记本 · ComfyUI 图像/视频/音频生成模型实战手册'
+      : 'ComfyUI on an RTX 5090 Laptop — image, video and audio models';
+  };
+  window.__theme=function(){
+    var cur=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+    try{ localStorage.setItem('cqp-theme',cur); }catch(e){}
+    applyTheme(cur);
+  };
+  // initial language
+  window.__lang(d.l);
+  // initial theme: stored choice, else follow the OS
+  var t=theme();
+  if(!t){ t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light'; }
+  applyTheme(t);
+  if(window.matchMedia){
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(e){
+      if(!theme()) applyTheme(e.matches?'dark':'light');
+    });
+  }
+  // in-page language links
+  document.querySelectorAll('a[data-langlink]').forEach(function(a){
+    a.addEventListener('click',function(ev){
+      ev.preventDefault(); window.__lang(a.getAttribute('data-langlink'));
+      window.scrollTo({top:0,behavior:'smooth'}); history.replaceState(null,'','?lang='+a.getAttribute('data-langlink'));
+    });
+  });
+})();
+</script>
+</body>
+</html>

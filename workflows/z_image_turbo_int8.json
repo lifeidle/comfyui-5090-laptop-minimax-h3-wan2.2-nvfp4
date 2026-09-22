@@ -1,0 +1,119 @@
+{
+  "_meta": {
+    "title": "Z-Image-Turbo int8",
+    "source": "官方蓝图 Text to Image (Z-Image-Turbo) 拓扑",
+    "notes": [
+      "CLIPLoader 的 type 必须是 lumina2（不是 qwen）",
+      "ModelSamplingAuraFlow shift=3；KSampler 8 步 cfg=1 res_multistep/simple",
+      "负向条件用 ConditioningZeroOut（cfg=1 时负向无意义）"
+    ]
+  },
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "z_image_turbo_int8_convrot.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen_3_4b.safetensors",
+      "type": "lumina2",
+      "device": "default"
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "ae.safetensors"
+    }
+  },
+  "4": {
+    "class_type": "ModelSamplingAuraFlow",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "shift": 3.0
+    }
+  },
+  "5": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "text": "一张超写实摄影作品：清晨的江南水乡，白墙黛瓦的民居倒映在静谧河面上，一只乌篷船缓缓划过，留下细长涟漪；薄雾尚未散尽，远处石拱桥轮廓柔和；柔和晨光斜照，胶片质感，浅景深。画面右上角有一块木质牌匾，上面写着四个楷体汉字「水乡晨曲」。"
+    }
+  },
+  "6": {
+    "class_type": "ConditioningZeroOut",
+    "inputs": {
+      "conditioning": [
+        "5",
+        0
+      ]
+    }
+  },
+  "7": {
+    "class_type": "EmptySD3LatentImage",
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "batch_size": 1
+    }
+  },
+  "8": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "4",
+        0
+      ],
+      "positive": [
+        "5",
+        0
+      ],
+      "negative": [
+        "6",
+        0
+      ],
+      "latent_image": [
+        "7",
+        0
+      ],
+      "seed": 20260922,
+      "steps": 8,
+      "cfg": 1.0,
+      "sampler_name": "res_multistep",
+      "scheduler": "simple",
+      "denoise": 1.0
+    }
+  },
+  "9": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "8",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    }
+  },
+  "10": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "9",
+        0
+      ],
+      "filename_prefix": "zimage/int8"
+    }
+  }
+}

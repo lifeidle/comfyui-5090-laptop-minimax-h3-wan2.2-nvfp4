@@ -1,0 +1,139 @@
+{
+  "_meta": {
+    "title": "HunyuanVideo 1.5 文生视频 720p_50step",
+    "source": "无官方蓝图；按本机节点签名手搭",
+    "notes": [
+      "★ CLIPLoader 的 29 个类型里没有 hunyuan_video_15，必须用 DualCLIPLoader",
+      "HunyuanVideo15ImageToVideo 的 start_image 是 optional，不接即 T2V",
+      "latent 通道 32、空间下采样 16（与 1.0 不同）"
+    ]
+  },
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "hunyuanvideo1.5_720p_t2v_fp16.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "2": {
+    "class_type": "DualCLIPLoader",
+    "inputs": {
+      "clip_name1": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "clip_name2": "byt5_small_glyphxl_fp16.safetensors",
+      "type": "hunyuan_video_15",
+      "device": "default"
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "hunyuanvideo15_vae_fp16.safetensors"
+    }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "text": "一个陶艺工作室的近景：陶轮缓缓旋转，湿润陶土在双手之间逐渐被拉高成一只花瓶；泥点随旋转飞溅，灯光从左侧打出暖黄色轮廓光；背景虚化的木架上摆满了素坯。"
+    }
+  },
+  "5": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "text": "模糊，低清，畸变，静止，过曝"
+    }
+  },
+  "6": {
+    "class_type": "HunyuanVideo15ImageToVideo",
+    "inputs": {
+      "positive": [
+        "4",
+        0
+      ],
+      "negative": [
+        "5",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ],
+      "width": 1280,
+      "height": 720,
+      "length": 121,
+      "batch_size": 1
+    }
+  },
+  "8": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "6",
+        1
+      ],
+      "latent_image": [
+        "6",
+        2
+      ],
+      "seed": 20260922,
+      "steps": 50,
+      "cfg": 6.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    }
+  },
+  "9": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "8",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    }
+  },
+  "10": {
+    "class_type": "CreateVideo",
+    "inputs": {
+      "images": [
+        "9",
+        0
+      ],
+      "fps": 24.0,
+      "bit_depth": "auto",
+      "color_space": "sRGB",
+      "codec": "none"
+    }
+  },
+  "11": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": [
+        "10",
+        0
+      ],
+      "filename_prefix": "hv15/720p_50step",
+      "format": "mp4",
+      "codec": "h264"
+    }
+  }
+}
