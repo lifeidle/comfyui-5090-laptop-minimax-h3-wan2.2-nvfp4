@@ -1,0 +1,24 @@
+{
+  "_meta": {
+    "name": "P3 验收 · Qwen-Image 2512 中文文字渲染（含 30 个汉字）",
+    "purpose": "计划书 P3 验收项 2『生成含 20 个以上汉字的海报，逐字核对文字渲染』",
+    "expected_text": {
+      "竖排主标题": "春风得意马蹄疾，一日看尽长安花",
+      "主标题字数": 14,
+      "横排副标题": "茶香四溢 静心品茗 八方来客 岁月悠长",
+      "副标题字数": 16,
+      "合计字数": 30
+    },
+    "note": "用无 LoRA 的 50 步分支（文字渲染质量优先），分辨率取官方 1:1 档 1328x1328"
+  },
+  "1": {"class_type": "UNETLoader", "inputs": {"unet_name": "qwen_image_2512_fp8_e4m3fn.safetensors", "weight_dtype": "default"}},
+  "2": {"class_type": "CLIPLoader", "inputs": {"clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors", "type": "qwen_image", "device": "default"}},
+  "3": {"class_type": "VAELoader", "inputs": {"vae_name": "qwen_image_vae.safetensors"}},
+  "4": {"class_type": "ModelSamplingAuraFlow", "inputs": {"model": ["1", 0], "shift": 3.1}},
+  "5": {"class_type": "CLIPTextEncode", "inputs": {"text": "一张中式茶馆海报，宣纸质感米白底色，画面正中是竖排毛笔书法主标题，共两行、每行七个字，必须逐字准确：第一行「春风得意马蹄疾」，第二行「一日看尽长安花」。主标题下方是横排小号行楷副标题，四个词组，必须逐字准确：「茶香四溢」「静心品茗」「八方来客」「岁月悠长」。背景是淡淡的远山与松枝水墨，右下角一枚朱红印章。整体构图居中、留白充足、字体清晰可辨、笔画完整，印刷级排版。", "clip": ["2", 0]}},
+  "6": {"class_type": "CLIPTextEncode", "inputs": {"text": "低分辨率，低画质，文字模糊，错字，缺笔画，多字，少字，乱码，扭曲变形，水印，签名，乱码文字，构图混乱", "clip": ["2", 0]}},
+  "7": {"class_type": "EmptySD3LatentImage", "inputs": {"width": 1328, "height": 1328, "batch_size": 1}},
+  "8": {"class_type": "KSampler", "inputs": {"model": ["4", 0], "positive": ["5", 0], "negative": ["6", 0], "latent_image": ["7", 0], "seed": 881001, "steps": 50, "cfg": 4.0, "sampler_name": "euler", "scheduler": "simple", "denoise": 1.0}},
+  "9": {"class_type": "VAEDecode", "inputs": {"samples": ["8", 0], "vae": ["3", 0]}},
+  "10": {"class_type": "SaveImage", "inputs": {"images": ["9", 0], "filename_prefix": "p3_qwen_text_poster"}}
+}

@@ -1,0 +1,131 @@
+{
+ "37": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "wan2.2_ti2v_5B_fp16.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "38": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+   "type": "wan",
+   "device": "default"
+  }
+ },
+ "39": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "wan2.2_vae.safetensors"
+  }
+ },
+ "8": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "3",
+    0
+   ],
+   "vae": [
+    "39",
+    0
+   ]
+  }
+ },
+ "57": {
+  "class_type": "CreateVideo",
+  "inputs": {
+   "fps": 24,
+   "bit_depth": "auto",
+   "color_space": "sRGB",
+   "codec": "none",
+   "images": [
+    "8",
+    0
+   ]
+  }
+ },
+ "58": {
+  "class_type": "SaveVideo",
+  "inputs": {
+   "filename_prefix": "wan22_5b_t2v_smoke",
+   "format": "auto",
+   "codec": "auto",
+   "video": [
+    "57",
+    0
+   ]
+  }
+ },
+ "55": {
+  "class_type": "Wan22ImageToVideoLatent",
+  "inputs": {
+   "width": 704,
+   "height": 384,
+   "length": 49,
+   "batch_size": 1,
+   "vae": [
+    "39",
+    0
+   ]
+  }
+ },
+ "7": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "text": "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量，JPEG压缩残留，丑陋的，残缺的，多余的手指，画得不好的手部，画得不好的脸部，畸形的，毁容的，形态畸形的肢体，手指融合，静止不动的画面，杂乱的背景，三条腿，背景人很多，倒着走",
+   "clip": [
+    "38",
+    0
+   ]
+  }
+ },
+ "6": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "text": "特写镜头，一只蜂鸟悬停在红色花丛前采蜜，翅膀高速振动，阳光透过花瓣，背景虚化，镜头缓慢横移",
+   "clip": [
+    "38",
+    0
+   ]
+  }
+ },
+ "3": {
+  "class_type": "KSampler",
+  "inputs": {
+   "seed": 20260922,
+   "steps": 20,
+   "cfg": 5,
+   "sampler_name": "uni_pc",
+   "scheduler": "simple",
+   "denoise": 1,
+   "model": [
+    "48",
+    0
+   ],
+   "positive": [
+    "6",
+    0
+   ],
+   "negative": [
+    "7",
+    0
+   ],
+   "latent_image": [
+    "55",
+    0
+   ]
+  }
+ },
+ "48": {
+  "class_type": "ModelSamplingSD3",
+  "inputs": {
+   "shift": 8,
+   "model": [
+    "37",
+    0
+   ]
+  }
+ }
+}

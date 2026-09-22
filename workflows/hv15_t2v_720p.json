@@ -1,0 +1,448 @@
+{
+ "11": {
+  "class_type": "DualCLIPLoader",
+  "inputs": {
+   "clip_name1": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+   "clip_name2": "byt5_small_glyphxl_fp16.safetensors",
+   "type": "hunyuan_video_15",
+   "device": "default"
+  }
+ },
+ "111": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "hunyuanvideo1.5_1080p_sr_distilled_fp16.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "10": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "hunyuanvideo15_vae_fp16.safetensors"
+  }
+ },
+ "8": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "127",
+    0
+   ],
+   "vae": [
+    "10",
+    0
+   ]
+  }
+ },
+ "105": {
+  "class_type": "EasyCache",
+  "inputs": {
+   "reuse_threshold": 0.2,
+   "start_percent": 0.15,
+   "end_percent": 0.95,
+   "verbose": false,
+   "model": [
+    "12",
+    0
+   ]
+  }
+ },
+ "113": {
+  "class_type": "HunyuanVideo15SuperResolution",
+  "inputs": {
+   "noise_augmentation": 0.7,
+   "positive": [
+    "44",
+    0
+   ],
+   "negative": [
+    "93",
+    0
+   ],
+   "latent": [
+    "109",
+    0
+   ]
+  }
+ },
+ "44": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "text": "陶艺工作室里，双手在旋转的陶轮上把陶土拉坯成花瓶，左侧暖黄色轮廓光，背景虚化木架上摆满素坯，镜头缓慢推近",
+   "clip": [
+    "11",
+    0
+   ]
+  }
+ },
+ "12": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "hunyuanvideo1.5_720p_t2v_fp16.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "108": {
+  "class_type": "LatentUpscaleModelLoader",
+  "inputs": {
+   "model_name": "hunyuanvideo15_latent_upsampler_1080p.safetensors"
+  }
+ },
+ "116": {
+  "class_type": "EasyCache",
+  "inputs": {
+   "reuse_threshold": 0.2,
+   "start_percent": 0.15,
+   "end_percent": 0.95,
+   "verbose": false,
+   "model": [
+    "111",
+    0
+   ]
+  }
+ },
+ "93": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "text": "低质量，模糊，抖动，畸变，静止不动，字幕，水印",
+   "clip": [
+    "11",
+    0
+   ]
+  }
+ },
+ "120": {
+  "class_type": "VAEDecodeTiled",
+  "inputs": {
+   "tile_size": 512,
+   "overlap": 64,
+   "temporal_size": 64,
+   "temporal_overlap": 8,
+   "samples": [
+    "127",
+    0
+   ],
+   "vae": [
+    "10",
+    0
+   ]
+  }
+ },
+ "114": {
+  "class_type": "CreateVideo",
+  "inputs": {
+   "fps": 24,
+   "bit_depth": "auto",
+   "color_space": "sRGB",
+   "codec": "none",
+   "images": [
+    "117",
+    0
+   ]
+  }
+ },
+ "117": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "141",
+    0
+   ],
+   "vae": [
+    "10",
+    0
+   ]
+  }
+ },
+ "128": {
+  "class_type": "BasicScheduler",
+  "inputs": {
+   "scheduler": "simple",
+   "steps": 20,
+   "denoise": 1,
+   "model": [
+    "105",
+    0
+   ]
+  }
+ },
+ "129": {
+  "class_type": "RandomNoise",
+  "inputs": {
+   "noise_seed": 20260922
+  }
+ },
+ "130": {
+  "class_type": "KSamplerSelect",
+  "inputs": {
+   "sampler_name": "euler"
+  }
+ },
+ "131": {
+  "class_type": "CFGGuider",
+  "inputs": {
+   "cfg": 6,
+   "model": [
+    "132",
+    0
+   ],
+   "positive": [
+    "44",
+    0
+   ],
+   "negative": [
+    "93",
+    0
+   ]
+  }
+ },
+ "132": {
+  "class_type": "ModelSamplingSD3",
+  "inputs": {
+   "shift": 7,
+   "model": [
+    "105",
+    0
+   ]
+  }
+ },
+ "127": {
+  "class_type": "SamplerCustomAdvanced",
+  "inputs": {
+   "noise": [
+    "129",
+    0
+   ],
+   "guider": [
+    "131",
+    0
+   ],
+   "sampler": [
+    "130",
+    0
+   ],
+   "sigmas": [
+    "128",
+    0
+   ],
+   "latent_image": [
+    "124",
+    0
+   ]
+  }
+ },
+ "102": {
+  "class_type": "SaveVideo",
+  "inputs": {
+   "filename_prefix": "hv15_t2v_720p_720p",
+   "format": "auto",
+   "codec": "h264",
+   "video": [
+    "101",
+    0
+   ]
+  }
+ },
+ "101": {
+  "class_type": "CreateVideo",
+  "inputs": {
+   "fps": 24,
+   "bit_depth": "auto",
+   "color_space": "sRGB",
+   "codec": "none",
+   "images": [
+    "8",
+    0
+   ]
+  }
+ },
+ "133": {
+  "class_type": "RandomNoise",
+  "inputs": {
+   "noise_seed": 20260922
+  }
+ },
+ "134": {
+  "class_type": "KSamplerSelect",
+  "inputs": {
+   "sampler_name": "euler"
+  }
+ },
+ "135": {
+  "class_type": "ModelSamplingSD3",
+  "inputs": {
+   "shift": 2,
+   "model": [
+    "116",
+    0
+   ]
+  }
+ },
+ "136": {
+  "class_type": "BasicScheduler",
+  "inputs": {
+   "scheduler": "simple",
+   "steps": 8,
+   "denoise": 1,
+   "model": [
+    "116",
+    0
+   ]
+  }
+ },
+ "137": {
+  "class_type": "SplitSigmas",
+  "inputs": {
+   "step": 4,
+   "sigmas": [
+    "136",
+    0
+   ]
+  }
+ },
+ "139": {
+  "class_type": "DisableNoise",
+  "inputs": {}
+ },
+ "140": {
+  "class_type": "SamplerCustomAdvanced",
+  "inputs": {
+   "noise": [
+    "133",
+    0
+   ],
+   "guider": [
+    "143",
+    0
+   ],
+   "sampler": [
+    "134",
+    0
+   ],
+   "sigmas": [
+    "137",
+    0
+   ],
+   "latent_image": [
+    "113",
+    2
+   ]
+  }
+ },
+ "141": {
+  "class_type": "SamplerCustomAdvanced",
+  "inputs": {
+   "noise": [
+    "139",
+    0
+   ],
+   "guider": [
+    "142",
+    0
+   ],
+   "sampler": [
+    "134",
+    0
+   ],
+   "sigmas": [
+    "137",
+    1
+   ],
+   "latent_image": [
+    "140",
+    0
+   ]
+  }
+ },
+ "142": {
+  "class_type": "CFGGuider",
+  "inputs": {
+   "cfg": 1,
+   "model": [
+    "116",
+    0
+   ],
+   "positive": [
+    "44",
+    0
+   ],
+   "negative": [
+    "93",
+    0
+   ]
+  }
+ },
+ "143": {
+  "class_type": "CFGGuider",
+  "inputs": {
+   "cfg": 1,
+   "model": [
+    "135",
+    0
+   ],
+   "positive": [
+    "113",
+    0
+   ],
+   "negative": [
+    "113",
+    1
+   ]
+  }
+ },
+ "109": {
+  "class_type": "HunyuanVideo15LatentUpscaleWithModel",
+  "inputs": {
+   "upscale_method": "bilinear",
+   "width": 1920,
+   "height": 1080,
+   "crop": "disabled",
+   "model": [
+    "108",
+    0
+   ],
+   "samples": [
+    "127",
+    0
+   ]
+  }
+ },
+ "118": {
+  "class_type": "SaveVideo",
+  "inputs": {
+   "filename_prefix": "hv15_t2v_720p_1080p_sr",
+   "format": "auto",
+   "codec": "auto",
+   "video": [
+    "114",
+    0
+   ]
+  }
+ },
+ "112": {
+  "class_type": "VAEDecodeTiled",
+  "inputs": {
+   "tile_size": 512,
+   "overlap": 64,
+   "temporal_size": 64,
+   "temporal_overlap": 4096,
+   "samples": [
+    "141",
+    0
+   ],
+   "vae": [
+    "10",
+    0
+   ]
+  }
+ },
+ "124": {
+  "class_type": "EmptyHunyuanVideo15Latent",
+  "inputs": {
+   "width": 1280,
+   "height": 720,
+   "length": 121,
+   "batch_size": 1
+  }
+ }
+}

@@ -178,7 +178,7 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:22px 0 0;color:v
 <tr>
 <td><a href="#3-怎么下把-1256-gb-拉下来">3</a></td>
 <td>怎么下</td>
-<td>125.6 GB 的多源下载工程</td>
+<td>多源下载工程</td>
 </tr>
 <tr>
 <td><a href="#4-怎么搭comfyui-的节点约束">4</a></td>
@@ -191,9 +191,9 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:22px 0 0;color:v
 <td>量化判定的方法论（全文核心）</td>
 </tr>
 <tr>
-<td><a href="#6-怎么选四条模型线实战">6</a></td>
-<td>怎么选</td>
-<td>每个模型的实战与基准</td>
+<td><a href="#6-怎么选八条模型线实战">6</a></td>
+<td><strong>怎么选</strong></td>
+<td>图像 / 编辑 / 视频 / 音乐 / 3D 八条线的实战与基准</td>
 </tr>
 <tr>
 <td><a href="#7-优化清单可以直接抄的配置">7</a></td>
@@ -208,12 +208,17 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:22px 0 0;color:v
 <tr>
 <td><a href="#9-工具链">9</a></td>
 <td>工具链</td>
-<td>六个可复用脚本</td>
+<td>可复用脚本 + <strong>官方模板→API 转换器</strong></td>
 </tr>
 <tr>
 <td><a href="#10-结论与后续">10</a></td>
 <td>结论与后续</td>
 <td>还没做的事</td>
+</tr>
+<tr>
+<td><a href="#附录-e覆盖度审计我们试过什么没试什么为什么放弃">附录 E</a></td>
+<td><strong>覆盖度审计</strong></td>
+<td><strong>试过什么、没试什么、每个放弃的确切理由</strong></td>
 </tr>
 </tbody>
 </table></div>
@@ -268,43 +273,102 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:22px 0 0;color:v
 <thead>
 <tr>
 <th>用途</th>
-<th>选定模型</th>
-<th>量化格式</th>
+<th>推荐模型</th>
+<th>量化</th>
 <th>实测耗时</th>
-<th>备注</th>
+<th>为什么是它</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>图像生成</strong></td>
+<td><strong>图像（日常主力）</strong></td>
 <td>Z-Image-Turbo</td>
-<td><strong>NVFP4</strong>（4.51 GB）</td>
+<td><strong>NVFP4</strong> 4.51 GB</td>
 <td><strong>13.8 s</strong>（1024²/8步）</td>
-<td>中文文字渲染准确，8 步出图</td>
+<td>全套 <strong>8.33 GB 可常驻</strong>，零 offload</td>
 </tr>
 <tr>
-<td><strong>图像编辑</strong></td>
+<td><strong>图像（高分辨率 / 中文）</strong></td>
+<td>Qwen-Image 2512 + Lightning</td>
+<td>fp8 20.43 GB</td>
+<td><strong>12.2 s</strong>（1328²/<strong>4步</strong>）</td>
+<td>像素多 68%、<strong>中文逐字 30/30 全对</strong>；代价：必须 offload</td>
+</tr>
+<tr>
+<td>图像编辑</td>
 <td>FLUX.2 Klein <strong>4B</strong></td>
-<td>fp8（4.07 GB）</td>
+<td>fp8 4.07 GB</td>
 <td>42.3 s</td>
-<td>9B 版被编码器卡住，见 §6.5</td>
+<td>官方 fp8 单文件仅 4.07 GB，质量几乎无损</td>
+</tr>
+<tr>
+<td><strong>视频（最快）</strong></td>
+<td>LTX-Video 2B 蒸馏</td>
+<td>fp8 4.46 GB</td>
+<td><strong>19.2 s</strong>（1216×704/121帧）</td>
+<td>目前最快的视频模型；运动幅度偏小</td>
+</tr>
+<tr>
+<td><strong>视频（质量最好·轻量档）</strong></td>
+<td>Wan 2.2 5B TI2V</td>
+<td>fp16 10 GB</td>
+<td>355.1 s（1280×704/121帧）</td>
+<td>提示词遵循与物理真实感最好</td>
+</tr>
+<tr>
+<td><strong>视频（旗舰档）</strong></td>
+<td>Wan 2.2 14B MoE</td>
+<td>fp8 双专家 28.6 GB</td>
+<td><strong>93.8 s</strong>（832×480/81帧/<strong>4步</strong>）</td>
+<td>旗舰 MoE + LightX2V 4 步 LoRA，真的跑得动</td>
+</tr>
+<tr>
+<td>视频（电影感 + 1080p 超分）</td>
+<td>HunyuanVideo 1.5 720p→1080p</td>
+<td>fp16 + SR 模型</td>
+<td>⚠️ <strong>70 分钟未完成，24 GB 上不可行</strong></td>
+<td>见 §6.4「一个负面结果」</td>
 </tr>
 <tr>
 <td><strong>视频 + 音频</strong></td>
 <td>MiniMax H3</td>
 <td>int8 + ConvRot</td>
-<td><strong>519.1 s</strong>（1344×768/124帧）</td>
-<td><strong>原生带音轨</strong>，5.17 s 视频含立体声</td>
+<td>519.1 s（1344×768/124帧）</td>
+<td><strong>唯一原生带音轨</strong>的线</td>
 </tr>
 <tr>
-<td><strong>纯视频</strong></td>
-<td>HunyuanVideo 1.5 480p</td>
-<td>fp16 + LightX2V 4步 LoRA</td>
-<td><strong>117.0 s</strong>（848×480/121帧）</td>
-<td>4 步出片，适合迭代</td>
+<td><strong>音乐生成</strong></td>
+<td>ACE-Step 1.5 XL turbo</td>
+<td>bf16 9.97 GB</td>
+<td><strong>28.6 s</strong>（60 s 歌曲）</td>
+<td><strong>Apache 2.0 可商用</strong>，出片最快</td>
+</tr>
+<tr>
+<td>音乐生成（整首含人声）</td>
+<td>YuE2-3B</td>
+<td>int8 3.96 GB</td>
+<td>93.7 s（60 s 歌曲）</td>
+<td>SongBench 最高；<strong>但 cc-by-nc 非商用</strong></td>
+</tr>
+<tr>
+<td>音乐生成（带 LLM 增强）</td>
+<td>MiniMax Music 3</td>
+<td>int8 2.50 GB</td>
+<td>458.2 s（60 s 歌曲）</td>
+<td>质量高但慢一个量级</td>
+</tr>
+<tr>
+<td><strong>图生 3D</strong></td>
+<td>Hunyuan3D 2.1</td>
+<td>all-in-one 7.37 GB</td>
+<td>54.7 s</td>
+<td>一个文件出 GLB（52 万面）</td>
 </tr>
 </tbody>
 </table></div>
+<blockquote>
+<p><strong>量化格式的统一答案不变：只要显卡是 Blackwell（sm_120/121），一律选 NVFP4。</strong> 见 §5 的证明。</p>
+</blockquote>
 <h3 id="12-三条可以直接拿去用的规则">1.2 三条可以直接拿去用的规则</h3>
 <ol>
 <li><strong>量化格式：只要显卡是 Blackwell（sm_120/121），一律选 NVFP4。</strong> 见 §5 的证明。</li>
@@ -390,9 +454,11 @@ qwen_3_4b_fp4_mixed.safetensors    3.48 GB  1081 tensors   BF16, F32, F8_E4M3, U
 <p><strong>下面这张决策树就是完整的选型逻辑</strong>：</p>
 <p><img src="assets/zh/chart4-quant-decision-tree.svg" alt="量化格式选型决策树" /></p>
 <hr />
-<h2 id="3-怎么下把-1256-gb-拉下来">3. 怎么下：把 125.6 GB 拉下来</h2>
-<p>下载这件事看着简单，但<strong>125.6 GB × 不稳定的源</strong>足以让一个天真实现跑一整天。
-先说结论：我们最后跑了 <strong>34 个文件 / 125.6 GB / 零损坏</strong>，核心是三个机制。</p>
+<h2 id="3-怎么下把几百-gb-拉下来">3. 怎么下：把几百 GB 拉下来</h2>
+<p>下载这件事看着简单，但<strong>几百 GB × 不稳定的源</strong>足以让一个天真实现跑上一整天。
+我们一共跑了两批：第一批 <strong>34 个文件 / 125.6 GB</strong>，第二批 <strong>66 个文件 / 332.8 GB</strong>
+（音乐 4 条线 + Wan 2.2 14B + HV1.5 超分 + Stable Audio 3），<strong>两批都是零损坏</strong>。
+真正让这件事可用的，是下面三个机制。</p>
 <h3 id="31-三个源的速度实测">3.1 三个源的速度实测</h3>
 <p><img src="assets/zh/chart1-download-sources.svg" alt="下载源吞吐实测" /></p>
 <p>差距是<strong>量级级别</strong>的：modelscope 比 hf-mirror 快 7 倍、比 huggingface 快 12 倍。
@@ -672,8 +738,10 @@ int8 版配的是 <code>qwen_3_4b.safetensors</code>（bf16），nvfp4 版配的
 <p>缺任何一条，PSNR 数字都会被误读。</p>
 </blockquote>
 <hr />
-<h2 id="6-怎么选四条模型线实战">6. 怎么选：四条模型线实战</h2>
-<h3 id="61-图像生成--z-image-turbo">6.1 图像生成 —— Z-Image-Turbo</h3>
+<h2 id="6-怎么选八条模型线实战">6. 怎么选：八条模型线实战</h2>
+<h3 id="61-图像生成--z-image-turbo-vs-qwen-image-2512">6.1 图像生成 —— Z-Image-Turbo vs Qwen-Image 2512</h3>
+<p>这两条都跑通了，成绩也接近，所以要讲清楚<strong>为什么两个都留着</strong>。</p>
+<h4 id="z-image-turbo日常主力">Z-Image-Turbo（日常主力）</h4>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -695,8 +763,12 @@ int8 版配的是 <code>qwen_3_4b.safetensors</code>（bf16），nvfp4 版配的
 <td><code>ae.safetensors</code> —— 0.34 GB</td>
 </tr>
 <tr>
+<td><strong>全套 footprint</strong></td>
+<td><strong>8.33 GB</strong></td>
+</tr>
+<tr>
 <td>关键参数</td>
-<td><code>CLIPLoader</code> type = <strong><code>lumina2</code></strong>；<code>ModelSamplingAuraFlow</code> shift=3；KSampler <strong>8 步，CFG=1</strong>，<code>res_multistep</code> / <code>simple</code></td>
+<td><code>CLIPLoader</code> type = <strong><code>lumina2</code></strong>；<code>ModelSamplingAuraFlow</code> shift=3；KSampler <strong>8 步，CFG=1</strong></td>
 </tr>
 <tr>
 <td>实测</td>
@@ -704,12 +776,64 @@ int8 版配的是 <code>qwen_3_4b.safetensors</code>（bf16），nvfp4 版配的
 </tr>
 </tbody>
 </table></div>
-<p><strong>为什么选它做主力图像模型？</strong> 三个理由：</p>
+<p><strong>它真正的优势只有一条，但很硬：8.33 GB 全套能完全常驻 24 GB 显存，零 offload。</strong>
+每一步都不需要在显存与内存之间搬运权重 —— 长时间高频使用最省心。</p>
+<h4 id="qwen-image-2512--lightning高分辨率--中文文字">Qwen-Image 2512 + Lightning（高分辨率 / 中文文字）</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>项</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DiT 文件</td>
+<td><code>qwen_image_2512_fp8_e4m3fn.safetensors</code> —— 20.43 GB</td>
+</tr>
+<tr>
+<td>文本编码器</td>
+<td><code>qwen_2.5_vl_7b_fp8_scaled.safetensors</code> —— 9.38 GB</td>
+</tr>
+<tr>
+<td>VAE</td>
+<td><code>qwen_image_vae.safetensors</code> —— 0.25 GB</td>
+</tr>
+<tr>
+<td><strong>全套 footprint</strong></td>
+<td><strong>30.06 GB（超过 24 GB，必须 offload）</strong></td>
+</tr>
+<tr>
+<td>加速 LoRA</td>
+<td><code>Qwen-Image-2512-Lightning-4steps-V1.0-fp32.safetensors</code> —— 1.58 GB</td>
+</tr>
+<tr>
+<td>关键参数</td>
+<td><code>CLIPLoader</code> type = <strong><code>qwen_image</code></strong>；<code>ModelSamplingAuraFlow</code> shift=3.1；有无 LoRA 走官方 <code>ComfySwitchNode</code>（steps 50↔4、CFG 4.0↔1.0）</td>
+</tr>
+<tr>
+<td>实测</td>
+<td>无 LoRA <strong>206.7 s</strong>（1328²，50 步）→ 有 LoRA <strong>12.2 s</strong>（1328²，<strong>4 步</strong>）</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>它的优势有两条：</strong></p>
 <ol>
-<li><strong>8 步出图</strong>，一次只要十几秒，迭代速度快到可以当草稿本用</li>
-<li><strong>中文文字渲染准确</strong>（提示词里的中文招牌能正确画出来）</li>
-<li>有 nvfp4 版本，<strong>4.51 GB</strong> —— 一台 24 GB 的机器可以把它和编码器全塞进显存，无需 offload</li>
+<li><strong>分辨率更高</strong>：1328² 比 Z-Image 的 1024² 多 <strong>68%</strong> 像素，而耗时还略少（12.2 s vs 13.8 s）</li>
+<li><strong>中文文字渲染经过逐字核验</strong>：跑「春风得意马蹄疾 / 一日看尽长安花」＋「茶香四溢 静心品茗 八方来客 岁月悠长」，<strong>30/30 字全对、零错字零缺笔</strong>（202.7 s / 50 步）</li>
 </ol>
+<blockquote>
+<p>⚠️ <strong>一处自我纠正</strong>：本手册早期版本把「中文文字渲染准确」写成了选 Z-Image-Turbo 的理由，<strong>那是错的</strong>。
+上面 30/30 的验收证据跑的是 <strong>Qwen-Image 2512</strong>，不是 Z-Image；Z-Image 的中文渲染能力<strong>从未单独验证过</strong>。
+同时早期版本<strong>完全没有提到 Qwen-Image</strong>，这是一处遗漏，在此补上。</p>
+</blockquote>
+<p><strong>结论：两个都留，按场景分。</strong></p>
+<ul>
+<li>要<strong>高频草稿、显存干净</strong> → Z-Image-Turbo（8.33 GB 全常驻）</li>
+<li>要<strong>高分辨率出片、画面里带中文</strong> → Qwen-Image 2512 + Lightning</li>
+</ul>
+<p>顺带一提，Lightning LoRA 的收益值得单独记一笔：<strong>同一个模型，206.7 s → 12.2 s，快 16.9 倍</strong>，
+而且细节反而更足。这又一次印证了 §2 那条原则 —— <strong>提速靠「少走步数」，不靠「压权重」</strong>。</p>
 <h3 id="62-图像编辑--flux2-klein-4b">6.2 图像编辑 —— FLUX.2 Klein 4B</h3>
 <div class="tw"><table>
 <thead>
@@ -787,7 +911,39 @@ int8 版配的是 <code>qwen_3_4b.safetensors</code>（bf16），nvfp4 版配的
 <strong>h264 / 1344×768 / 24fps / 5.17 s + aac 32kHz 立体声</strong>。
 抽 4 帧拼图后画面与提示词时间线吻合（RGB 分离的「COMFYUI」标题 → 铬色棕榈树 → 日落）。
 <strong>这不是噪点，是可用的音视频。</strong></p>
-<h3 id="64-纯视频--hunyuanvideo-15">6.4 纯视频 —— HunyuanVideo 1.5</h3>
+<h3 id="64-纯视频--三条线各有一条硬理由">6.4 纯视频 —— 三条线，各有一条硬理由</h3>
+<p>纯视频我们跑了<strong>三条线</strong>，结论很干净：<strong>它们不是互相替代关系，而是三种不同的取舍。</strong></p>
+<h4 id="ltx-video-2b-蒸馏--最快">LTX-Video 2B 蒸馏 —— 最快</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>项</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DiT + VAE</td>
+<td><code>ltxv-2b-0.9.8-distilled-fp8.safetensors</code> —— 4.46 GB（all-in-one，含 VAE）</td>
+</tr>
+<tr>
+<td>文本编码器</td>
+<td><code>t5xxl_fp8_e4m3fn.safetensors</code> —— 4.89 GB（<code>CLIPLoader</code> type = <strong><code>ltxv</code></strong>）</td>
+</tr>
+<tr>
+<td>关键参数</td>
+<td><code>EmptyLTXVLatentVideo</code> → <code>LTXVConditioning</code> → <code>LTXVScheduler</code>(steps=8) → <code>SamplerCustom</code>(cfg=<strong>1</strong>，蒸馏版走 CFG-free)</td>
+</tr>
+<tr>
+<td>实测</td>
+<td>768×512/97帧 = <strong>11.7 s</strong>；1216×704/121帧 = <strong>19.2 s</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>19.2 秒出 5 秒 1216×704 视频 —— 这是我们测到的最快的一个，比 Wan 2.2 5B 快 18 倍。</strong>
+代价是<strong>运动幅度明显偏小</strong>：抽帧看，画面稳定、语义正确（茶杯、竹托、雨痕窗户都对），
+但镜头推进非常轻。适合「快速看构图/风格」，不适合「要明显动作」。</p>
+<h4 id="wan-22-5b-ti2v--质量最好">Wan 2.2 5B TI2V —— 质量最好</h4>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -798,7 +954,89 @@ int8 版配的是 <code>qwen_3_4b.safetensors</code>（bf16），nvfp4 版配的
 <tbody>
 <tr>
 <td>DiT</td>
-<td><code>hunyuanvideo1.5_480p_t2v_fp16.safetensors</code> —— 16.65 GB</td>
+<td><code>wan2.2_ti2v_5B_fp16.safetensors</code> —— 10.00 GB</td>
+</tr>
+<tr>
+<td>文本编码器</td>
+<td><code>umt5_xxl_fp8_e4m3fn_scaled.safetensors</code> —— 6.74 GB（<code>CLIPLoader</code> type = <strong><code>wan</code></strong>）</td>
+</tr>
+<tr>
+<td>VAE</td>
+<td><code>wan2.2_vae.safetensors</code> —— 1.41 GB</td>
+</tr>
+<tr>
+<td>关键参数</td>
+<td><code>ModelSamplingSD3</code> shift=8；KSampler <strong>20 步，CFG=5</strong>，<code>uni_pc</code> / <code>simple</code>；<code>Wan22ImageToVideoLatent</code>（<code>start_image</code> 是 <strong>optional</strong>，不接即纯文生视频）</td>
+</tr>
+<tr>
+<td>实测</td>
+<td>704×384/49帧 = <strong>34.6 s</strong>；1280×704/121帧 = <strong>355.1 s</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>这是本次「视频质量」最好的一条。</strong> 用同一句提示词（蜂鸟在红色花丛前采蜜、翅膀高速振动、
+镜头缓慢横移），产物里<strong>翅膀有清晰运动模糊、鸟的位置逐帧移动、背景虚化层次正确</strong> ——
+提示词里每个要素都落到了画面上。代价是慢：5 秒视频要 355 秒。</p>
+<blockquote>
+<p><code>wan2.2_ti2v_5B</code> 里的 <strong>TI2V = Text + Image to Video</strong>，两种都支持。
+这也印证了 §4.1 那条通用观察：<strong>节点叫 <code>ImageToVideo</code>，先看它的图像输入是不是 optional</strong> ——
+<code>Wan22ImageToVideoLatent.start_image</code> 是 optional，不接就是纯文生视频。</p>
+</blockquote>
+<h4 id="wan-22-14b-moe--旗舰档用-4-步-lora-就真的能跑">Wan 2.2 14B MoE —— 旗舰档，用 4 步 LoRA 就真的能跑</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>项</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DiT</td>
+<td><code>wan2.2_t2v_high_noise_14B_fp8_scaled</code> + <code>wan2.2_t2v_low_noise_14B_fp8_scaled</code> —— <strong>各 14.29 GB（双专家）</strong></td>
+</tr>
+<tr>
+<td>加速 LoRA</td>
+<td><code>wan2.2_t2v_lightx2v_4steps_lora_v1.1_high_noise</code> + <code>..._low_noise</code> —— 各 1.23 GB</td>
+</tr>
+<tr>
+<td><strong>VAE</strong></td>
+<td><strong><code>wan_2.1_vae.safetensors</code> 0.25 GB —— 注意与 5B 线的 <code>wan2.2_vae</code> 不是同一个</strong></td>
+</tr>
+<tr>
+<td>关键参数</td>
+<td>两个 <code>UNETLoader</code> → 两个 <code>LoraLoaderModelOnly</code> → 两个 <code>ModelSamplingSD3</code>(shift=5)，由<strong>同一个 <code>PrimitiveBoolean</code> 驱动 5 个 <code>ComfySwitchNode</code></strong>（模型 / steps 20↔4 / 边界步 / CFG 3.5↔1.0）；<code>KSamplerAdvanced</code> 两段接力（高噪专家 <code>add_noise=enable</code> → 低噪专家 <code>add_noise=disable</code>）</td>
+</tr>
+<tr>
+<td>实测</td>
+<td><strong>93.8 s</strong>（832×480 / 81 帧 / <strong>4 步</strong>）</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>这条线的意义在于：它证明了「旗舰 MoE 视频模型在 24 GB 笔记本上可用」。</strong>
+双专家合计 28.6 GB 远超显存，但因为<strong>每一步只加载一个专家</strong>，
+配合 LightX2V 4 步 LoRA（把 20 步压到 4 步），实际跑进了 <strong>94 秒</strong>。</p>
+<p><strong>⚠️ 踩坑记录（值得单独记）</strong>：我们一开始想当然地把模板里的 <code>wan_2.1_vae</code> 替换成手上的
+<code>wan2.2_vae</code>，结果 <code>VAEDecode</code> 直接报：</p>
+<pre><code>Given groups=1, weight of size [48, 48, 1, 1, 1],
+expected input[1, 16, 21, 60, 104] to have 48 channels, but got 16 channels instead
+</code></pre>
+<p><strong>根因：Wan 2.2 的 5B 线和 14B 线用的不是同一个 VAE</strong>（5B → <code>wan2.2_vae</code>，14B → <code>wan_2.1_vae</code>），
+两者通道数不同（48 vs 16）。查了官方模板才确认 —— 所有 <code>video_wan2_2_14B_*</code> 模板都指向 <code>wan_2.1_vae</code>，
+只有 <code>video_wan2_2_5B_*</code> 指向 <code>wan2.2_vae</code>。
+<strong>教训：文件名相似不等于可替换，模板里写什么就用什么。</strong></p>
+<h4 id="hunyuanvideo-15--电影感--自带-1080p-超分">HunyuanVideo 1.5 —— 电影感 + 自带 1080p 超分</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>项</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DiT</td>
+<td><code>hunyuanvideo1.5_480p_t2v_fp16.safetensors</code> / <code>..._720p_t2v_fp16.safetensors</code> —— 各 16.65 GB</td>
 </tr>
 <tr>
 <td>文本编码器</td>
@@ -813,18 +1051,74 @@ int8 版配的是 <code>qwen_3_4b.safetensors</code>（bf16），nvfp4 版配的
 <td><code>hunyuanvideo1.5_t2v_480p_lightx2v_4step_lora_rank_32_bf16.safetensors</code> —— 0.34 GB</td>
 </tr>
 <tr>
+<td>超分分支</td>
+<td><code>hunyuanvideo1.5_1080p_sr_distilled_fp16</code> 16.66 GB + <code>hunyuanvideo15_latent_upsampler_1080p</code> 0.20 GB</td>
+</tr>
+<tr>
 <td>实测</td>
-<td>848×480 / 121 帧（5.04 s）= <strong>117.0 s</strong></td>
+<td>480p/121帧/4步 = <strong>117.0 s</strong>；<strong>720p→1080p：跑满 70 分钟未完成，主动终止</strong></td>
 </tr>
 </tbody>
 </table></div>
+<p><strong>⚠️ 关于 720p 档，必须说清一个负面结果。</strong>
+我们按官方模板完整跑了 720p → 1080p 超分流水线（基座 20 步 + SR 8 步），
+<strong>在 24 GB 笔记本上跑满 70 分钟仍未结束，只能主动终止</strong> —— 这本身就是结论：</p>
+<blockquote>
+<p><strong>720p + 超分这条路径在 24 GB 笔记本上不具备可用性。</strong>
+官方模板没有任何一步是&quot;慢一点但能等&quot;的量级，而是<strong>基线就远超可接受范围</strong>。
+如果要 1080p，更实际的做法是用 480p/720p 出片后再走独立的上采样流程，
+或者改用 Wan 2.2 / LTX 这类没有额外 SR 阶段的线。</p>
+</blockquote>
+<p>之所以把它明写出来，是因为**「跑不动」和「跑得慢」是两种不同的信息**，
+而开源社区的工作流分享普遍只报成功案例。<strong>这条路径在 24 GB 上是不可行的，这就是它唯一的结论。</strong></p>
 <p><strong>⚠️ 一个非常重要的概念区分：<code>480p</code> / <code>720p</code> / <code>i2v</code> / <code>SR</code> 是四个不同的基座模型</strong>，
 不是同一个模型换分辨率。文件名里的分辨率是<strong>模型身份的一部分</strong>。</p>
-<p><strong>4 步出片是它最大的价值</strong> —— 117 秒换 5 秒视频，意味着可以做快速迭代；
-而 720p 50 步的质量更高但慢得多。<strong>先 480p 快速试提示词，定稿再上 720p</strong>，这是推荐的用法。</p>
+<p><strong>它最独特的地方是官方 720p 模板本身就是一条 720p → 1080p 超分流水线</strong>：
+基座出 1280×720 → 用 <code>LatentUpscaleModelLoader</code> 把 latent 放大到 1920×1080 →
+再由一个专门的 SR 蒸馏模型（8 步、<code>SplitSigmas</code> 切 4 步）精修，<strong>两个分辨率各存一份视频</strong>。
+也就是说这条线能直接产出<strong>真 1080p</strong>，而不是把 720p 插值放大。</p>
+<p><strong>4 步出片是 480p 档最大的价值</strong> —— 117 秒换 5 秒视频，可以当迭代草稿用。
+推荐用法：<strong>先 480p 快速试提示词，定稿再上 720p</strong>。</p>
 <p><strong>产物复核</strong>：<code>ffprobe</code> 确认 h264 / 848×480 / 24fps / 121 帧 / 5.04 s；
 抽帧拼图后时序稳定、主体一致 ——「陶艺工作室拉坯成瓶，陶轮旋转、双手塑形、左侧暖黄轮廓光、
 背景虚化木架素坯」，<strong>提示词里的每个要素都对上了</strong>。</p>
+<h4 id="三条线怎么选">三条线怎么选</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>你要什么</th>
+<th>选谁</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>快速迭代 / 看构图</strong></td>
+<td>LTX-Video 2B</td>
+<td>19 秒出片，快 18 倍；接受运动小</td>
+</tr>
+<tr>
+<td><strong>最佳画质 / 动作可信（轻量档）</strong></td>
+<td>Wan 2.2 5B</td>
+<td>提示词遵循与物理真实感最好；但要 6 分钟</td>
+</tr>
+<tr>
+<td><strong>最佳画质（旗舰档）</strong></td>
+<td><strong>Wan 2.2 14B MoE</strong></td>
+<td>双专家 + 4 步 LoRA，<strong>94 秒</strong>就能跑旗舰模型</td>
+</tr>
+<tr>
+<td><strong>要 1080p</strong></td>
+<td>⚠️ 目前没有可用方案</td>
+<td>HV1.5 的 720p+SR 在 24 GB 上跑满 70 分钟未完成（见上方 HunyuanVideo 1.5 小节）</td>
+</tr>
+<tr>
+<td><strong>要声音</strong></td>
+<td>MiniMax H3（§6.3）</td>
+<td>唯一原生出音轨</td>
+</tr>
+</tbody>
+</table></div>
 <h3 id="65-一个跑不了的--flux2-klein-9b">6.5 一个跑不了的 —— FLUX.2 Klein 9B</h3>
 <p><strong>这是唯一没跑通的一条线，而且原因很有教育意义。</strong></p>
 <p>报错：</p>
@@ -843,12 +1137,249 @@ ComfyUI 无法加载分片目录。</p>
 <p><strong>教训</strong>：选模型的时候，除了看&quot;显存装不装得下&quot;，还要看**&quot;权重是不是目标工具能加载的格式&quot;**。
 这是一个很多人会忽略的前置条件。</p>
 </blockquote>
-<h3 id="66-基准总表">6.6 基准总表</h3>
+<h3 id="66-音乐生成--从零补上的一个领域">6.6 音乐生成 —— 从零补上的一个领域</h3>
+<p><strong>这是本次覆盖度上最大的缺口</strong>：图像和视频早就跑通了，<strong>音乐一个字都没碰</strong>。
+（注意区分：MiniMax H3 出的音轨是<strong>视频伴音（音效/环境声）</strong>，跟「按歌词生成一首歌」是两件事。）</p>
+<p>我们把 ComfyUI 0.37 <strong>原生支持</strong>的四条音乐线全部跑了一遍：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>模型</th>
+<th>授权</th>
+<th>权重</th>
+<th>参数</th>
+<th>实测</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ACE-Step 1.5 turbo</strong></td>
+<td><strong>Apache 2.0</strong></td>
+<td>DiT 4.79 GB + 编码器 1.19/1.19 GB + VAE 0.34 GB</td>
+<td><code>TextEncodeAceStepAudio1.5</code>（tags/lyrics/语言/BPM/时长）→ <code>EmptyAceStep1.5LatentAudio</code> → KSampler <strong>8 步 CFG=1</strong></td>
+<td>22.9 s / 60 s 歌</td>
+<td>最快、<strong>可商用</strong></td>
+</tr>
+<tr>
+<td><strong>ACE-Step 1.5 XL turbo</strong></td>
+<td><strong>Apache 2.0</strong></td>
+<td>DiT 9.97 GB + 编码器 1.19/<strong>8.38</strong> GB + VAE 0.34 GB</td>
+<td>同上（XL 版编码器换成 qwen_4b）</td>
+<td><strong>28.6 s</strong> / 60 s 歌</td>
+<td>质量更高，仍可商用</td>
+</tr>
+<tr>
+<td><strong>YuE2-3B</strong></td>
+<td>⚠️ <strong>cc-by-nc（非商用）</strong></td>
+<td><code>yue2_3b_int8_convrot</code> 3.96 GB（all-in-one）</td>
+<td>两阶段：<code>YuE2GenerateABC</code>（32 步 AR 规划谱）→ <code>YuE2GenerateMusic</code> → KSampler <code>dpm_2</code>/<code>sgm_uniform</code> 32 步</td>
+<td>93.7 s / 60 s 歌</td>
+<td>整首歌含人声，中英歌词；<strong>SongBench 分数最高</strong></td>
+</tr>
+<tr>
+<td><strong>MiniMax Music 3</strong></td>
+<td>见仓库</td>
+<td>DiT 2.50 GB + 编码器 9.20 GB + VAE 0.22 GB</td>
+<td><code>MiniMaxMusic3TextEncode</code>（caption/lyrics）→ KSampler <strong>30 步 CFG=1.7</strong></td>
+<td><strong>458.2 s</strong> / 60 s 歌</td>
+<td>质量取向，慢一个量级</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>产物复核</strong>（全部用 <code>ffprobe</code> 验过）：</p>
+<pre><code>ace15_turbo_song      mp3  48 kHz 立体声  60.00 s  245 kbps
+ace15_xl_turbo_song   mp3  48 kHz 立体声  60.00 s  231 kbps
+yue2_text2music       flac 48 kHz 立体声  60.00 s
+minimax_music3_song   mp3  44.1 kHz 立体声 59.99 s
+</code></pre>
+<p><strong>怎么选：</strong></p>
+<ul>
+<li><strong>要能商用 → ACE-Step 1.5。</strong> Apache 2.0 没有营收门槛、没有地区排除，这是它最大的价值。
+且它最快（29 秒出 60 秒歌），是「质量 / 速度 / 授权」三项综合最优的一条。</li>
+<li><strong>要最好的整首歌质量、且不商用 → YuE2。</strong> 它是唯一带「先用 LLM 规划 ABC 谱、再生成音频」
+两阶段结构的，也是基准分最高的；但 <strong>cc-by-nc 明确禁止商用</strong>。</li>
+<li><strong>MiniMax Music 3</strong> 质量取向但慢 16 倍，除非有特别理由，否则不划算。</li>
+</ul>
+<blockquote>
+<p><strong>一个容易踩的授权坑</strong>：开源音乐模型的许可比视频/图像模型乱得多。
+流行的几个（MusicGen、Stable Audio Open 早期版本）都是 <strong>CC-BY-NC</strong>，
+权重能下载、<strong>但产出不能商用</strong>。「能跑」和「能用」在这里是两件事。</p>
+</blockquote>
+<h3 id="67-图生-3d--hunyuan3d-21">6.7 图生 3D —— Hunyuan3D 2.1</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>项</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>权重</td>
+<td><code>hunyuan_3d_v2.1.safetensors</code> —— 7.37 GB（<strong>all-in-one</strong>：含 VAE + CLIP-Vision，<code>ImageOnlyCheckpointLoader</code> 一个节点加载）</td>
+</tr>
+<tr>
+<td>关键参数</td>
+<td><code>CLIPVisionEncode</code> → <code>Hunyuan3Dv2Conditioning</code>；<code>EmptyLatentHunyuan3Dv2</code> resolution=<strong>4096</strong>；KSampler <strong>30 步 CFG=5</strong>；<code>VAEDecodeHunyuan3D</code> octree_resolution=<strong>256</strong>、num_chunks=8000 → <code>VoxelToMesh</code>(surface net, threshold 0.6) → <code>SaveGLB</code></td>
+</tr>
+<tr>
+<td>实测</td>
+<td><strong>54.7 s</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>流程是三步串起来的</strong>：先用 Z-Image 生成一张干净的物体图（青花瓷茶壶、纯白背景，15.0 s），
+拷进 <code>input/</code>，再跑图生 3D。</p>
+<p><strong>产物复核</strong>（直接解析 GLB 二进制头 + JSON chunk）：</p>
+<pre><code>magic = &quot;glTF&quot;  version = 2  file length = 8,701,344
+meshes = 1
+  primitive: vertices = 202,768   triangles = 522,140
+materials = 1   nodes = 1
+</code></pre>
+<p><strong>52 万三角面的可用网格</strong> —— 不是点云、不是体素块，是带材质的标准 glTF 2.0 资产，能直接进 Blender / 游戏引擎。</p>
+<h3 id="68-基准总表">6.8 基准总表</h3>
 <p><img src="assets/zh/chart5-model-benchmark.svg" alt="各工作流实测耗时" /></p>
 <blockquote>
 <p>所有时间都取自 ComfyUI 服务端的 <code>execution_start</code> / <code>execution_success</code> 时间戳，
 <strong>而不是墙钟时间或 API 往返时间</strong> —— 后者会把排队、加载模型的耗时算进来，读数虚高。</p>
 </blockquote>
+<h4 id="图像">图像</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>模型</th>
+<th>配置</th>
+<th>服务端耗时</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Qwen-Image 2512 + Lightning</strong></td>
+<td>1328² / <strong>4 步</strong></td>
+<td><strong>12.2 s</strong></td>
+</tr>
+<tr>
+<td><strong>Z-Image-Turbo nvfp4</strong></td>
+<td>1024² / 8 步</td>
+<td><strong>13.8 s</strong></td>
+</tr>
+<tr>
+<td><strong>SDXL base 1.0</strong></td>
+<td>1024² / 20 步</td>
+<td>14.1 s</td>
+</tr>
+<tr>
+<td>Z-Image-Turbo int8</td>
+<td>1024² / 8 步</td>
+<td>17.7 s</td>
+</tr>
+<tr>
+<td>FLUX.1-dev fp8</td>
+<td>1024² / 20 步</td>
+<td>32.1 s</td>
+</tr>
+<tr>
+<td>FLUX.2 Klein 4B fp8</td>
+<td>1024² 编辑</td>
+<td>42.3 s</td>
+</tr>
+<tr>
+<td>Qwen-Image 2512（无 LoRA）</td>
+<td>1328² / 50 步</td>
+<td>206.7 s</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="视频">视频</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>模型</th>
+<th>配置</th>
+<th>服务端耗时</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LTX-Video 2B 蒸馏（冒烟）</strong></td>
+<td>768×512 / 97 帧</td>
+<td><strong>11.7 s</strong></td>
+</tr>
+<tr>
+<td><strong>LTX-Video 2B 蒸馏</strong></td>
+<td>1216×704 / 121 帧</td>
+<td><strong>19.2 s</strong></td>
+</tr>
+<tr>
+<td>Wan 2.2 5B TI2V（冒烟）</td>
+<td>704×384 / 49 帧</td>
+<td>34.6 s</td>
+</tr>
+<tr>
+<td><strong>Wan 2.2 14B MoE（4 步 LoRA）</strong></td>
+<td>832×480 / 81 帧</td>
+<td><strong>93.8 s</strong></td>
+</tr>
+<tr>
+<td>HunyuanVideo 1.5 480p 4 步</td>
+<td>848×480 / 121 帧</td>
+<td>117.0 s</td>
+</tr>
+<tr>
+<td><strong>Wan 2.2 5B TI2V</strong></td>
+<td>1280×704 / 121 帧</td>
+<td><strong>355.1 s</strong></td>
+</tr>
+<tr>
+<td>MiniMax H3 t2va 8 步</td>
+<td>1344×768 / 124 帧（含音轨）</td>
+<td>519.1 s</td>
+</tr>
+<tr>
+<td><s>HunyuanVideo 1.5 720p→1080p</s></td>
+<td>1280×720 → 1920×1080 / 121 帧</td>
+<td><strong>跑满 70 分钟未完成，主动终止</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="音乐--3d">音乐 / 3D</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>模型</th>
+<th>配置</th>
+<th>服务端耗时</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ACE-Step 1.5 turbo</td>
+<td>60 s 歌曲 / 8 步</td>
+<td>22.9 s</td>
+</tr>
+<tr>
+<td>ACE-Step 1.5 XL turbo</td>
+<td>60 s 歌曲 / 8 步</td>
+<td>28.6 s</td>
+</tr>
+<tr>
+<td><strong>Hunyuan3D 2.1</strong></td>
+<td>30 步，4096 latent，octree 256</td>
+<td><strong>54.7 s</strong></td>
+</tr>
+<tr>
+<td>YuE2-3B</td>
+<td>60 s 歌曲 / 32 步</td>
+<td>93.7 s</td>
+</tr>
+<tr>
+<td>MiniMax Music 3</td>
+<td>60 s 歌曲 / 30 步</td>
+<td>458.2 s</td>
+</tr>
+</tbody>
+</table></div>
 <p><strong>一个诚实的说明</strong>：Z-Image 的耗时我们测了两轮，得到 <code>20.9 / 15.8 s</code> 和 <code>17.7 / 13.8 s</code>。
 <strong>绝对值的 run-to-run 波动约 ±15%</strong>（笔记本 GPU 的温度/功耗墙会导致降频），
 但 <strong>nvfp4 比 int8 快 22%～25%</strong> 这个<strong>相对结论在两轮里都稳定成立</strong>。</p>
@@ -989,11 +1520,46 @@ ComfyUI 无法加载分片目录。</p>
 <td><strong>方法错误：编码器没固定</strong></td>
 <td>见 §5，必须受控 + 种子基线</td>
 </tr>
+<tr>
+<td><strong>Wan 14B 报 <code>expected input to have 48 channels, but got 16 channels</code></strong></td>
+<td><strong>Wan 2.2 的 5B 线与 14B 线用的不是同一个 VAE</strong>（5B → <code>wan2.2_vae</code>，14B → <code>wan_2.1_vae</code>）</td>
+<td>按模板原样用 <code>wan_2.1_vae</code>，别想当然替换</td>
+</tr>
+<tr>
+<td>官方模板转成 API 后<strong>参数静默错位</strong>（<code>steps</code> 变成 <code>&quot;randomize&quot;</code>）</td>
+<td>前端会在种子参数后插一个 <code>control_after_generate</code> 伪 widget</td>
+<td>该伪 widget <strong>要占一个槽位</strong>参与位置对齐。见 §9.4</td>
+</tr>
+<tr>
+<td><code>SaveAudioAdvanced</code> 报缺 <code>format.quality</code>，但 <code>quality</code> 明明写了</td>
+<td>v3 动态 combo 的子字段用<strong>点号命名空间</strong></td>
+<td>写 <code>&quot;format.quality&quot;: &quot;V0&quot;</code>，不是 <code>&quot;quality&quot;</code></td>
+</tr>
+<tr>
+<td>子图模板转换后外层节点<strong>莫名少连线</strong></td>
+<td>子图 <code>outputs/inputs</code> 的 <code>linkIds</code> 指向内层 link，边界没接回去</td>
+<td>按 linkIds 把边界连线重连到内层真实端点。见 §9.4</td>
+</tr>
+<tr>
+<td><code>ComfyMathExpression</code> 报 <code>required_input_missing: values.a</code></td>
+<td><code>values.*</code> 是必填输入，被删掉了</td>
+<td><code>expression</code> 改成 <code>&quot;a&quot;</code>，值喂给 <code>values.a</code></td>
+</tr>
+<tr>
+<td>ComfyUI 启动报 <strong><code>You need pytorch with cu130 or higher to use optimized CUDA operations</code></strong></td>
+<td>PyTorch 是 cu128，<code>comfy_kitchen</code> 的 CUDA 后端<strong>被禁用</strong></td>
+<td>这不是可忽略的警告 —— 它意味着 NVFP4 / SVDQuant 的优化内核没生效。见附录 E ④</td>
+</tr>
+<tr>
+<td>一个视频工作流跑 1 小时仍不结束</td>
+<td>工作流本身不适合该显存规模（如 HV1.5 720p + 1080p SR）</td>
+<td><strong>先估时间再跑</strong>；不可行就明确记录为「不可行」，不要静默重试</td>
+</tr>
 </tbody>
 </table></div>
 <hr />
 <h2 id="9-工具链">9. 工具链</h2>
-<h3 id="91-六个脚本">9.1 六个脚本</h3>
+<h3 id="91-工具清单">9.1 工具清单</h3>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -1007,12 +1573,36 @@ ComfyUI 无法加载分片目录。</p>
 <td>多源下载器：三级回退 + 静默看门狗 + Range 探尺寸 + 断点续传</td>
 </tr>
 <tr>
+<td><code>scripts/dl_more.py</code></td>
+<td>同一套下载器，换成「音乐 4 条线 + Wan 2.2 14B + HV1.5 超分」的清单</td>
+</tr>
+<tr>
+<td><code>scripts/probe_more.py</code></td>
+<td><strong>只探不下载</strong>：Range 请求拿全部待下载文件的精确体积，用于先估时间预算</td>
+</tr>
+<tr>
 <td><code>scripts/verify_models.py</code></td>
 <td>三层校验：字节大小 + safetensors 结构 + dtype 识别</td>
 </tr>
 <tr>
+<td><strong><code>scripts/ui2api.py</code></strong></td>
+<td><strong>把官方模板（UI/workflow 格式）转成可提交的 API prompt</strong> —— 本节最有价值的工具，见 §9.4</td>
+</tr>
+<tr>
+<td><code>scripts/mk_wf.py</code></td>
+<td>由官方模板派生本项目的视频工作流变体（Wan 5B/14B、LTX、HV1.5、Hunyuan3D）</td>
+</tr>
+<tr>
+<td><code>scripts/mk_music.py</code> / <code>mk_music2.py</code></td>
+<td>派生音乐工作流（ACE-Step / YuE2 / MiniMax Music 3）</td>
+</tr>
+<tr>
 <td><code>scripts/run_workflow.py</code></td>
 <td>API 提交 + <strong>服务端权威计时</strong>（读 <code>execution_start</code>/<code>success</code>）</td>
+</tr>
+<tr>
+<td><code>scripts/run_batch.py</code></td>
+<td>顺序跑多个工作流（GPU 必须串行），每个带独立超时上限</td>
 </tr>
 <tr>
 <td><code>tools/compare_ab.py</code></td>
@@ -1024,7 +1614,7 @@ ComfyUI 无法加载分片目录。</p>
 </tr>
 <tr>
 <td><code>tools/make_charts.py</code></td>
-<td>生成本文所有 SVG 图表</td>
+<td>生成本文所有 SVG 图表（中英各一套）</td>
 </tr>
 </tbody>
 </table></div>
@@ -1032,16 +1622,23 @@ ComfyUI 无法加载分片目录。</p>
 <pre><code class="language-bash"># 1) 环境
 #    ComfyUI 已在本机跑起来（默认 http://127.0.0.1:8188）
 
-# 2) 下载模型（三级源回退）
-python scripts/dl_models.py
+# 2) 先探体积、估时间（不下载）
+python scripts/probe_more.py
 
-# 3) 三层校验（字节 + 结构 + dtype）
+# 3) 下载模型（三级源回退）
+python scripts/dl_more.py --workers 4
+
+# 4) 三层校验（字节 + 结构 + dtype）
 python scripts/verify_models.py --refresh
 
-# 4) 跑一个工作流，拿服务端权威耗时
-python scripts/run_workflow.py workflows/z_image_turbo_nvfp4.json --free
+# 5) 把官方模板转成 API 工作流，再派生本项目要跑的变体
+python scripts/ui2api.py video_wan2_2_5B_ti2v.json -o wf.json
+python scripts/mk_wf.py wan_smoke wan_full ltx_full hv15_720 hy3d
 
-# 5) 做一次受控 A/B（同一编码器，只变量化）
+# 6) 顺序跑一批（GPU 串行，每个带独立超时）
+python scripts/run_batch.py &quot;workflows/wan22_5b_t2v_full.json@900&quot;
+
+# 7) 做一次受控 A/B（同一编码器，只变量化）
 python tools/compare_ab.py
 python tools/ab_metrics.py
 </code></pre>
@@ -1057,8 +1654,71 @@ python tools/ab_metrics.py
 ├── docs/                  # 深挖文章
 ├── scripts/               # 可复现脚本
 ├── tools/                 # 分析与图表工具
-└── workflows/             # API 格式工作流
+└── workflows/             # API 格式工作流（26 个）
 </code></pre>
+<h3 id="94-最有价值的一个工具官方模板--api-工作流">9.4 最有价值的一个工具：官方模板 → API 工作流</h3>
+<p>ComfyUI 官方的模板（<code>comfyui_workflow_templates_json/templates/</code> 与 <code>blueprints/</code>）
+是<strong>给 UI 用的 UI 格式</strong>，<strong>不能直接 POST 给 <code>/prompt</code></strong>。要么手工重搭，要么写转换器。
+我们写了 <code>ui2api.py</code>，把这件事一次做对。它踩过的坑值得单独记下来 —— <strong>每一条都是一个会静默出错的陷阱</strong>：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>陷阱</th>
+<th>症状</th>
+<th>正解</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong><code>control_after_generate</code> 伪 widget</strong></td>
+<td>参数整体错位：<code>steps</code> 拿到 <code>&quot;randomize&quot;</code>、<code>sampler_name</code> 拿到 <code>5</code></td>
+<td>凡是 spec 带 <code>control_after_generate=True</code> 的种子参数，<strong>其后要多占一个槽位</strong>再对齐</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>widget / link 判定</strong></td>
+<td>用「类型不在输出集合里」单条规则判，会把 <code>seed</code>/<code>steps</code>/<code>cfg</code> 全判成连线</td>
+<td>要<strong>两条规则取并集</strong>：① <code>INT/FLOAT/STRING/BOOLEAN/COMBO</code>/list 白名单 ② 不在输出类型集合（覆盖 <code>COMFY_DYNAMICCOMBO_V3</code> 这类 v3 动态类型）</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>动态 combo 的子字段</strong></td>
+<td><code>SaveAudioAdvanced</code> 报缺 <code>format.quality</code>，但 <code>quality</code> 明明写在 inputs 里</td>
+<td>v3 动态 combo 的子字段用<strong>点号命名空间</strong>：写 <code>&quot;format.quality&quot;: &quot;V0&quot;</code>，不是 <code>&quot;quality&quot;</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>子图边界连线</strong></td>
+<td>内层节点全在、连线也在，但外层 <code>SaveAudioAdvanced</code> <strong>缺 <code>audio</code></strong></td>
+<td>子图 <code>outputs[i].linkIds</code> / <code>inputs[j].linkIds</code> 指向内层 link，必须<strong>据此把边界连线接回内层真实端点</strong>，否则外层连线被整条丢掉</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong><code>ComfyMathExpression</code> 的 <code>values.*</code></strong></td>
+<td>删掉 <code>values.a</code> 后报 <code>required_input_missing: values.a</code></td>
+<td><code>values.*</code> 是必填输入；要写死数值就把 <code>expression</code> 改成 <code>&quot;a&quot;</code> 再把值喂给 <code>values.a</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>本机没有的节点</strong></td>
+<td>如 <code>EasyCache</code> 未安装，图直接断</td>
+<td>未知节点按<strong>穿透</strong>处理：沿它第一个输入继续回溯</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong><code>PrimitiveNode</code></strong></td>
+<td>API 格式里不存在该节点</td>
+<td>内联成字面量常数</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><strong>一个通用教训</strong>：<strong>转换器的错误几乎全部表现为「能提交但结果不对」或「参数静默错位」</strong>，
+不会自己报错。所以<strong>每次转换都应该做一次 dry-run 提交</strong>（<code>POST /prompt</code>）——
+结构/类型正确时只会报 <code>value_not_in_list</code>（缺模型），其余报错都是真问题。</p>
+</blockquote>
 <hr />
 <h2 id="10-结论与后续">10. 结论与后续</h2>
 <h3 id="101-结论">10.1 结论</h3>
@@ -1100,7 +1760,12 @@ python tools/ab_metrics.py
 </tbody>
 </table></div>
 <hr />
-<h2 id="附录-a完整模型清单34-文件--1256-gb">附录 A：完整模型清单（34 文件 / 125.6 GB）</h2>
+<h2 id="附录-a完整模型清单100-文件--4584-gb">附录 A：完整模型清单（100 文件 / 458.4 GB）</h2>
+<blockquote>
+<p><strong>⚠️ 口径修正</strong>：本手册早期版本把清单写成「34 文件 / 125.6 GB」，<strong>那只是当时最后一批的量</strong>，
+不是全部。真实磁盘占用是 <strong>100 个权重文件 / 458.4 GB</strong>（按 <code>realpath</code> 去重，避免 junction 别名重复计数）。
+下面按「用途」分组列全，并标出<strong>哪些跑过、哪些只是下载了</strong>。</p>
+</blockquote>
 <details>
 <summary>展开查看全部文件</summary>
 <p><strong>MiniMax H3（视频 + 音频）</strong></p>
@@ -1247,7 +1912,290 @@ python tools/ab_metrics.py
 </tr>
 </tbody>
 </table></div>
-<p><strong>校验结果：34 / 34 完整，125.6 GB，0 损坏。</strong></p>
+<p><strong>Wan 2.2（视频）</strong> ← 本次新跑通</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>文件</th>
+<th>大小</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>wan2.2_ti2v_5B_fp16.safetensors</code></td>
+<td>10.00 GB</td>
+<td>✅ 跑过（§6.4）</td>
+</tr>
+<tr>
+<td><code>wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors</code></td>
+<td>14.29 GB</td>
+<td>✅ <strong>跑过（93.8 s，§6.4）</strong></td>
+</tr>
+<tr>
+<td><code>wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors</code></td>
+<td>14.29 GB</td>
+<td>✅ <strong>跑过（93.8 s，§6.4）</strong></td>
+</tr>
+<tr>
+<td><code>wan2.2_t2v_lightx2v_4steps_lora_v1.1_high_noise.safetensors</code></td>
+<td>1.23 GB</td>
+<td>✅ 跑过</td>
+</tr>
+<tr>
+<td><code>wan2.2_t2v_lightx2v_4steps_lora_v1.1_low_noise.safetensors</code></td>
+<td>1.23 GB</td>
+<td>✅ 跑过</td>
+</tr>
+<tr>
+<td><code>wan2.2_vae.safetensors</code></td>
+<td>1.41 GB</td>
+<td>✅ 跑过（5B 线用）</td>
+</tr>
+<tr>
+<td><code>wan_2.1_vae.safetensors</code></td>
+<td>0.25 GB</td>
+<td>✅ 跑过（14B 线用，<strong>与上面不是同一个 VAE</strong>）</td>
+</tr>
+<tr>
+<td><code>umt5_xxl_fp8_e4m3fn_scaled.safetensors</code></td>
+<td>6.74 GB</td>
+<td>✅ 跑过</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>LTX-Video（视频）</strong> ← 本次新跑通</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>文件</th>
+<th>大小</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ltxv-2b-0.9.8-distilled-fp8.safetensors</code></td>
+<td>4.46 GB</td>
+<td>✅ 跑过（§6.4）</td>
+</tr>
+<tr>
+<td><code>ltx-2b.safetensors</code>（VAE）</td>
+<td>1.68 GB</td>
+<td>✅ 跑过</td>
+</tr>
+<tr>
+<td><code>t5xxl_fp8_e4m3fn.safetensors</code></td>
+<td>4.89 GB</td>
+<td>✅ 跑过</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>ACE-Step 1.5（音乐）</strong> ← 本次新跑通</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>文件</th>
+<th>大小</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>acestep_v1.5_turbo.safetensors</code></td>
+<td>4.79 GB</td>
+<td>✅ 跑过</td>
+</tr>
+<tr>
+<td><code>acestep_v1.5_xl_turbo_bf16.safetensors</code></td>
+<td>9.97 GB</td>
+<td>✅ 跑过</td>
+</tr>
+<tr>
+<td><code>qwen_0.6b_ace15.safetensors</code></td>
+<td>1.19 GB</td>
+<td>✅ 跑过</td>
+</tr>
+<tr>
+<td><code>qwen_1.7b_ace15.safetensors</code></td>
+<td>1.10 GB</td>
+<td>✅ 跑过</td>
+</tr>
+<tr>
+<td><code>qwen_4b_ace15.safetensors</code></td>
+<td>8.38 GB</td>
+<td>✅ 跑过</td>
+</tr>
+<tr>
+<td><code>ace_1.5_vae.safetensors</code></td>
+<td>0.34 GB</td>
+<td>✅ 跑过</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>YuE2 / MiniMax Music 3 / Stable Audio 3（音乐）</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>文件</th>
+<th>大小</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>yue2_3b_int8_convrot.safetensors</code></td>
+<td>3.96 GB</td>
+<td>✅ 跑过</td>
+</tr>
+<tr>
+<td><code>minimax_music3_dit_int8_convrot.safetensors</code></td>
+<td>2.50 GB</td>
+<td>✅ 跑过</td>
+</tr>
+<tr>
+<td><code>minimax_music3_text_encoder_pruned_int8_convrot.safetensors</code></td>
+<td>9.20 GB</td>
+<td>✅ 跑过</td>
+</tr>
+<tr>
+<td><code>minimax_music3_dav.safetensors</code></td>
+<td>0.22 GB</td>
+<td>✅ 跑过</td>
+</tr>
+<tr>
+<td><code>stable_audio_3_medium.safetensors</code></td>
+<td>9.22 GB</td>
+<td>⬜ 权重已下，未跑（见附录 E）</td>
+</tr>
+<tr>
+<td><code>qwen3.5_2b_bf16.safetensors</code></td>
+<td>4.55 GB</td>
+<td>⬜ 同上</td>
+</tr>
+<tr>
+<td><code>t5gemma_b_b_ul2.safetensors</code></td>
+<td>1.19 GB</td>
+<td>⬜ 同上</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>P3 图像线（早期批次，手册早期版本漏收录）</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>文件</th>
+<th>大小</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>qwen_image_2512_fp8_e4m3fn.safetensors</code></td>
+<td>20.43 GB</td>
+<td>✅ 跑过（§6.1）</td>
+</tr>
+<tr>
+<td><code>qwen_2.5_vl_7b_fp8_scaled.safetensors</code></td>
+<td>9.38 GB</td>
+<td>✅ 跑过</td>
+</tr>
+<tr>
+<td><code>qwen_image_vae.safetensors</code></td>
+<td>0.25 GB</td>
+<td>✅ 跑过</td>
+</tr>
+<tr>
+<td><code>Qwen-Image-2512-Lightning-4steps-V1.0-fp32.safetensors</code></td>
+<td>1.70 GB</td>
+<td>✅ 跑过</td>
+</tr>
+<tr>
+<td><code>flux1-dev-fp8.safetensors</code></td>
+<td>17.25 GB</td>
+<td>✅ 跑过（32.1 s @1024²/20步）</td>
+</tr>
+<tr>
+<td><code>sd_xl_base_1.0.safetensors</code></td>
+<td>6.94 GB</td>
+<td>✅ 跑过（14.1 s @1024²/20步）</td>
+</tr>
+<tr>
+<td><code>Qwen-Image-2512</code>（bf16 diffusers 分片，53.74 GB）</td>
+<td>53.74 GB</td>
+<td>⬜ 被 fp8 单文件取代，未跑</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>HunyuanVideo 1.5 超分分支</strong> ← 720p 模板必需</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>文件</th>
+<th>大小</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hunyuanvideo1.5_1080p_sr_distilled_fp16.safetensors</code></td>
+<td>16.66 GB</td>
+<td>✅ 已下载</td>
+</tr>
+<tr>
+<td><code>hunyuanvideo15_latent_upsampler_1080p.safetensors</code></td>
+<td>0.20 GB</td>
+<td>✅ 已下载</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Hunyuan3D 2.1（图生 3D）</strong> ← 本次新跑通</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>文件</th>
+<th>大小</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hunyuan_3d_v2.1.safetensors</code></td>
+<td>7.37 GB</td>
+<td>✅ 跑过（§6.7）</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>HunyuanVideo 1.0（已被 1.5 取代）</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>文件</th>
+<th>大小</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hunyuan_video_custom_720p_fp8_e4m3fn.safetensors</code></td>
+<td>13.17 GB</td>
+<td>⬜ 下了没跑（见附录 E）</td>
+</tr>
+<tr>
+<td><code>hunyuan_video_vae_fp32.safetensors</code></td>
+<td>0.99 GB</td>
+<td>⬜ 同上</td>
+</tr>
+<tr>
+<td><code>llava_llama3_fp8_scaled.safetensors</code></td>
+<td>9.09 GB</td>
+<td>⬜ 同上</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>校验口径</strong>：<code>verify_models.py</code> 三层校验（字节大小 + safetensors 结构 + dtype）。
+第一批 34 文件 / 125.6 GB <strong>34/34 通过、0 损坏</strong>；后续批次同样以字节数校验通过。
+<strong>总计 100 文件 / 458.4 GB（realpath 去重后）。</strong></p>
 </details>
 <h2 id="附录-b实测原始数据">附录 B：实测原始数据</h2>
 <p>见 <a href="data/"><code>data/</code></a> 目录：</p>
@@ -1255,6 +2203,7 @@ python tools/ab_metrics.py
 <li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/quant-ab-metrics.md"><code>data/quant-ab-metrics.md</code></a> —— 受控 A/B 的完整指标</li>
 <li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/benchmark-results.md"><code>data/benchmark-results.md</code></a> —— 各工作流服务端耗时</li>
 <li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/download-manifest.md"><code>data/download-manifest.md</code></a> —— 34 个文件的体积与 dtype</li>
+<li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/coverage-round2.md"><code>data/coverage-round2.md</code></a> —— <strong>第二轮覆盖度扩展的原始数据</strong>（音乐 4 条线 + Wan 2.2 14B + LTX + Hunyuan3D 的耗时与产物规格、VAE 踩坑记录、cu130 内核禁用证据）</li>
 </ul>
 <h2 id="附录-c术语表">附录 C：术语表</h2>
 <div class="tw"><table>
@@ -1322,7 +2271,7 @@ python tools/ab_metrics.py
 </tr>
 <tr>
 <td>结论可比较性</td>
-<td>✅ 四条模型线用 <strong>同一套测量口径</strong></td>
+<td>✅ <strong>八条模型线、四个领域</strong>用 <strong>同一套测量口径</strong></td>
 <td>❌ 各自为政，跨模型数字不可比</td>
 </tr>
 <tr>
@@ -1351,7 +2300,7 @@ python tools/ab_metrics.py
 <p><strong>结论：单一仓库 + <code>docs/</code> 分专题。</strong></p>
 <p>理由只有一条，但很硬：<strong>这份手册真正有价值的东西是「方法论」，而不是「某一个模型的参数」。</strong></p>
 <ul>
-<li>四条模型线里，<strong>可复用的部分是同一套</strong>：受控 A/B 的四组对照设计、带静默看门狗的多源下载器、三层模型校验、服务端权威计时。</li>
+<li><strong>八条模型线跨越四个领域</strong>（图像 / 视频 / 音乐 / 3D），<strong>可复用的部分却是同一套</strong>：受控 A/B 的四组对照设计、带静默看门狗的多源下载器、三层模型校验、服务端权威计时、官方模板→API 转换器。<strong>这一点本身就是单仓库最有力的论据</strong> —— 方法论一旦复制 8 份，就不再是同一套方法论了。</li>
 <li><strong>不可复用的部分（每个模型自己的节点约束与参数）体量很小</strong> —— 在单仓库里用一章（§6）就讲完了。</li>
 <li>如果拆成 4 个仓库，那套方法论就会被复制 4 份。一旦我们在某个仓库里改进了 A/B 方法，另外 3 个仓库不会自动同步 —— 这正是<strong>结论不再可比</strong>的根源。</li>
 </ul>
@@ -1367,6 +2316,175 @@ python tools/ab_metrics.py
 <li>团队分工细化到「每个模型由不同的人独立维护」</li>
 </ol>
 <p>在此之前，<strong>单一仓库的收益（可复用、可比、一次讲清）远大于成本。</strong></p>
+<hr />
+<h2 id="附录-e覆盖度审计--我们试过什么没试什么为什么放弃">附录 E：覆盖度审计 —— 我们试过什么、没试什么、为什么放弃</h2>
+<blockquote>
+<p>这一节回答一个很容易被跳过、但最该被追问的问题：<strong>「最先进的模型都试过了吗？」</strong>
+诚实的答案是：<strong>没有全试过。</strong> 三类领域的覆盖度差别很大。下面把账摊开，
+并对<strong>每一个主动放弃的模型写清确切理由</strong> —— 其中包括<strong>一次判断失误的纠正</strong>。</p>
+</blockquote>
+<h3 id="e1-覆盖度总览">E.1 覆盖度总览</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>领域</th>
+<th>跑通并出片</th>
+<th>下了没跑</th>
+<th>主动放弃</th>
+<th>覆盖度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>图像</strong></td>
+<td>7 条（SDXL / FLUX.1-dev / Qwen-Image 2512 ×2 / Z-Image ×2 / FLUX.2 Klein 4B）</td>
+<td>1（Qwen bf16 分片）</td>
+<td>2（FLUX.2-dev、Nunchaku Qwen NVFP4）</td>
+<td>较充分</td>
+</tr>
+<tr>
+<td><strong>视频</strong></td>
+<td><strong>5 条（MiniMax H3 / HunyuanVideo 1.5 / Wan 2.2 5B / Wan 2.2 14B / LTX-Video 2B）</strong></td>
+<td>2（HV1.0、HV1.5 720p）</td>
+<td>2（LTX-2.3、LTX-2.5）</td>
+<td><strong>中等偏高</strong></td>
+</tr>
+<tr>
+<td><strong>音乐</strong></td>
+<td><strong>4 条（ACE-Step ×2 / YuE2 / MiniMax Music 3）</strong></td>
+<td>1（Stable Audio 3）</td>
+<td>0</td>
+<td><strong>从 0 补到 4</strong></td>
+</tr>
+<tr>
+<td><strong>3D</strong></td>
+<td>1（Hunyuan3D 2.1）</td>
+<td>0</td>
+<td>0</td>
+<td>完成</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="e2-主动放弃的模型以及确切理由">E.2 主动放弃的模型，以及确切理由</h3>
+<h4 id="①-flux2-dev--显存装不下">① FLUX.2-dev —— 显存装不下</h4>
+<ul>
+<li><strong>权重体积</strong>：DiT 单文件 fp8 <strong>35.46 GB</strong></li>
+<li><strong>为什么放弃</strong>：本机 24 GB 显存，<strong>这一个文件就是显存的 1.48 倍</strong>。
+它不只是&quot;需要 offload&quot;，而是&quot;每一步都要把 35 GB 在 PCIe 上搬一遍&quot;，
+按同量级模型的实测经验，速度会掉到不可用区间。</li>
+<li><strong>替代</strong>：FLUX.2 <strong>Klein 4B</strong>（fp8 仅 4.07 GB）已跑通并出片。</li>
+<li><strong>什么时候应重新考虑</strong>：出现 NVFP4 / GGUF 版本把 DiT 压到 20 GB 以内时。</li>
+</ul>
+<h4 id="②-ltx-23---这是一次判断失误必须纠正">② LTX-2.3 —— ⚠️ <strong>这是一次判断失误，必须纠正</strong></h4>
+<ul>
+<li><strong>当时的否决理由</strong>：fp8 权重 <strong>29.15 GB</strong> &gt; 24 GB，「装不下」。</li>
+<li><strong>错在哪</strong>：<strong>只按 fp8 这一档去估，忘了 LTX-2.3 有 GGUF 量化版。</strong>
+社区实测 <strong>Q3 GGUF 能跑在 12 GB 卡上、Q4_K_M 能跑在 16 GB 卡上</strong>。
+用「最高精度版本装不下」去否决一个<strong>有多种量化可选</strong>的模型，是方法错误。</li>
+<li><strong>为什么它本来值得跑</strong>：<strong>它是唯一在单次生成里原生同步输出音视频的开源模型</strong>
+（22B DiT = 14B 视频 + 5B 音频），是 MiniMax H3 之外的另一条&quot;带声音&quot;路线。</li>
+<li><strong>修正后的结论</strong>：<strong>不该被否决，应在下一轮用 GGUF Q4_K_M 补跑。</strong></li>
+<li><strong>顺带一个版权提醒</strong>：LTX-2.3 <strong>不是 Apache 2.0</strong>（网上大量文章写错）。
+它走 LTX-2 Community License：年营收低于约 1000 万美元可免费商用。</li>
+</ul>
+<h4 id="③-ltx-25--仓库-gated">③ LTX-2.5 —— 仓库 gated</h4>
+<ul>
+<li><strong>为什么放弃</strong>：HF 仓库返回 <strong>401</strong>，需要先在 HF 页面接受许可协议。</li>
+<li><strong>这是流程原因，不是技术原因</strong>；接受许可后即可下载。</li>
+</ul>
+<h4 id="④-nunchaku-qwen-image-2512-nvfp4w4a4-svdquant-差一个-cu130">④ Nunchaku Qwen-Image-2512 NVFP4（W4A4 SVDQuant）—— 差一个 cu130</h4>
+<ul>
+<li>
+<p><strong>为什么它最值得跑</strong>：它把「已被我们证明最优的 NVFP4」和「最强图像模型 Qwen-Image」合体 ——
+调研数据 <strong>238 ms/step @1024²，50 步约 11.9 s</strong>，DiT 从 20.4 GB 压到 <strong>~12 GB</strong>，
+理论上能<strong>同时拿到画质与免 offload</strong>。</p>
+</li>
+<li>
+<p><strong>为什么没跑</strong>：它依赖 <code>scaled_mm_svdquant_w4a4</code> / <code>convrot_w4a4_linear</code> 这些优化 CUDA 内核，
+而本机 ComfyUI 启动日志明确报：</p>
+<pre><code>WARNING: You need pytorch with cu130 or higher to use optimized CUDA operations.
+[INFO] Found comfy_kitchen backend cuda: {'available': True, 'disabled': True, ...}
+</code></pre>
+<p><strong>我们的 PyTorch 是 2.11.0+cu128，所以 <code>comfy_kitchen</code> 的 CUDA 后端被禁用了。</strong>
+没有这层内核，SVDQuant W4A4 拿不到它的加速路径 —— 跑了也不代表真实性能。</p>
+</li>
+<li>
+<p><strong>由此得到一条更重要的推论</strong>：<strong>§5 的 NVFP4 结论是在「优化内核被禁用」的前提下测出来的。</strong>
+也就是说 <strong>NVFP4 快 22% 是个保守值（下界）</strong> —— 升到 cu130 解禁内核后，差距大概率更大。
+这是本手册<strong>已知的一个未验证的乐观偏差</strong>，在此明示。</p>
+</li>
+</ul>
+<h4 id="⑤-wan-22-14b-moe---已跑通本轮补上">⑤ Wan 2.2 14B MoE —— ✅ <strong>已跑通（本轮补上）</strong></h4>
+<ul>
+<li><strong>结果：93.8 秒</strong>（832×480 / 81 帧 / 4 步）。双专家各 14.29 GB + LightX2V 4 步 LoRA 全部下载校验后，
+走 <code>PrimitiveBoolean</code> 驱动的 <code>ComfySwitchNode</code> 4 步 / CFG 1 分支跑通。</li>
+<li><strong>这条结果的价值</strong>：<strong>它把「旗舰 MoE 视频模型能不能在这台机器上跑」这个问题彻底回答了 —— 能。</strong>
+双专家合计 28.6 GB 远超显存，但因为<strong>每一步只加载一个专家</strong>，配合 4 步 LoRA，实际 94 秒出片。</li>
+<li><strong>过程中的一个真实踩坑</strong>：把模板里的 <code>wan_2.1_vae</code> 想当然替换成 <code>wan2.2_vae</code>，
+导致 <code>VAEDecode</code> 报通道不匹配（48 vs 16）。<strong>Wan 2.2 的 5B 线与 14B 线用的不是同一个 VAE。</strong>
+详见 §6.4 与 §8 速查表。</li>
+</ul>
+<h4 id="⑥-hunyuanvideo-10--被-15-取代">⑥ HunyuanVideo 1.0 —— 被 1.5 取代</h4>
+<ul>
+<li><strong>权重在盘上</strong>（DiT 13.17 GB + VAE 0.99 GB + llava-llama3 编码器 9.09 GB），<strong>但没跑</strong>。</li>
+<li><strong>为什么</strong>：HunyuanVideo <strong>1.5 是 1.0 的正式升级</strong>（8.3B、480p/720p、自带超分），且 1.5 已跑通。
+再跑 1.0 只有考古价值，没有选型价值。</li>
+<li><strong>保留原因</strong>：留档对比；且 llava-llama3 编码器对其他线可能还有用。</li>
+</ul>
+<h4 id="⑦-stable-audio-3-medium--权重已下未跑">⑦ Stable Audio 3 Medium —— 权重已下，未跑</h4>
+<ul>
+<li>主模型 9.22 GB + 两个编码器（<code>qwen3.5_2b</code> 4.55 GB、<code>t5gemma_b_b_ul2</code> 1.19 GB）<strong>已全部下载</strong>。</li>
+<li><strong>为什么没跑</strong>：它是<strong>音效 / 短片段</strong>路线（≤47 s），而「按歌词生成整首歌」这个任务
+已有 ACE-Step / YuE2 / MiniMax Music 3 三条线跑通并复核。
+它的定位是<strong>补充而非缺口</strong>，排在下一轮。</li>
+</ul>
+<h4 id="⑧-musicgen--stable-audio-open早期版-授权不允许">⑧ MusicGen / Stable Audio Open（早期版）—— 授权不允许</h4>
+<ul>
+<li><strong>为什么直接排除</strong>：权重是 <strong>CC-BY-NC（非商用）</strong>。
+<strong>「能下载」不等于「产出能用」</strong> —— 对需要长期使用、可能商用的场景，直接出局。
+（这也是为什么 §6.6 给了 ACE-Step 最高推荐：Apache 2.0 没有营收门槛、没有地区排除。）</li>
+</ul>
+<h3 id="e3-四种类别的性质不同">E.3 四种类别的性质不同</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>类别</th>
+<th>含义</th>
+<th>证据强度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>跑通并出片</strong></td>
+<td>有 <code>ffprobe</code> / GLB 结构复核 + 服务端权威耗时</td>
+<td>见 §6 与 §6.8</td>
+</tr>
+<tr>
+<td><strong>下了没跑</strong></td>
+<td>权重已校验，只缺一次运行</td>
+<td>附录 A 标 ⬜，下一轮优先补</td>
+</tr>
+<tr>
+<td><strong>主动放弃</strong></td>
+<td>有明确理由（显存 / 授权 / gated / 内核依赖）</td>
+<td>见 E.2，逐条写明</td>
+</tr>
+<tr>
+<td><strong>完全没碰</strong></td>
+<td>连权重都没下</td>
+<td><strong>本轮已清零</strong> —— 音乐从 0 补到 4 条线</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="e4-从这次审计得到的两条方法论">E.4 从这次审计得到的两条方法论</h3>
+<ol>
+<li><strong>「装不下」这个否决理由，必须标注用的是哪一档量化。</strong>
+LTX-2.3 的教训：用 fp8 的 29 GB 去否决一个<strong>有 GGUF Q3/Q4 版本</strong>的模型是错的。
+正确写法是「fp8 装不下；GGUF Q4_K_M（16 GB）可跑，待验证」。</li>
+<li><strong>任何性能结论都要标注它成立的前提。</strong>
+§5 的 NVFP4 结论是在 cu130 内核被禁用的情况下测的，所以「快 22%」是<strong>下界</strong>。
+不写清条件，读者会误以为那是该硬件的上限。</li>
+</ol>
 <hr />
 <h2 id="许可">许可</h2>
 <p><a href="LICENSE">MIT</a>。文中所有实测数据均来自本机运行，欢迎复核与指正。</p>
@@ -1412,7 +2530,7 @@ reproducible method.</p>
 <tr>
 <td><a href="#3-how-we-downloaded-moving-1256-gb">3</a></td>
 <td>How we downloaded</td>
-<td>The engineering behind 125.6 GB</td>
+<td>Multi-source download engineering</td>
 </tr>
 <tr>
 <td><a href="#4-how-we-built-comfyui-node-constraints">4</a></td>
@@ -1425,9 +2543,9 @@ reproducible method.</p>
 <td>The methodology (the core)</td>
 </tr>
 <tr>
-<td><a href="#6-how-we-chose-four-model-lines-in-practice">6</a></td>
-<td>How we chose</td>
-<td>Each model, measured</td>
+<td><a href="#6-how-we-chose-eight-model-lines-in-practice">6</a></td>
+<td><strong>How we chose</strong></td>
+<td>Image / editing / video / music / 3D — eight lines, measured</td>
 </tr>
 <tr>
 <td><a href="#7-optimization-checklist-configs-you-can-copy">7</a></td>
@@ -1442,12 +2560,17 @@ reproducible method.</p>
 <tr>
 <td><a href="#9-toolchain">9</a></td>
 <td>Toolchain</td>
-<td>Six reusable scripts</td>
+<td>Reusable scripts + <strong>a template→API converter</strong></td>
 </tr>
 <tr>
 <td><a href="#10-conclusion-and-what-is-next">10</a></td>
 <td>Conclusion</td>
 <td>What is still open</td>
+</tr>
+<tr>
+<td><a href="#appendix-e-coverage-audit-what-we-ran-what-we-did-not-and-why">Appendix E</a></td>
+<td><strong>Coverage audit</strong></td>
+<td><strong>What was run, what was not, and the exact reason for every skip</strong></td>
 </tr>
 </tbody>
 </table></div>
@@ -1508,40 +2631,99 @@ optimization. It is the difference between running and not running.</p>
 <th>Model chosen</th>
 <th>Quantization</th>
 <th>Measured time</th>
-<th>Notes</th>
+<th>Why this one</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>Image generation</strong></td>
+<td><strong>Image (daily driver)</strong></td>
 <td>Z-Image-Turbo</td>
-<td><strong>NVFP4</strong> (4.51 GB)</td>
+<td><strong>NVFP4</strong> 4.51 GB</td>
 <td><strong>13.8 s</strong> (1024²/8 steps)</td>
-<td>Accurate Chinese text rendering</td>
+<td>Full set is <strong>8.33 GB — stays resident</strong>, zero offload</td>
 </tr>
 <tr>
-<td><strong>Image editing</strong></td>
+<td><strong>Image (high-res / Chinese)</strong></td>
+<td>Qwen-Image 2512 + Lightning</td>
+<td>fp8 20.43 GB</td>
+<td><strong>12.2 s</strong> (1328²/<strong>4 steps</strong>)</td>
+<td>68% more pixels and <strong>Chinese text 30/30 exact</strong>; cost: offload mandatory</td>
+</tr>
+<tr>
+<td>Image editing</td>
 <td>FLUX.2 Klein <strong>4B</strong></td>
-<td>fp8 (4.07 GB)</td>
+<td>fp8 4.07 GB</td>
 <td>42.3 s</td>
-<td>9B is blocked by its encoder, see §6.5</td>
+<td>BFL's official fp8 file is only 4.07 GB, quality intact</td>
+</tr>
+<tr>
+<td><strong>Video (fastest)</strong></td>
+<td>LTX-Video 2B distilled</td>
+<td>fp8 4.46 GB</td>
+<td><strong>19.2 s</strong> (1216×704/121 frames)</td>
+<td>Fastest video model we measured; motion is subtle</td>
+</tr>
+<tr>
+<td><strong>Video (best quality, light tier)</strong></td>
+<td>Wan 2.2 5B TI2V</td>
+<td>fp16 10 GB</td>
+<td>355.1 s (1280×704/121 frames)</td>
+<td>Best prompt adherence and physical plausibility</td>
+</tr>
+<tr>
+<td><strong>Video (flagship tier)</strong></td>
+<td>Wan 2.2 14B MoE</td>
+<td>fp8 dual-expert 28.6 GB</td>
+<td><strong>93.8 s</strong> (832×480/81 frames/<strong>4 steps</strong>)</td>
+<td>Flagship MoE + LightX2V 4-step LoRA actually runs</td>
+</tr>
+<tr>
+<td>Video (cinematic + 1080p SR)</td>
+<td>HunyuanVideo 1.5 720p→1080p</td>
+<td>fp16 + SR models</td>
+<td>⚠️ <strong>70 min without finishing — infeasible on 24 GB</strong></td>
+<td>See §6.4, &quot;a negative result&quot;</td>
 </tr>
 <tr>
 <td><strong>Video + audio</strong></td>
 <td>MiniMax H3</td>
 <td>int8 + ConvRot</td>
-<td><strong>519.1 s</strong> (1344×768/124 frames)</td>
-<td><strong>Native audio track</strong>, 5.17 s of video with stereo</td>
+<td>519.1 s (1344×768/124 frames)</td>
+<td>The <strong>only line with a native audio track</strong></td>
 </tr>
 <tr>
-<td><strong>Video only</strong></td>
-<td>HunyuanVideo 1.5 480p</td>
-<td>fp16 + LightX2V 4-step LoRA</td>
-<td><strong>117.0 s</strong> (848×480/121 frames)</td>
-<td>4 steps — fast enough to iterate</td>
+<td><strong>Music generation</strong></td>
+<td>ACE-Step 1.5 XL turbo</td>
+<td>bf16 9.97 GB</td>
+<td><strong>28.6 s</strong> (60 s song)</td>
+<td><strong>Apache 2.0, commercially usable</strong>, fastest output</td>
+</tr>
+<tr>
+<td>Music generation (full song with vocals)</td>
+<td>YuE2-3B</td>
+<td>int8 3.96 GB</td>
+<td>93.7 s (60 s song)</td>
+<td>Highest SongBench score; <strong>but cc-by-nc, non-commercial</strong></td>
+</tr>
+<tr>
+<td>Music generation (LLM-enhanced)</td>
+<td>MiniMax Music 3</td>
+<td>int8 2.50 GB</td>
+<td>458.2 s (60 s song)</td>
+<td>High quality, an order of magnitude slower</td>
+</tr>
+<tr>
+<td><strong>Image → 3D</strong></td>
+<td>Hunyuan3D 2.1</td>
+<td>all-in-one 7.37 GB</td>
+<td>54.7 s</td>
+<td>One file produces a GLB (520k triangles)</td>
 </tr>
 </tbody>
 </table></div>
+<blockquote>
+<p><strong>The quantization answer does not change: if the GPU is Blackwell (sm_120/121), always pick NVFP4.</strong> Proof in §5.</p>
+</blockquote>
 <h3 id="12-three-rules-you-can-apply-immediately">1.2 Three rules you can apply immediately</h3>
 <ol>
 <li><strong>Quantization: if the GPU is Blackwell (sm_120/121), always pick NVFP4.</strong> Proof in §5.</li>
@@ -1633,10 +2815,11 @@ qwen_3_4b_fp4_mixed.safetensors    3.48 GB  1081 tensors   BF16, F32, F8_E4M3, U
 <p><strong>The decision tree below is the complete selection logic:</strong></p>
 <p><img src="assets/en/chart4-quant-decision-tree.svg" alt="Quantization selection decision tree" /></p>
 <hr />
-<h2 id="3-how-we-downloaded-moving-1256-gb">3. How we downloaded: moving 125.6 GB</h2>
-<p>Downloading looks trivial until you multiply <strong>125.6 GB</strong> by <strong>unstable mirrors</strong>. A naive
-implementation can spend a whole day on it. The outcome: <strong>34 files, 125.6 GB, zero corruption</strong> —
-built on three mechanisms.</p>
+<h2 id="3-how-we-downloaded-moving-several-hundred-gb">3. How we downloaded: moving several hundred GB</h2>
+<p>Downloading looks trivial until you multiply <strong>hundreds of gigabytes</strong> by <strong>unstable mirrors</strong>. A
+naive implementation can spend a whole day on it. We ran two batches: the first at
+<strong>34 files / 125.6 GB</strong>, the second at <strong>66 files / 332.8 GB</strong> (the four music lines + Wan 2.2 14B +
+HV1.5 super-resolution + Stable Audio 3) — <strong>both with zero corruption</strong>, built on three mechanisms.</p>
 <h3 id="31-throughput-measured">3.1 Throughput, measured</h3>
 <p><img src="assets/en/chart1-download-sources.svg" alt="Download source throughput" /></p>
 <p>The gap is <strong>an order of magnitude</strong>: modelscope is 7× faster than hf-mirror and 12× faster than
@@ -1941,8 +3124,10 @@ or the conclusion is not attributable</li>
 <p>Miss any one of these and the PSNR number will be misread.</p>
 </blockquote>
 <hr />
-<h2 id="6-how-we-chose-four-model-lines-in-practice">6. How we chose: four model lines in practice</h2>
-<h3 id="61-image-generation--z-image-turbo">6.1 Image generation — Z-Image-Turbo</h3>
+<h2 id="6-how-we-chose-eight-model-lines-in-practice">6. How we chose: eight model lines in practice</h2>
+<h3 id="61-image-generation--z-image-turbo-vs-qwen-image-2512">6.1 Image generation — Z-Image-Turbo vs Qwen-Image 2512</h3>
+<p>Both lines run, and their results are close — so we need to explain <strong>why we keep both</strong>.</p>
+<h4 id="z-image-turbo-the-daily-driver">Z-Image-Turbo (the daily driver)</h4>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -1964,8 +3149,12 @@ or the conclusion is not attributable</li>
 <td><code>ae.safetensors</code> — 0.34 GB</td>
 </tr>
 <tr>
+<td><strong>Total footprint</strong></td>
+<td><strong>8.33 GB</strong></td>
+</tr>
+<tr>
 <td>Key parameters</td>
-<td><code>CLIPLoader</code> type = <strong><code>lumina2</code></strong>; <code>ModelSamplingAuraFlow</code> shift=3; KSampler <strong>8 steps, CFG=1</strong>, <code>res_multistep</code> / <code>simple</code></td>
+<td><code>CLIPLoader</code> type = <strong><code>lumina2</code></strong>; <code>ModelSamplingAuraFlow</code> shift=3; KSampler <strong>8 steps, CFG=1</strong></td>
 </tr>
 <tr>
 <td>Measured</td>
@@ -1973,13 +3162,71 @@ or the conclusion is not attributable</li>
 </tr>
 </tbody>
 </table></div>
-<p><strong>Why this is our default image model</strong> — three reasons:</p>
+<p><strong>Its real advantage is a single point, but a hard one: the whole 8.33 GB stays resident in 24 GB,
+with zero offload.</strong> No step ever needs weights shuffled between VRAM and system RAM — the
+least fussy option for heavy, continuous use.</p>
+<h4 id="qwen-image-2512--lightning-high-resolution--chinese-text">Qwen-Image 2512 + Lightning (high resolution / Chinese text)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DiT</td>
+<td><code>qwen_image_2512_fp8_e4m3fn.safetensors</code> — 20.43 GB</td>
+</tr>
+<tr>
+<td>Text encoder</td>
+<td><code>qwen_2.5_vl_7b_fp8_scaled.safetensors</code> — 9.38 GB</td>
+</tr>
+<tr>
+<td>VAE</td>
+<td><code>qwen_image_vae.safetensors</code> — 0.25 GB</td>
+</tr>
+<tr>
+<td><strong>Total footprint</strong></td>
+<td><strong>30.06 GB (over 24 GB, offload mandatory)</strong></td>
+</tr>
+<tr>
+<td>Acceleration LoRA</td>
+<td><code>Qwen-Image-2512-Lightning-4steps-V1.0-fp32.safetensors</code> — 1.58 GB</td>
+</tr>
+<tr>
+<td>Key parameters</td>
+<td><code>CLIPLoader</code> type = <strong><code>qwen_image</code></strong>; <code>ModelSamplingAuraFlow</code> shift=3.1; with/without LoRA goes through the official <code>ComfySwitchNode</code> (steps 50↔4, CFG 4.0↔1.0)</td>
+</tr>
+<tr>
+<td>Measured</td>
+<td>without LoRA <strong>206.7 s</strong> (1328², 50 steps) → with LoRA <strong>12.2 s</strong> (1328², <strong>4 steps</strong>)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>It wins on two points:</strong></p>
 <ol>
-<li><strong>8 steps to an image</strong>, roughly ten seconds, which makes it fast enough to use as a sketchpad</li>
-<li><strong>Accurate Chinese text rendering</strong> (Chinese signage in the prompt is drawn correctly)</li>
-<li>It ships an nvfp4 build at <strong>4.51 GB</strong> — on a 24 GB machine the model <em>and</em> its encoder fit fully
-in VRAM, with no offload at all</li>
+<li><strong>Higher resolution</strong>: 1328² carries <strong>68% more pixels</strong> than Z-Image's 1024², at slightly
+<em>less</em> time (12.2 s vs 13.8 s)</li>
+<li><strong>Chinese text rendering verified character by character</strong>: we rendered 「春风得意马蹄疾 /
+一日看尽长安花」 plus 「茶香四溢 静心品茗 八方来客 岁月悠长」 and got <strong>30/30 characters exact,
+zero typos, zero missing strokes</strong> (202.7 s / 50 steps)</li>
 </ol>
+<blockquote>
+<p>⚠️ <strong>A correction to our own earlier work</strong>: an early version of this document listed
+&quot;accurate Chinese text rendering&quot; as a reason to pick Z-Image-Turbo. <strong>That was wrong.</strong>
+The 30/30 acceptance run above used <strong>Qwen-Image 2512</strong>, not Z-Image; Z-Image's Chinese
+rendering ability was <strong>never tested on its own</strong>. That early version also <strong>never mentioned
+Qwen-Image at all</strong> — an omission, now fixed here.</p>
+</blockquote>
+<p><strong>Verdict: keep both, split by use case.</strong></p>
+<ul>
+<li><strong>Frequent sketches, clean VRAM budget</strong> → Z-Image-Turbo (8.33 GB fully resident)</li>
+<li><strong>High-resolution output, Chinese text in frame</strong> → Qwen-Image 2512 + Lightning</li>
+</ul>
+<p>Worth recording separately: the Lightning LoRA took the same model from <strong>206.7 s to 12.2 s — 16.9×
+faster</strong> — with detail, if anything, more present. This again confirms the §2 rule:
+<strong>speed comes from fewer steps, not from smaller weights.</strong></p>
 <h3 id="62-image-editing--flux2-klein-4b">6.2 Image editing — FLUX.2 Klein 4B</h3>
 <div class="tw"><table>
 <thead>
@@ -2059,7 +3306,41 @@ So every generation shuttles weights between VRAM and RAM. That, not raw compute
 <strong>h264 / 1344×768 / 24fps / 5.17 s + aac 32 kHz stereo</strong>. Extracting four frames into a contact sheet
 shows the imagery matching the prompt's timeline (an RGB-split &quot;COMFYUI&quot; title → chrome palm trees →
 sunset). <strong>This is not noise. It is usable video with usable audio.</strong></p>
-<h3 id="64-video-only--hunyuanvideo-15">6.4 Video only — HunyuanVideo 1.5</h3>
+<h3 id="64-video-only--three-lines-each-with-one-hard-reason">6.4 Video only — three lines, each with one hard reason</h3>
+<p>We ran <strong>three</strong> video-only lines, and the conclusion is clean: <strong>they do not replace each other,
+they are three different trade-offs.</strong></p>
+<h4 id="ltx-video-2b-distilled--the-fastest">LTX-Video 2B distilled — the fastest</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DiT + VAE</td>
+<td><code>ltxv-2b-0.9.8-distilled-fp8.safetensors</code> — 4.46 GB (all-in-one, VAE included)</td>
+</tr>
+<tr>
+<td>Text encoder</td>
+<td><code>t5xxl_fp8_e4m3fn.safetensors</code> — 4.89 GB (<code>CLIPLoader</code> type = <strong><code>ltxv</code></strong>)</td>
+</tr>
+<tr>
+<td>Key parameters</td>
+<td><code>EmptyLTXVLatentVideo</code> → <code>LTXVConditioning</code> → <code>LTXVScheduler</code> (steps=8) → <code>SamplerCustom</code> (cfg=<strong>1</strong>, the distilled build is CFG-free)</td>
+</tr>
+<tr>
+<td>Measured</td>
+<td>768×512/97 frames = <strong>11.7 s</strong>; 1216×704/121 frames = <strong>19.2 s</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>19.2 seconds for 5 seconds of 1216×704 video — the fastest we measured, 18× faster than Wan 2.2 5B.</strong>
+The cost is <strong>noticeably smaller motion</strong>: the frames are stable and semantically correct (teacup,
+bamboo tray, rain-streaked window all present), but the push-in is very gentle. Good for &quot;check the
+composition and style fast&quot;; not for &quot;I need visible action&quot;.</p>
+<h4 id="wan-22-5b-ti2v--the-best-quality">Wan 2.2 5B TI2V — the best quality</h4>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -2070,7 +3351,92 @@ sunset). <strong>This is not noise. It is usable video with usable audio.</stron
 <tbody>
 <tr>
 <td>DiT</td>
-<td><code>hunyuanvideo1.5_480p_t2v_fp16.safetensors</code> — 16.65 GB</td>
+<td><code>wan2.2_ti2v_5B_fp16.safetensors</code> — 10.00 GB</td>
+</tr>
+<tr>
+<td>Text encoder</td>
+<td><code>umt5_xxl_fp8_e4m3fn_scaled.safetensors</code> — 6.74 GB (<code>CLIPLoader</code> type = <strong><code>wan</code></strong>)</td>
+</tr>
+<tr>
+<td>VAE</td>
+<td><code>wan2.2_vae.safetensors</code> — 1.41 GB</td>
+</tr>
+<tr>
+<td>Key parameters</td>
+<td><code>ModelSamplingSD3</code> shift=8; KSampler <strong>20 steps, CFG=5</strong>, <code>uni_pc</code> / <code>simple</code>; <code>Wan22ImageToVideoLatent</code> (<code>start_image</code> is <strong>optional</strong> — leave it unconnected for pure text-to-video)</td>
+</tr>
+<tr>
+<td>Measured</td>
+<td>704×384/49 frames = <strong>34.6 s</strong>; 1280×704/121 frames = <strong>355.1 s</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>This is the best video quality of the whole round.</strong> With one prompt (a hummingbird hovering at
+red flowers, wings beating fast, slow lateral camera move), the output shows <strong>clear motion blur on
+the wings, the bird's position changing frame by frame, and correct depth-of-field layering</strong> —
+every element of the prompt landed in the picture. The cost is speed: 355 seconds for 5 seconds.</p>
+<blockquote>
+<p><code>wan2.2_ti2v_5B</code> stands for <strong>TI2V = Text + Image to Video</strong> — it does both.
+This also confirms the general observation from §4.1: <strong>when a node is called <code>ImageToVideo</code>,
+first check whether its image input is optional</strong> — <code>Wan22ImageToVideoLatent.start_image</code> is
+optional, so leaving it unconnected gives you pure text-to-video.</p>
+</blockquote>
+<h4 id="wan-22-14b-moe--the-flagship-tier-genuinely-runnable-with-a-4-step-lora">Wan 2.2 14B MoE — the flagship tier, genuinely runnable with a 4-step LoRA</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DiT</td>
+<td><code>wan2.2_t2v_high_noise_14B_fp8_scaled</code> + <code>wan2.2_t2v_low_noise_14B_fp8_scaled</code> — <strong>14.29 GB each (dual experts)</strong></td>
+</tr>
+<tr>
+<td>Acceleration LoRA</td>
+<td><code>wan2.2_t2v_lightx2v_4steps_lora_v1.1_high_noise</code> + <code>..._low_noise</code> — 1.23 GB each</td>
+</tr>
+<tr>
+<td><strong>VAE</strong></td>
+<td><strong><code>wan_2.1_vae.safetensors</code> 0.25 GB — note: not the same as the 5B line's <code>wan2.2_vae</code></strong></td>
+</tr>
+<tr>
+<td>Key parameters</td>
+<td>two <code>UNETLoader</code>s → two <code>LoraLoaderModelOnly</code> → two <code>ModelSamplingSD3</code> (shift=5), with <strong>one <code>PrimitiveBoolean</code> driving five <code>ComfySwitchNode</code>s</strong> (model / steps 20↔4 / boundary step / CFG 3.5↔1.0); a two-stage <code>KSamplerAdvanced</code> relay (high-noise expert <code>add_noise=enable</code> → low-noise expert <code>add_noise=disable</code>)</td>
+</tr>
+<tr>
+<td>Measured</td>
+<td><strong>93.8 s</strong> (832×480 / 81 frames / <strong>4 steps</strong>)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>What this line proves is that a flagship MoE video model is usable on a 24 GB laptop.</strong>
+The two experts total 28.6 GB, far beyond VRAM, but because <strong>only one expert is loaded per step</strong>,
+combined with the LightX2V 4-step LoRA (collapsing 20 steps into 4), it actually finishes in <strong>94 seconds</strong>.</p>
+<p><strong>⚠️ Trap we hit (worth recording separately)</strong>: we substituted the template's <code>wan_2.1_vae</code> with the
+<code>wan2.2_vae</code> we already had, and <code>VAEDecode</code> failed immediately:</p>
+<pre><code>Given groups=1, weight of size [48, 48, 1, 1, 1],
+expected input[1, 16, 21, 60, 104] to have 48 channels, but got 16 channels instead
+</code></pre>
+<p><strong>Root cause: Wan 2.2's 5B line and 14B line do not use the same VAE</strong> (5B → <code>wan2.2_vae</code>,
+14B → <code>wan_2.1_vae</code>), and the two have different channel counts (48 vs 16). Only the official
+templates settle it — every <code>video_wan2_2_14B_*</code> template points at <code>wan_2.1_vae</code>, and only the
+<code>video_wan2_2_5B_*</code> ones point at <code>wan2.2_vae</code>.
+<strong>Lesson: a similar filename is not a substitute. Use exactly what the template specifies.</strong></p>
+<h4 id="hunyuanvideo-15--cinematic-with-built-in-1080p-super-resolution">HunyuanVideo 1.5 — cinematic, with built-in 1080p super-resolution</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DiT</td>
+<td><code>hunyuanvideo1.5_480p_t2v_fp16.safetensors</code> / <code>..._720p_t2v_fp16.safetensors</code> — 16.65 GB each</td>
 </tr>
 <tr>
 <td>Text encoder</td>
@@ -2085,21 +3451,80 @@ sunset). <strong>This is not noise. It is usable video with usable audio.</stron
 <td><code>hunyuanvideo1.5_t2v_480p_lightx2v_4step_lora_rank_32_bf16.safetensors</code> — 0.34 GB</td>
 </tr>
 <tr>
+<td>SR branch</td>
+<td><code>hunyuanvideo1.5_1080p_sr_distilled_fp16</code> 16.66 GB + <code>hunyuanvideo15_latent_upsampler_1080p</code> 0.20 GB</td>
+</tr>
+<tr>
 <td>Measured</td>
-<td>848×480 / 121 frames (5.04 s) = <strong>117.0 s</strong></td>
+<td>480p/121 frames/4 steps = <strong>117.0 s</strong>; <strong>720p→1080p: ran a full 70 minutes without finishing, terminated</strong></td>
 </tr>
 </tbody>
 </table></div>
+<p><strong>⚠️ On the 720p tier, we have to report a negative result.</strong>
+We ran the official 720p → 1080p super-resolution pipeline end to end (base 20 steps + SR 8 steps) and
+<strong>on a 24 GB laptop it ran a full 70 minutes without finishing, so we terminated it</strong> — which is
+itself the finding:</p>
+<blockquote>
+<p><strong>The 720p + SR path is not viable on a 24 GB laptop.</strong>
+No single step of the official template is &quot;slow but bearable&quot; — the <strong>baseline is simply far
+outside the acceptable range</strong>. If you need 1080p, the practical route is to render at 480p/720p
+and then use a separate upscaling pass, or switch to a line with no extra SR stage such as
+Wan 2.2 or LTX.</p>
+</blockquote>
+<p>We state this explicitly because <strong>&quot;it does not run&quot; and &quot;it runs slowly&quot; are different kinds of
+information</strong>, and community workflow posts overwhelmingly report only successes. <strong>This path is
+infeasible on 24 GB — that is its only conclusion.</strong></p>
 <p><strong>⚠️ A crucial conceptual distinction: <code>480p</code> / <code>720p</code> / <code>i2v</code> / <code>SR</code> are four different base
 models</strong>, not one model at different resolutions. The resolution in the filename is <strong>part of the
 model's identity</strong>.</p>
-<p><strong>Four-step generation is its main value</strong> — 117 seconds for 5 seconds of video means real iteration
-speed. The 720p 50-step path is higher quality but far slower. <strong>Prototype prompts at 480p, then
-commit to 720p</strong> — that is the recommended workflow.</p>
+<p><strong>Its most distinctive feature is that the official 720p template is itself a 720p → 1080p
+super-resolution pipeline</strong>: the base produces 1280×720 → <code>LatentUpscaleModelLoader</code> upscales the
+latent to 1920×1080 → a dedicated SR distilled model (8 steps, split at 4 by <code>SplitSigmas</code>) refines
+it, and <strong>both resolutions are saved as separate videos</strong>. In other words this line produces <strong>true
+1080p</strong>, not a 720p upscale.</p>
+<p><strong>Four-step generation is the biggest win at the 480p tier</strong> — 117 seconds for 5 seconds of video,
+usable as an iteration sketch. Recommended workflow: <strong>prototype prompts at 480p, then commit to 720p</strong>.</p>
 <p><strong>Output verification</strong>: <code>ffprobe</code> confirms h264 / 848×480 / 24fps / 121 frames / 5.04 s. A frame
 contact sheet shows a temporally stable, subject-consistent result — <em>&quot;a pottery studio: the wheel
 slowly turns, wet clay is pulled taller into a vase between two hands, warm rim light from the left,
 blurred wooden shelves of bisque ware behind&quot;</em> — <strong>every element of the prompt is present.</strong></p>
+<h4 id="choosing-between-the-three">Choosing between the three</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>What you need</th>
+<th>Pick</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Fast iteration / composition check</strong></td>
+<td>LTX-Video 2B</td>
+<td>19 seconds, 18× faster; accept smaller motion</td>
+</tr>
+<tr>
+<td><strong>Best quality / believable action (light)</strong></td>
+<td>Wan 2.2 5B</td>
+<td>Best prompt adherence and physical plausibility; ~6 minutes</td>
+</tr>
+<tr>
+<td><strong>Best quality (flagship)</strong></td>
+<td><strong>Wan 2.2 14B MoE</strong></td>
+<td>Dual experts + 4-step LoRA — the flagship in <strong>94 seconds</strong></td>
+</tr>
+<tr>
+<td><strong>1080p</strong></td>
+<td>⚠️ no workable option yet</td>
+<td>HV1.5's 720p+SR ran 70 minutes without finishing on 24 GB (see the HunyuanVideo 1.5 block above)</td>
+</tr>
+<tr>
+<td><strong>Need sound</strong></td>
+<td>MiniMax H3 (§6.3)</td>
+<td>The only line with a native audio track</td>
+</tr>
+</tbody>
+</table></div>
 <h3 id="65-the-one-that-does-not-run--flux2-klein-9b">6.5 The one that does not run — FLUX.2 Klein 9B</h3>
 <p><strong>This is the only line we could not get running, and the reason is instructive.</strong></p>
 <p>The error:</p>
@@ -2118,13 +3543,255 @@ Three ways out:</p>
 <p><strong>Lesson</strong>: when picking a model, check not only &quot;does it fit in VRAM&quot; but also <strong>&quot;is its weight
 format loadable by my tooling?&quot;</strong> Many people overlook this precondition.</p>
 </blockquote>
-<h3 id="66-benchmark-summary">6.6 Benchmark summary</h3>
+<h3 id="66-music-generation--a-whole-field-filled-in-from-zero">6.6 Music generation — a whole field filled in from zero</h3>
+<p><strong>This was the biggest coverage gap</strong>: image and video were done long ago, while <strong>music had not been
+touched at all.</strong> (Worth distinguishing: MiniMax H3's audio track is <strong>video accompaniment —
+sound effects and ambience</strong>; it is not &quot;generate a song from lyrics&quot;.)</p>
+<p>We ran all four music lines that ComfyUI 0.37 <strong>supports natively</strong>:</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Model</th>
+<th>License</th>
+<th>Weights</th>
+<th>Parameters</th>
+<th>Measured</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ACE-Step 1.5 turbo</strong></td>
+<td><strong>Apache 2.0</strong></td>
+<td>DiT 4.79 GB + encoders 1.19/1.19 GB + VAE 0.34 GB</td>
+<td><code>TextEncodeAceStepAudio1.5</code> (tags/lyrics/language/BPM/duration) → <code>EmptyAceStep1.5LatentAudio</code> → KSampler <strong>8 steps CFG=1</strong></td>
+<td>22.9 s / 60 s song</td>
+<td>Fastest, <strong>commercially usable</strong></td>
+</tr>
+<tr>
+<td><strong>ACE-Step 1.5 XL turbo</strong></td>
+<td><strong>Apache 2.0</strong></td>
+<td>DiT 9.97 GB + encoders 1.19/<strong>8.38</strong> GB + VAE 0.34 GB</td>
+<td>same (XL swaps the encoder to qwen_4b)</td>
+<td><strong>28.6 s</strong> / 60 s song</td>
+<td>Higher quality, still commercially usable</td>
+</tr>
+<tr>
+<td><strong>YuE2-3B</strong></td>
+<td>⚠️ <strong>cc-by-nc (non-commercial)</strong></td>
+<td><code>yue2_3b_int8_convrot</code> 3.96 GB (all-in-one)</td>
+<td>two stages: <code>YuE2GenerateABC</code> (32-step AR score planning) → <code>YuE2GenerateMusic</code> → KSampler <code>dpm_2</code>/<code>sgm_uniform</code> 32 steps</td>
+<td>93.7 s / 60 s song</td>
+<td>Full song with vocals, zh+en lyrics; <strong>highest SongBench score</strong></td>
+</tr>
+<tr>
+<td><strong>MiniMax Music 3</strong></td>
+<td>see repo</td>
+<td>DiT 2.50 GB + encoder 9.20 GB + VAE 0.22 GB</td>
+<td><code>MiniMaxMusic3TextEncode</code> (caption/lyrics) → KSampler <strong>30 steps CFG=1.7</strong></td>
+<td><strong>458.2 s</strong> / 60 s song</td>
+<td>Quality-oriented, an order of magnitude slower</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Output verification</strong> (all checked with <code>ffprobe</code>):</p>
+<pre><code>ace15_turbo_song      mp3  48 kHz stereo  60.00 s  245 kbps
+ace15_xl_turbo_song   mp3  48 kHz stereo  60.00 s  231 kbps
+yue2_text2music       flac 48 kHz stereo  60.00 s
+minimax_music3_song   mp3  44.1 kHz stereo 59.99 s
+</code></pre>
+<p><strong>How to choose:</strong></p>
+<ul>
+<li><strong>Need commercial use → ACE-Step 1.5.</strong> Apache 2.0 means no revenue threshold, no territory
+exclusion — that is its biggest asset. It is also the fastest (29 seconds for a 60-second song),
+making it the best combined choice on quality / speed / licensing.</li>
+<li><strong>Need the best full-song quality and it is not commercial → YuE2.</strong> It is the only one with a
+two-stage structure (&quot;an LLM plans an ABC score first, then audio is generated&quot;) and it tops the
+benchmarks; but <strong>cc-by-nc forbids commercial use</strong>.</li>
+<li><strong>MiniMax Music 3</strong> is quality-oriented but 16× slower — not worth it unless you have a specific reason.</li>
+</ul>
+<blockquote>
+<p><strong>An easy licensing trap</strong>: open music models have far messier licences than video/image models.
+Several popular ones (MusicGen, early Stable Audio Open) are <strong>CC-BY-NC</strong> — the weights download
+fine, <strong>but the output cannot be used commercially</strong>. &quot;It runs&quot; and &quot;you may use it&quot; are two
+different things here.</p>
+</blockquote>
+<h3 id="67-image--3d--hunyuan3d-21">6.7 Image → 3D — Hunyuan3D 2.1</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Weights</td>
+<td><code>hunyuan_3d_v2.1.safetensors</code> — 7.37 GB (<strong>all-in-one</strong>: includes VAE + CLIP-Vision, loaded by a single <code>ImageOnlyCheckpointLoader</code>)</td>
+</tr>
+<tr>
+<td>Key parameters</td>
+<td><code>CLIPVisionEncode</code> → <code>Hunyuan3Dv2Conditioning</code>; <code>EmptyLatentHunyuan3Dv2</code> resolution=<strong>4096</strong>; KSampler <strong>30 steps CFG=5</strong>; <code>VAEDecodeHunyuan3D</code> octree_resolution=<strong>256</strong>, num_chunks=8000 → <code>VoxelToMesh</code> (surface net, threshold 0.6) → <code>SaveGLB</code></td>
+</tr>
+<tr>
+<td>Measured</td>
+<td><strong>54.7 s</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>The pipeline is three chained steps</strong>: first Z-Image renders a clean object image (a blue-and-white
+porcelain teapot on a plain white background, 15.0 s), it is copied into <code>input/</code>, then image-to-3D runs.</p>
+<p><strong>Output verification</strong> (parsing the GLB binary header + JSON chunk directly):</p>
+<pre><code>magic = &quot;glTF&quot;  version = 2  file length = 8,701,344
+meshes = 1
+  primitive: vertices = 202,768   triangles = 522,140
+materials = 1   nodes = 1
+</code></pre>
+<p><strong>A usable 520k-triangle mesh</strong> — not a point cloud, not voxel blocks, but a standard glTF 2.0 asset
+with a material, ready for Blender or a game engine.</p>
+<h3 id="68-benchmark-summary">6.8 Benchmark summary</h3>
 <p><img src="assets/en/chart5-model-benchmark.svg" alt="Measured generation time per workflow" /></p>
 <blockquote>
 <p>All times are read from ComfyUI's server-side <code>execution_start</code> / <code>execution_success</code> timestamps —
 <strong>never wall-clock time or API round-trip time</strong>, which would fold queueing and model-loading into
 the number and inflate it.</p>
 </blockquote>
+<h4 id="image">Image</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Configuration</th>
+<th>Server-side time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Qwen-Image 2512 + Lightning</strong></td>
+<td>1328² / <strong>4 steps</strong></td>
+<td><strong>12.2 s</strong></td>
+</tr>
+<tr>
+<td><strong>Z-Image-Turbo nvfp4</strong></td>
+<td>1024² / 8 steps</td>
+<td><strong>13.8 s</strong></td>
+</tr>
+<tr>
+<td><strong>SDXL base 1.0</strong></td>
+<td>1024² / 20 steps</td>
+<td>14.1 s</td>
+</tr>
+<tr>
+<td>Z-Image-Turbo int8</td>
+<td>1024² / 8 steps</td>
+<td>17.7 s</td>
+</tr>
+<tr>
+<td>FLUX.1-dev fp8</td>
+<td>1024² / 20 steps</td>
+<td>32.1 s</td>
+</tr>
+<tr>
+<td>FLUX.2 Klein 4B fp8</td>
+<td>1024² edit</td>
+<td>42.3 s</td>
+</tr>
+<tr>
+<td>Qwen-Image 2512 (no LoRA)</td>
+<td>1328² / 50 steps</td>
+<td>206.7 s</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="video">Video</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Configuration</th>
+<th>Server-side time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LTX-Video 2B distilled (smoke)</strong></td>
+<td>768×512 / 97 frames</td>
+<td><strong>11.7 s</strong></td>
+</tr>
+<tr>
+<td><strong>LTX-Video 2B distilled</strong></td>
+<td>1216×704 / 121 frames</td>
+<td><strong>19.2 s</strong></td>
+</tr>
+<tr>
+<td>Wan 2.2 5B TI2V (smoke)</td>
+<td>704×384 / 49 frames</td>
+<td>34.6 s</td>
+</tr>
+<tr>
+<td><strong>Wan 2.2 14B MoE (4-step LoRA)</strong></td>
+<td>832×480 / 81 frames</td>
+<td><strong>93.8 s</strong></td>
+</tr>
+<tr>
+<td>HunyuanVideo 1.5 480p 4-step</td>
+<td>848×480 / 121 frames</td>
+<td>117.0 s</td>
+</tr>
+<tr>
+<td><strong>Wan 2.2 5B TI2V</strong></td>
+<td>1280×704 / 121 frames</td>
+<td><strong>355.1 s</strong></td>
+</tr>
+<tr>
+<td>MiniMax H3 t2va 8-step</td>
+<td>1344×768 / 124 frames (with audio)</td>
+<td>519.1 s</td>
+</tr>
+<tr>
+<td><s>HunyuanVideo 1.5 720p→1080p</s></td>
+<td>1280×720 → 1920×1080 / 121 frames</td>
+<td><strong>70 min without finishing, terminated</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="music--3d">Music / 3D</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Configuration</th>
+<th>Server-side time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ACE-Step 1.5 turbo</td>
+<td>60 s song / 8 steps</td>
+<td>22.9 s</td>
+</tr>
+<tr>
+<td>ACE-Step 1.5 XL turbo</td>
+<td>60 s song / 8 steps</td>
+<td>28.6 s</td>
+</tr>
+<tr>
+<td><strong>Hunyuan3D 2.1</strong></td>
+<td>30 steps, 4096 latent, octree 256</td>
+<td><strong>54.7 s</strong></td>
+</tr>
+<tr>
+<td>YuE2-3B</td>
+<td>60 s song / 32 steps</td>
+<td>93.7 s</td>
+</tr>
+<tr>
+<td>MiniMax Music 3</td>
+<td>60 s song / 30 steps</td>
+<td>458.2 s</td>
+</tr>
+</tbody>
+</table></div>
 <p><strong>An honest note</strong>: we timed Z-Image twice and got <code>20.9 / 15.8 s</code> and <code>17.7 / 13.8 s</code>.
 <strong>Run-to-run variance in absolute terms is about ±15%</strong> (a laptop GPU throttles against thermal and
 power limits), but <strong>the relative result — nvfp4 is 22–25% faster than int8 — held in both runs.</strong></p>
@@ -2267,11 +3934,46 @@ Fix: use <code>VAEDecodeTiled</code>.</p>
 <td><strong>Method error: the encoder was not fixed</strong></td>
 <td>See §5 — you need a control plus a seed baseline</td>
 </tr>
+<tr>
+<td><strong>Wan 14B: <code>expected input to have 48 channels, but got 16 channels</code></strong></td>
+<td><strong>Wan 2.2's 5B line and 14B line do not use the same VAE</strong> (5B → <code>wan2.2_vae</code>, 14B → <code>wan_2.1_vae</code>)</td>
+<td>Use <code>wan_2.1_vae</code> exactly as the template does — do not substitute</td>
+</tr>
+<tr>
+<td>After converting an official template to API, <strong>parameters are silently misaligned</strong> (<code>steps</code> becomes <code>&quot;randomize&quot;</code>)</td>
+<td>The frontend inserts a <code>control_after_generate</code> pseudo-widget after seed params</td>
+<td>That pseudo-widget <strong>occupies a slot</strong> in the positional alignment. See §9.4</td>
+</tr>
+<tr>
+<td><code>SaveAudioAdvanced</code> demands <code>format.quality</code> although <code>quality</code> is present</td>
+<td>v3 dynamic-combo sub-fields use a <strong>dotted namespace</strong></td>
+<td>Write <code>&quot;format.quality&quot;: &quot;V0&quot;</code>, not <code>&quot;quality&quot;</code></td>
+</tr>
+<tr>
+<td>A subgraph template converts, but outer nodes <strong>silently lose links</strong></td>
+<td>The subgraph's <code>outputs</code>/<code>inputs</code> <code>linkIds</code> point at inner links and the boundary was never rewired</td>
+<td>Rewire boundary links to the real inner endpoints. See §9.4</td>
+</tr>
+<tr>
+<td><code>ComfyMathExpression</code> reports <code>required_input_missing: values.a</code></td>
+<td><code>values.*</code> are required inputs and were deleted</td>
+<td>Set <code>expression</code> to <code>&quot;a&quot;</code> and feed the value to <code>values.a</code></td>
+</tr>
+<tr>
+<td>ComfyUI startup warns <strong><code>You need pytorch with cu130 or higher to use optimized CUDA operations</code></strong></td>
+<td>PyTorch is cu128, so <code>comfy_kitchen</code>'s CUDA backend is <strong>disabled</strong></td>
+<td>This is not an ignorable warning — it means the NVFP4 / SVDQuant optimized kernels are inactive. See Appendix E ④</td>
+</tr>
+<tr>
+<td>A video workflow runs for an hour without finishing</td>
+<td>The workflow simply does not suit that VRAM budget (e.g. HV1.5 720p + 1080p SR)</td>
+<td><strong>Estimate time before running</strong>; if infeasible, record it as infeasible rather than silently retrying</td>
+</tr>
 </tbody>
 </table></div>
 <hr />
 <h2 id="9-toolchain">9. Toolchain</h2>
-<h3 id="91-six-scripts">9.1 Six scripts</h3>
+<h3 id="91-tools">9.1 Tools</h3>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -2285,12 +3987,36 @@ Fix: use <code>VAEDecodeTiled</code>.</p>
 <td>Multi-source downloader: three-tier fallback + silent watchdog + Range sizing + resume</td>
 </tr>
 <tr>
+<td><code>scripts/dl_more.py</code></td>
+<td>Same downloader, with the manifest swapped to the music lines + Wan 2.2 14B + HV1.5 SR</td>
+</tr>
+<tr>
+<td><code>scripts/probe_more.py</code></td>
+<td><strong>Probe only, never downloads</strong>: Range requests give exact sizes so you can budget time first</td>
+</tr>
+<tr>
 <td><code>scripts/verify_models.py</code></td>
 <td>Three-layer validation: byte size + safetensors structure + dtype detection</td>
 </tr>
 <tr>
+<td><strong><code>scripts/ui2api.py</code></strong></td>
+<td><strong>Converts official templates (UI/workflow format) into submittable API prompts</strong> — the most valuable tool here, see §9.4</td>
+</tr>
+<tr>
+<td><code>scripts/mk_wf.py</code></td>
+<td>Derives this project's video workflow variants from the official templates (Wan 5B/14B, LTX, HV1.5, Hunyuan3D)</td>
+</tr>
+<tr>
+<td><code>scripts/mk_music.py</code> / <code>mk_music2.py</code></td>
+<td>Derives the music workflows (ACE-Step / YuE2 / MiniMax Music 3)</td>
+</tr>
+<tr>
 <td><code>scripts/run_workflow.py</code></td>
 <td>API submission + <strong>server-authoritative timing</strong> (reads <code>execution_start</code>/<code>success</code>)</td>
+</tr>
+<tr>
+<td><code>scripts/run_batch.py</code></td>
+<td>Runs several workflows sequentially (the GPU must be serialized), each with its own timeout</td>
 </tr>
 <tr>
 <td><code>tools/compare_ab.py</code></td>
@@ -2302,23 +4028,30 @@ Fix: use <code>VAEDecodeTiled</code>.</p>
 </tr>
 <tr>
 <td><code>tools/make_charts.py</code></td>
-<td>Regenerates every SVG chart in this document</td>
+<td>Regenerates every SVG chart (one set per language)</td>
 </tr>
 </tbody>
 </table></div>
 <h3 id="92-quick-start">9.2 Quick start</h3>
 <pre><code class="language-bash"># 1) Assumes ComfyUI is already serving on http://127.0.0.1:8188
 
-# 2) Download the models (three-tier fallback)
-python scripts/dl_models.py
+# 2) Probe sizes and budget time first (downloads nothing)
+python scripts/probe_more.py
 
-# 3) Three-layer validation (bytes + structure + dtype)
+# 3) Download the models (three-tier fallback)
+python scripts/dl_more.py --workers 4
+
+# 4) Three-layer validation (bytes + structure + dtype)
 python scripts/verify_models.py --refresh
 
-# 4) Run one workflow and get the server-authoritative time
-python scripts/run_workflow.py workflows/z_image_turbo_nvfp4.json --free
+# 5) Convert an official template to an API workflow, then derive variants
+python scripts/ui2api.py video_wan2_2_5B_ti2v.json -o wf.json
+python scripts/mk_wf.py wan_smoke wan_full ltx_full hv15_720 hy3d
 
-# 5) Run a controlled A/B (same encoder, quantization is the only variable)
+# 6) Run a batch sequentially (GPU serialized, per-job timeout)
+python scripts/run_batch.py &quot;workflows/wan22_5b_t2v_full.json@900&quot;
+
+# 7) Run a controlled A/B (same encoder, quantization is the only variable)
 python tools/compare_ab.py
 python tools/ab_metrics.py
 </code></pre>
@@ -2334,8 +4067,73 @@ python tools/ab_metrics.py
 ├── docs/                  # Deep dives
 ├── scripts/               # Reproducible scripts
 ├── tools/                 # Analysis and charting tools
-└── workflows/             # API-format workflows
+└── workflows/             # API-format workflows (26 of them)
 </code></pre>
+<h3 id="94-the-single-most-valuable-tool-official-template--api-workflow">9.4 The single most valuable tool: official template → API workflow</h3>
+<p>ComfyUI's official templates (<code>comfyui_workflow_templates_json/templates/</code> and <code>blueprints/</code>)
+are in <strong>UI format for the frontend</strong> and <strong>cannot be POSTed to <code>/prompt</code> directly</strong>. You either
+rebuild the graph by hand or write a converter. We wrote <code>ui2api.py</code> and got it right once.
+The traps it had to solve are worth listing separately — <strong>every one of them fails silently</strong>:</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Trap</th>
+<th>Symptom</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong><code>control_after_generate</code> pseudo-widget</strong></td>
+<td>Everything shifts: <code>steps</code> receives <code>&quot;randomize&quot;</code>, <code>sampler_name</code> receives <code>5</code></td>
+<td>Any seed-like param whose spec has <code>control_after_generate=True</code> needs <strong>one extra slot</strong> inserted after it before positional alignment</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Widget vs. link classification</strong></td>
+<td>Using the &quot;type not in output set&quot; rule alone classifies <code>seed</code>/<code>steps</code>/<code>cfg</code> as links</td>
+<td>You need <strong>the union of two rules</strong>: ① <code>INT/FLOAT/STRING/BOOLEAN/COMBO</code>/list whitelist ② not in the set of output types (this is what catches v3 dynamic types like <code>COMFY_DYNAMICCOMBO_V3</code>)</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Dynamic combo sub-fields</strong></td>
+<td><code>SaveAudioAdvanced</code> demands <code>format.quality</code> even though <code>quality</code> is right there in inputs</td>
+<td>v3 dynamic-combo sub-fields use a <strong>dotted namespace</strong>: write <code>&quot;format.quality&quot;: &quot;V0&quot;</code>, not <code>&quot;quality&quot;</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Subgraph boundary links</strong></td>
+<td>Every inner node and link is present, yet the outer <code>SaveAudioAdvanced</code> <strong>has no <code>audio</code></strong></td>
+<td>A subgraph's <code>outputs[i].linkIds</code> / <code>inputs[j].linkIds</code> point at inner links; you must <strong>rewire the boundary links back to the real inner endpoints</strong>, otherwise the outer link is dropped entirely</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong><code>ComfyMathExpression</code>'s <code>values.*</code></strong></td>
+<td>Deleting <code>values.a</code> yields <code>required_input_missing: values.a</code></td>
+<td><code>values.*</code> are required inputs; to hardcode a number set <code>expression</code> to <code>&quot;a&quot;</code> and feed the value to <code>values.a</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Nodes this machine doesn't have</strong></td>
+<td>e.g. <code>EasyCache</code> is absent, and the graph just breaks</td>
+<td>Treat unknown nodes as <strong>pass-through</strong>: keep following their first input</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong><code>PrimitiveNode</code></strong></td>
+<td>It doesn't exist in API format</td>
+<td>Inline it as a literal constant</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><strong>The general lesson</strong>: <strong>a converter's mistakes almost always show up as &quot;it submits but the
+result is wrong&quot; or &quot;parameters silently misaligned&quot;</strong> — never as an error. So <strong>always do a
+dry-run submission</strong> (<code>POST /prompt</code>) after converting: when the graph and types are correct it
+reports only <code>value_not_in_list</code> (missing models). Anything else is a real problem.</p>
+</blockquote>
 <hr />
 <h2 id="10-conclusion-and-what-is-next">10. Conclusion and what is next</h2>
 <h3 id="101-conclusions">10.1 Conclusions</h3>
@@ -2379,7 +4177,14 @@ badly misread</li>
 </tbody>
 </table></div>
 <hr />
-<h2 id="appendix-a-complete-model-manifest-34-files--1256-gb">Appendix A: Complete model manifest (34 files / 125.6 GB)</h2>
+<h2 id="appendix-a-complete-model-manifest-100-files--4584-gb">Appendix A: Complete model manifest (100 files / 458.4 GB)</h2>
+<blockquote>
+<p><strong>⚠️ A scope correction</strong>: an early version of this document put the manifest at
+&quot;34 files / 125.6 GB&quot; — <strong>that was only the last batch</strong>, not the whole thing. The real on-disk
+footprint is <strong>100 weight files / 458.4 GB</strong> (deduplicated by <code>realpath</code>, so junction aliases are
+not double-counted). Below it is grouped by purpose, and marked with <strong>what was run and what was
+merely downloaded</strong>.</p>
+</blockquote>
 <details>
 <summary>Expand to see every file</summary>
 <p><strong>MiniMax H3 (video + audio)</strong></p>
@@ -2526,7 +4331,290 @@ badly misread</li>
 </tr>
 </tbody>
 </table></div>
-<p><strong>Validation result: 34 / 34 complete, 125.6 GB, 0 corrupt.</strong></p>
+<p><strong>Wan 2.2 (video)</strong> — newly run this round</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Size</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>wan2.2_ti2v_5B_fp16.safetensors</code></td>
+<td>10.00 GB</td>
+<td>✅ run (§6.4)</td>
+</tr>
+<tr>
+<td><code>wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors</code></td>
+<td>14.29 GB</td>
+<td>✅ <strong>run (93.8 s, §6.4)</strong></td>
+</tr>
+<tr>
+<td><code>wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors</code></td>
+<td>14.29 GB</td>
+<td>✅ <strong>run (93.8 s, §6.4)</strong></td>
+</tr>
+<tr>
+<td><code>wan2.2_t2v_lightx2v_4steps_lora_v1.1_high_noise.safetensors</code></td>
+<td>1.23 GB</td>
+<td>✅ run</td>
+</tr>
+<tr>
+<td><code>wan2.2_t2v_lightx2v_4steps_lora_v1.1_low_noise.safetensors</code></td>
+<td>1.23 GB</td>
+<td>✅ run</td>
+</tr>
+<tr>
+<td><code>wan2.2_vae.safetensors</code></td>
+<td>1.41 GB</td>
+<td>✅ run (5B line)</td>
+</tr>
+<tr>
+<td><code>wan_2.1_vae.safetensors</code></td>
+<td>0.25 GB</td>
+<td>✅ run (14B line — <strong>a different VAE</strong>)</td>
+</tr>
+<tr>
+<td><code>umt5_xxl_fp8_e4m3fn_scaled.safetensors</code></td>
+<td>6.74 GB</td>
+<td>✅ run</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>LTX-Video (video)</strong> — newly run this round</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Size</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ltxv-2b-0.9.8-distilled-fp8.safetensors</code></td>
+<td>4.46 GB</td>
+<td>✅ run (§6.4)</td>
+</tr>
+<tr>
+<td><code>ltx-2b.safetensors</code> (VAE)</td>
+<td>1.68 GB</td>
+<td>✅ run</td>
+</tr>
+<tr>
+<td><code>t5xxl_fp8_e4m3fn.safetensors</code></td>
+<td>4.89 GB</td>
+<td>✅ run</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>ACE-Step 1.5 (music)</strong> — newly run this round</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Size</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>acestep_v1.5_turbo.safetensors</code></td>
+<td>4.79 GB</td>
+<td>✅ run</td>
+</tr>
+<tr>
+<td><code>acestep_v1.5_xl_turbo_bf16.safetensors</code></td>
+<td>9.97 GB</td>
+<td>✅ run</td>
+</tr>
+<tr>
+<td><code>qwen_0.6b_ace15.safetensors</code></td>
+<td>1.19 GB</td>
+<td>✅ run</td>
+</tr>
+<tr>
+<td><code>qwen_1.7b_ace15.safetensors</code></td>
+<td>1.10 GB</td>
+<td>✅ run</td>
+</tr>
+<tr>
+<td><code>qwen_4b_ace15.safetensors</code></td>
+<td>8.38 GB</td>
+<td>✅ run</td>
+</tr>
+<tr>
+<td><code>ace_1.5_vae.safetensors</code></td>
+<td>0.34 GB</td>
+<td>✅ run</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>YuE2 / MiniMax Music 3 / Stable Audio 3 (music)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Size</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>yue2_3b_int8_convrot.safetensors</code></td>
+<td>3.96 GB</td>
+<td>✅ run</td>
+</tr>
+<tr>
+<td><code>minimax_music3_dit_int8_convrot.safetensors</code></td>
+<td>2.50 GB</td>
+<td>✅ run</td>
+</tr>
+<tr>
+<td><code>minimax_music3_text_encoder_pruned_int8_convrot.safetensors</code></td>
+<td>9.20 GB</td>
+<td>✅ run</td>
+</tr>
+<tr>
+<td><code>minimax_music3_dav.safetensors</code></td>
+<td>0.22 GB</td>
+<td>✅ run</td>
+</tr>
+<tr>
+<td><code>stable_audio_3_medium.safetensors</code></td>
+<td>9.22 GB</td>
+<td>⬜ downloaded, not run (see Appendix E)</td>
+</tr>
+<tr>
+<td><code>qwen3.5_2b_bf16.safetensors</code></td>
+<td>4.55 GB</td>
+<td>⬜ same</td>
+</tr>
+<tr>
+<td><code>t5gemma_b_b_ul2.safetensors</code></td>
+<td>1.19 GB</td>
+<td>⬜ same</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>P3 image line (earlier batch, missing from the early version of this document)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Size</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>qwen_image_2512_fp8_e4m3fn.safetensors</code></td>
+<td>20.43 GB</td>
+<td>✅ run (§6.1)</td>
+</tr>
+<tr>
+<td><code>qwen_2.5_vl_7b_fp8_scaled.safetensors</code></td>
+<td>9.38 GB</td>
+<td>✅ run</td>
+</tr>
+<tr>
+<td><code>qwen_image_vae.safetensors</code></td>
+<td>0.25 GB</td>
+<td>✅ run</td>
+</tr>
+<tr>
+<td><code>Qwen-Image-2512-Lightning-4steps-V1.0-fp32.safetensors</code></td>
+<td>1.70 GB</td>
+<td>✅ run</td>
+</tr>
+<tr>
+<td><code>flux1-dev-fp8.safetensors</code></td>
+<td>17.25 GB</td>
+<td>✅ run (32.1 s @1024²/20 steps)</td>
+</tr>
+<tr>
+<td><code>sd_xl_base_1.0.safetensors</code></td>
+<td>6.94 GB</td>
+<td>✅ run (14.1 s @1024²/20 steps)</td>
+</tr>
+<tr>
+<td><code>Qwen-Image-2512</code> (bf16 diffusers shards, 53.74 GB)</td>
+<td>53.74 GB</td>
+<td>⬜ superseded by the fp8 single file</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>HunyuanVideo 1.5 super-resolution branch</strong> — required by the 720p template</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Size</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hunyuanvideo1.5_1080p_sr_distilled_fp16.safetensors</code></td>
+<td>16.66 GB</td>
+<td>✅ downloaded</td>
+</tr>
+<tr>
+<td><code>hunyuanvideo15_latent_upsampler_1080p.safetensors</code></td>
+<td>0.20 GB</td>
+<td>✅ downloaded</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Hunyuan3D 2.1 (image → 3D)</strong> — newly run this round</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Size</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hunyuan_3d_v2.1.safetensors</code></td>
+<td>7.37 GB</td>
+<td>✅ run (§6.7)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>HunyuanVideo 1.0 (superseded by 1.5)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Size</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hunyuan_video_custom_720p_fp8_e4m3fn.safetensors</code></td>
+<td>13.17 GB</td>
+<td>⬜ downloaded, not run (see Appendix E)</td>
+</tr>
+<tr>
+<td><code>hunyuan_video_vae_fp32.safetensors</code></td>
+<td>0.99 GB</td>
+<td>⬜ same</td>
+</tr>
+<tr>
+<td><code>llava_llama3_fp8_scaled.safetensors</code></td>
+<td>9.09 GB</td>
+<td>⬜ same</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Validation</strong>: <code>verify_models.py</code> applies three layers (byte size + safetensors structure + dtype).
+The first batch of 34 files / 125.6 GB passed <strong>34/34, 0 corrupt</strong>; later batches were validated by
+byte size as well. <strong>Total: 100 files / 458.4 GB (after <code>realpath</code> deduplication).</strong></p>
 </details>
 <h2 id="appendix-b-raw-measurements">Appendix B: Raw measurements</h2>
 <p>See the <a href="data/"><code>data/</code></a> directory:</p>
@@ -2534,6 +4622,7 @@ badly misread</li>
 <li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/quant-ab-metrics.md"><code>data/quant-ab-metrics.md</code></a> — full controlled A/B metrics</li>
 <li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/benchmark-results.md"><code>data/benchmark-results.md</code></a> — server-side time per workflow</li>
 <li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/download-manifest.md"><code>data/download-manifest.md</code></a> — size and dtype of all 34 files</li>
+<li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/coverage-round2.md"><code>data/coverage-round2.md</code></a> — <strong>raw data for the round-2 coverage expansion</strong> (timings and output specs for the four music lines + Wan 2.2 14B + LTX + Hunyuan3D, the VAE trap, and the cu130 kernel evidence)</li>
 </ul>
 <h2 id="appendix-c-glossary">Appendix C: Glossary</h2>
 <div class="tw"><table>
@@ -2601,7 +4690,7 @@ badly misread</li>
 </tr>
 <tr>
 <td>Comparability of results</td>
-<td>✅ All four model lines measured with <strong>one yardstick</strong></td>
+<td>✅ <strong>Eight model lines across four domains</strong> measured with <strong>one yardstick</strong></td>
 <td>❌ Each does its own thing; cross-model numbers aren't comparable</td>
 </tr>
 <tr>
@@ -2630,7 +4719,7 @@ badly misread</li>
 <p><strong>A single repo, with per-topic deep dives under <code>docs/</code>.</strong></p>
 <p>One reason, but a hard one: <strong>what makes this guide valuable is the methodology, not any single model's parameters.</strong></p>
 <ul>
-<li>Across all four model lines the reusable parts are <strong>the same</strong>: the four-arm controlled A/B design, the multi-source downloader with a silent watchdog, three-layer model verification, server-authoritative timing.</li>
+<li><strong>Eight model lines spanning four domains</strong> (image / video / music / 3D) share <strong>the same reusable parts</strong>: the four-arm controlled A/B design, the multi-source downloader with a silent watchdog, three-layer model verification, server-authoritative timing, and the template→API converter. <strong>That fact alone is the strongest argument for a single repo</strong> — once the methodology is copied eight times, it is no longer one methodology.</li>
 <li>The <strong>non-reusable parts — each model's own node constraints and parameters — are small</strong>: one chapter (§6) covers them.</li>
 <li>Split into four repos, that methodology gets copied four times. Improve the A/B method in one repo and the other three never catch up — which is exactly how results <strong>stop being comparable</strong>.</li>
 </ul>
@@ -2646,6 +4735,184 @@ Conversely, splitting pays off only when each model genuinely needs its own tool
 <li>The team splits so that each model is maintained by a different person</li>
 </ol>
 <p>Until then, the <strong>benefits of the single repo — reusable, comparable, explained in one pass — far outweigh the cost.</strong></p>
+<hr />
+<h2 id="appendix-e-coverage-audit--what-we-ran-what-we-did-not-and-why">Appendix E: Coverage audit — what we ran, what we did not, and why</h2>
+<blockquote>
+<p>This section answers the question that is easiest to skip and most worth asking:
+<strong>&quot;Did you try all the state-of-the-art models?&quot;</strong>
+The honest answer is <strong>no.</strong> Coverage differs a lot between the three domains. Below is the full
+ledger, with <strong>the exact reason for every deliberate skip</strong> — including <strong>one corrected misjudgement</strong>.</p>
+</blockquote>
+<h3 id="e1-coverage-at-a-glance">E.1 Coverage at a glance</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Ran and produced output</th>
+<th>Downloaded, not run</th>
+<th>Deliberately skipped</th>
+<th>Coverage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Image</strong></td>
+<td>7 lines (SDXL / FLUX.1-dev / Qwen-Image 2512 ×2 / Z-Image ×2 / FLUX.2 Klein 4B)</td>
+<td>1 (Qwen bf16 shards)</td>
+<td>2 (FLUX.2-dev, Nunchaku Qwen NVFP4)</td>
+<td>Fairly complete</td>
+</tr>
+<tr>
+<td><strong>Video</strong></td>
+<td><strong>5 lines (MiniMax H3 / HunyuanVideo 1.5 / Wan 2.2 5B / Wan 2.2 14B / LTX-Video 2B)</strong></td>
+<td>2 (HV1.0, HV1.5 720p)</td>
+<td>2 (LTX-2.3, LTX-2.5)</td>
+<td><strong>Moderate-high</strong></td>
+</tr>
+<tr>
+<td><strong>Music</strong></td>
+<td><strong>4 lines (ACE-Step ×2 / YuE2 / MiniMax Music 3)</strong></td>
+<td>1 (Stable Audio 3)</td>
+<td>0</td>
+<td><strong>0 → 4 this round</strong></td>
+</tr>
+<tr>
+<td><strong>3D</strong></td>
+<td>1 (Hunyuan3D 2.1)</td>
+<td>0</td>
+<td>0</td>
+<td>Complete</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="e2-the-models-we-deliberately-skipped-and-exactly-why">E.2 The models we deliberately skipped, and exactly why</h3>
+<h4 id="①-flux2-dev--does-not-fit-in-vram">① FLUX.2-dev — does not fit in VRAM</h4>
+<ul>
+<li><strong>Weight size</strong>: the DiT single file is fp8 <strong>35.46 GB</strong></li>
+<li><strong>Why skipped</strong>: this machine has 24 GB of VRAM, so <strong>that one file is 1.48× the entire VRAM</strong>.
+It is beyond &quot;needs offloading&quot; — it means moving 35 GB over PCIe on every step, and by the
+behaviour of comparable models the speed would collapse to unusable.</li>
+<li><strong>Substitute</strong>: FLUX.2 <strong>Klein 4B</strong> (fp8, only 4.07 GB) runs and produces output.</li>
+<li><strong>When to revisit</strong>: once an NVFP4 or GGUF build brings the DiT under 20 GB.</li>
+</ul>
+<h4 id="②-ltx-23---this-was-a-misjudgement-and-it-needs-correcting">② LTX-2.3 — ⚠️ <strong>this was a misjudgement, and it needs correcting</strong></h4>
+<ul>
+<li><strong>The original reason</strong>: fp8 weights are <strong>29.15 GB</strong> &gt; 24 GB, &quot;does not fit&quot;.</li>
+<li><strong>What was wrong</strong>: <strong>we only estimated the fp8 tier and forgot LTX-2.3 has GGUF quantizations.</strong>
+Community reports put <strong>Q3 GGUF on 12 GB cards and Q4_K_M on 16 GB cards</strong>. Rejecting a model
+that <strong>offers several quantization tiers</strong> because its highest-precision build does not fit is a
+methodological error.</li>
+<li><strong>Why it was worth running</strong>: <strong>it is the only open model that natively emits synchronized audio
+and video in one pass</strong> (a 22B DiT = 14B video + 5B audio) — the other &quot;with sound&quot; route besides MiniMax H3.</li>
+<li><strong>Corrected conclusion</strong>: <strong>it should not have been rejected; it should be re-run with GGUF Q4_K_M.</strong></li>
+<li><strong>A licensing footnote</strong>: LTX-2.3 is <strong>not Apache 2.0</strong> (a great many articles get this wrong).
+It ships under the LTX-2 Community License: free commercial use below roughly $10M annual revenue.</li>
+</ul>
+<h4 id="③-ltx-25--gated-repository">③ LTX-2.5 — gated repository</h4>
+<ul>
+<li><strong>Why skipped</strong>: the HF repository returns <strong>401</strong>; you must accept the licence on the HF page first.</li>
+<li><strong>This is a process reason, not a technical one</strong> — it downloads once the licence is accepted.</li>
+</ul>
+<h4 id="④-nunchaku-qwen-image-2512-nvfp4-w4a4-svdquant--one-cu130-short">④ Nunchaku Qwen-Image-2512 NVFP4 (W4A4 SVDQuant) — one cu130 short</h4>
+<ul>
+<li>
+<p><strong>Why it was the most promising candidate</strong>: it combines <strong>NVFP4 (which we proved is best)</strong> with
+<strong>the strongest image model, Qwen-Image</strong>. The reported numbers are <strong>238 ms/step @1024², so about
+11.9 s for 50 steps</strong>, with the DiT shrinking from 20.4 GB to <strong>~12 GB</strong> — theoretically delivering
+<strong>both quality and freedom from offloading</strong>.</p>
+</li>
+<li>
+<p><strong>Why it was not run</strong>: it depends on optimized CUDA kernels (<code>scaled_mm_svdquant_w4a4</code>,
+<code>convrot_w4a4_linear</code>), and this machine's ComfyUI startup log states plainly:</p>
+<pre><code>WARNING: You need pytorch with cu130 or higher to use optimized CUDA operations.
+[INFO] Found comfy_kitchen backend cuda: {'available': True, 'disabled': True, ...}
+</code></pre>
+<p><strong>Our PyTorch is 2.11.0+cu128, so the <code>comfy_kitchen</code> CUDA backend is disabled.</strong> Without those
+kernels, SVDQuant W4A4 does not get its fast path — running it would not represent real performance.</p>
+</li>
+<li>
+<p><strong>A more important corollary follows</strong>: <strong>the §5 NVFP4 result was measured with those optimized
+kernels disabled.</strong> In other words, <strong>&quot;22% faster&quot; is a conservative figure (a lower bound)</strong> —
+after moving to cu130 the gap should grow. This is <strong>a known, unverified optimistic bias</strong> in this
+document, stated here explicitly.</p>
+</li>
+</ul>
+<h4 id="⑤-wan-22-14b-moe---run-this-round">⑤ Wan 2.2 14B MoE — ✅ <strong>run this round</strong></h4>
+<ul>
+<li><strong>Result: 93.8 seconds</strong> (832×480 / 81 frames / 4 steps). Both experts (14.29 GB each) plus the
+LightX2V 4-step LoRAs were downloaded and validated, then run through the <code>PrimitiveBoolean</code>-driven
+<code>ComfySwitchNode</code> 4-step / CFG 1 branch.</li>
+<li><strong>Why this matters</strong>: <strong>it definitively answers whether a flagship MoE video model can run on this
+machine — yes.</strong> The two experts total 28.6 GB, far beyond VRAM, but because <strong>only one expert is
+loaded per step</strong>, combined with the 4-step LoRA, it produces a clip in 94 seconds.</li>
+<li><strong>A real trap along the way</strong>: substituting the template's <code>wan_2.1_vae</code> with <code>wan2.2_vae</code> made
+<code>VAEDecode</code> fail on a channel mismatch (48 vs 16). <strong>Wan 2.2's 5B and 14B lines use different VAEs.</strong>
+See §6.4 and the §8 troubleshooting table.</li>
+</ul>
+<h4 id="⑥-hunyuanvideo-10--superseded-by-15">⑥ HunyuanVideo 1.0 — superseded by 1.5</h4>
+<ul>
+<li><strong>The weights are on disk</strong> (DiT 13.17 GB + VAE 0.99 GB + llava-llama3 encoder 9.09 GB) <strong>but were not run.</strong></li>
+<li><strong>Why</strong>: HunyuanVideo <strong>1.5 is the official successor to 1.0</strong> (8.3B, 480p/720p, built-in SR), and
+1.5 already runs. Running 1.0 again has archaeological value only — no selection value.</li>
+<li><strong>Why they are kept</strong>: for archival comparison, and the llava-llama3 encoder may still be useful elsewhere.</li>
+</ul>
+<h4 id="⑦-stable-audio-3-medium--downloaded-not-run">⑦ Stable Audio 3 Medium — downloaded, not run</h4>
+<ul>
+<li>The base model (9.22 GB) plus two encoders (<code>qwen3.5_2b</code> 4.55 GB, <code>t5gemma_b_b_ul2</code> 1.19 GB)
+are <strong>all downloaded</strong>.</li>
+<li><strong>Why not run</strong>: it is the <strong>sound-effects / short-clip</strong> route (≤47 s), whereas &quot;generate a full song
+from lyrics&quot; is already covered and verified by ACE-Step / YuE2 / MiniMax Music 3.
+It is a complement rather than a gap, so it waits for the next round.</li>
+</ul>
+<h4 id="⑧-musicgen--stable-audio-open-early--the-licence-forbids-it">⑧ MusicGen / Stable Audio Open (early) — the licence forbids it</h4>
+<ul>
+<li><strong>Why excluded outright</strong>: the weights are <strong>CC-BY-NC (non-commercial)</strong>.
+<strong>&quot;It downloads&quot; is not the same as &quot;you may use the output&quot;</strong> — for work that will be used long
+term and possibly commercially, they are out.
+(This is also why §6.6 recommends ACE-Step most strongly: Apache 2.0, no revenue threshold, no
+territory exclusion.)</li>
+</ul>
+<h3 id="e3-the-four-categories-mean-different-things">E.3 The four categories mean different things</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Meaning</th>
+<th>Strength of evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ran and produced output</strong></td>
+<td><code>ffprobe</code> / GLB structure check + server-authoritative timing</td>
+<td>See §6 and §6.8</td>
+</tr>
+<tr>
+<td><strong>Downloaded, not run</strong></td>
+<td>Weights validated, only a run is missing</td>
+<td>Marked ⬜ in Appendix A; next priority</td>
+</tr>
+<tr>
+<td><strong>Deliberately skipped</strong></td>
+<td>A concrete reason (VRAM / licence / gated / kernel dependency)</td>
+<td>See E.2, each written out</td>
+</tr>
+<tr>
+<td><strong>Never touched at all</strong></td>
+<td>No weights even downloaded</td>
+<td><strong>Cleared this round</strong> — music went 0 → 4 lines</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="e4-two-methodological-lessons-from-this-audit">E.4 Two methodological lessons from this audit</h3>
+<ol>
+<li><strong>A &quot;does not fit&quot; rejection must state which quantization tier it refers to.</strong>
+The LTX-2.3 lesson: rejecting a model <strong>that has GGUF Q3/Q4 builds</strong> because its fp8 build is
+29 GB is wrong. The correct phrasing is &quot;fp8 does not fit; GGUF Q4_K_M (16 GB) should work, unverified&quot;.</li>
+<li><strong>Every performance claim must state the conditions under which it holds.</strong>
+The §5 NVFP4 result was measured with the cu130 kernels disabled, so &quot;22% faster&quot; is a <strong>lower bound</strong>.
+Without stating the conditions, readers will mistake it for the hardware's ceiling.</li>
+</ol>
 <hr />
 <h2 id="license">License</h2>
 <p><a href="LICENSE">MIT</a>. Every measurement here comes from a real run on this machine — corrections and

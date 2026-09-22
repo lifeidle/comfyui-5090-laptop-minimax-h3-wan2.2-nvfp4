@@ -177,20 +177,46 @@ S = {
                  "en": "Measured generation time (log scale)"},
     "c5_sub": {"zh": "RTX 5090 Laptop 24 GB，ComfyUI 0.37.0 —— 计时取自 execution_start / execution_success，绝不用墙钟时间",
                "en": "RTX 5090 Laptop 24 GB, ComfyUI 0.37.0 - timing read from execution_start / execution_success, never wall clock"},
+    "c5_leg_img": {"zh": "图像", "en": "image"},
+    "c5_leg_vid": {"zh": "视频", "en": "video"},
+    "c5_leg_mus": {"zh": "音乐", "en": "music"},
+    "c5_leg_3d": {"zh": "3D", "en": "3D"},
     "c5_axis": {"zh": "秒", "en": "seconds"},
     "c5_unit": {"zh": " 秒", "en": " s"},
-    "c5_items": {"zh": [["MiniMax H3 · 文生视频 + 音频", "1344×768，124 帧，5.17 s 含立体声"],
-                        ["HunyuanVideo 1.5 · 480p，4 步", "848×480，121 帧，5.04 s"],
-                        ["MiniMax H3 · 冒烟测试", "768×448，56 帧"],
-                        ["FLUX.2 Klein 4B · fp8 图像编辑", "单张 1024×1024"],
-                        ["Z-Image-Turbo · int8", "1024×1024，8 步"],
-                        ["Z-Image-Turbo · nvfp4", "1024×1024，8 步"]],
-                 "en": [["MiniMax H3 - text to video + audio", "1344x768, 124 frames, 5.17 s clip with stereo audio"],
-                        ["HunyuanVideo 1.5 - 480p, 4 steps", "848x480, 121 frames, 5.04 s clip"],
-                        ["MiniMax H3 - smoke test", "768x448, 56 frames"],
-                        ["FLUX.2 Klein 4B - fp8 image edit", "single 1024x1024 image"],
-                        ["Z-Image-Turbo - int8", "1024x1024, 8 steps"],
-                        ["Z-Image-Turbo - nvfp4", "1024x1024, 8 steps"]]},
+    "c5_items": {"zh": [["Qwen-Image 2512 + Lightning · 图像", "1328²，4 步"],
+                        ["Z-Image-Turbo nvfp4 · 图像", "1024²，8 步"],
+                        ["SDXL base 1.0 · 图像", "1024²，20 步"],
+                        ["Z-Image-Turbo int8 · 图像", "1024²，8 步"],
+                        ["LTX-Video 2B 蒸馏 · 视频", "1216×704，121 帧，8 步"],
+                        ["ACE-Step 1.5 turbo · 音乐", "60 s 歌曲，8 步"],
+                        ["ACE-Step 1.5 XL turbo · 音乐", "60 s 歌曲，8 步"],
+                        ["FLUX.1-dev fp8 · 图像", "1024²，20 步"],
+                        ["FLUX.2 Klein 4B fp8 · 图像编辑", "单张 1024²"],
+                        ["Hunyuan3D 2.1 · 图生 3D", "30 步，octree 256"],
+                        ["YuE2-3B · 音乐", "60 s 歌曲，32 步"],
+                        ["Wan 2.2 14B MoE · 视频", "832×480，81 帧，4 步"],
+                        ["HunyuanVideo 1.5 480p · 视频", "848×480，121 帧，4 步"],
+                        ["Qwen-Image 2512（无 LoRA） · 图像", "1328²，50 步"],
+                        ["Wan 2.2 5B TI2V · 视频", "1280×704，121 帧，20 步"],
+                        ["MiniMax Music 3 · 音乐", "60 s 歌曲，30 步"],
+                        ["MiniMax H3 · 视频 + 音频", "1344×768，124 帧含音轨"]],
+                 "en": [["Qwen-Image 2512 + Lightning - image", "1328², 4 steps"],
+                        ["Z-Image-Turbo nvfp4 - image", "1024², 8 steps"],
+                        ["SDXL base 1.0 - image", "1024², 20 steps"],
+                        ["Z-Image-Turbo int8 - image", "1024², 8 steps"],
+                        ["LTX-Video 2B distilled - video", "1216x704, 121 frames, 8 steps"],
+                        ["ACE-Step 1.5 turbo - music", "60 s song, 8 steps"],
+                        ["ACE-Step 1.5 XL turbo - music", "60 s song, 8 steps"],
+                        ["FLUX.1-dev fp8 - image", "1024², 20 steps"],
+                        ["FLUX.2 Klein 4B fp8 - image edit", "single 1024²"],
+                        ["Hunyuan3D 2.1 - image to 3D", "30 steps, octree 256"],
+                        ["YuE2-3B - music", "60 s song, 32 steps"],
+                        ["Wan 2.2 14B MoE - video", "832x480, 81 frames, 4 steps"],
+                        ["HunyuanVideo 1.5 480p - video", "848x480, 121 frames, 4 steps"],
+                        ["Qwen-Image 2512 (no LoRA) - image", "1328², 50 steps"],
+                        ["Wan 2.2 5B TI2V - video", "1280x704, 121 frames, 20 steps"],
+                        ["MiniMax Music 3 - music", "60 s song, 30 steps"],
+                        ["MiniMax H3 - video + audio", "1344x768, 124 frames with audio"]]},
 
     # ---------------------------------------------------------------- chart 6
     "c6_title": {"zh": "NVFP4 实际带来什么", "en": "What NVFP4 actually buys you"},
@@ -352,31 +378,42 @@ def chart_decision_tree(lang):
 # ==================================================================== chart 5
 def chart_benchmarks(lang):
     import math
-    vals = [519.06, 117.0, 76.31, 42.32, 17.70, 13.80]
-    cols = [RED, BLUE, BLUE, AMBER, DIM, EMERALD]
+    # 按耗时升序：图像(蓝) / 视频(琥珀) / 音乐(紫) / 3D(绿)
+    IMG, VID, MUS, THREE = "#2563eb", "#d97706", "#7c3aed", "#059669"
+    vals = [12.2, 13.8, 14.1, 17.7, 19.2, 22.9, 28.6, 32.1, 42.3, 54.7, 93.7, 93.8, 117.0, 206.7, 355.1, 458.2, 519.1]
+    cols = [IMG, IMG, IMG, IMG, VID, MUS, MUS, IMG, IMG, THREE, MUS, VID, VID, IMG, VID, MUS, VID]
     items = [(n, c, v, col) for (n, c), v, col in zip(g("c5_items", lang), vals, cols)]
-    h = 330
+    rowh = 30
+    h = 130 + len(items) * rowh + 56
     p = header(g("c5_title", lang), g("c5_sub", lang))
-    x0, x1 = 340, 812
+    x0, x1 = 388, 800
     lo, hi = math.log10(10), math.log10(600)
-    y0, rowh = 106, 32
+    y0 = 106
 
     def sx(v):
         return x0 + (x1 - x0) * (math.log10(v) - lo) / (hi - lo)
 
     for gv in [10, 20, 30, 50, 100, 200, 300, 500]:
         gx = sx(gv)
-        p.append(line(gx, y0 - 12, gx, y0 + len(items) * rowh - 6))
+        p.append(line(gx, y0 - 12, gx, y0 + len(items) * rowh - 8))
         p.append(t(gx, y0 + len(items) * rowh + 8, gv, 11, DIM, anchor="middle"))
     p.append(t((x0 + x1) / 2, y0 + len(items) * rowh + 26, g("c5_axis", lang),
                11, MUT, anchor="middle"))
     for i, (name, cfg, v, col) in enumerate(items):
         y = y0 + i * rowh
-        p.append(t(PAD, y + 11, esc(name), 12.5, TXT, 600))
-        p.append(t(PAD, y + 26, esc(cfg), 10.5, MUT))
+        p.append(t(PAD, y + 7, esc(name), 12, TXT, 600))
+        p.append(t(PAD, y + 20, esc(cfg), 10, MUT))
         wpx = sx(v) - x0
-        p.append(rect(x0, y - 1, wpx, 18, col, rx=4))
-        p.append(t(x0 + wpx + 8, y + 13, f"{v:.1f}" + g("c5_unit", lang), 13, TXT, 700))
+        p.append(rect(x0, y - 2, wpx, 17, col, rx=4))
+        p.append(t(x0 + wpx + 8, y + 11, f"{v:.1f}" + g("c5_unit", lang), 12, TXT, 700))
+    # 图例
+    ly = h - 30
+    lx = PAD
+    for label, col in ((g("c5_leg_img", lang), IMG), (g("c5_leg_vid", lang), VID),
+                       (g("c5_leg_mus", lang), MUS), (g("c5_leg_3d", lang), THREE)):
+        p.append(rect(lx, ly - 8, 14, 10, col, rx=3))
+        p.append(t(lx + 19, ly, label, 10.5, MUT))
+        lx += 30 + len(label) * 9
     save(lang, "chart5-model-benchmark.svg", p, W, h, g("c5_title", lang))
 
 

@@ -1,0 +1,118 @@
+{
+ "1": {
+  "class_type": "ImageOnlyCheckpointLoader",
+  "inputs": {
+   "ckpt_name": "hunyuan_3d_v2.1.safetensors"
+  }
+ },
+ "2": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "h3d_teapot_input.png"
+  }
+ },
+ "3": {
+  "class_type": "ModelSamplingAuraFlow",
+  "inputs": {
+   "shift": 1,
+   "sampling": "flow",
+   "model": [
+    "1",
+    0
+   ]
+  }
+ },
+ "7": {
+  "class_type": "KSampler",
+  "inputs": {
+   "seed": 20260922,
+   "steps": 30,
+   "cfg": 5,
+   "sampler_name": "euler",
+   "scheduler": "normal",
+   "denoise": 1,
+   "model": [
+    "3",
+    0
+   ],
+   "positive": [
+    "6",
+    0
+   ],
+   "negative": [
+    "6",
+    1
+   ],
+   "latent_image": [
+    "4",
+    0
+   ]
+  }
+ },
+ "10": {
+  "class_type": "SaveGLB",
+  "inputs": {
+   "mesh": [
+    "9",
+    0
+   ],
+   "filename_prefix": "hunyuan3d_v21_teapot"
+  }
+ },
+ "8": {
+  "class_type": "VAEDecodeHunyuan3D",
+  "inputs": {
+   "num_chunks": 8000,
+   "octree_resolution": 256,
+   "samples": [
+    "7",
+    0
+   ],
+   "vae": [
+    "1",
+    2
+   ]
+  }
+ },
+ "9": {
+  "class_type": "VoxelToMesh",
+  "inputs": {
+   "algorithm": "surface net",
+   "threshold": 0.6,
+   "voxel": [
+    "8",
+    0
+   ]
+  }
+ },
+ "13": {
+  "class_type": "CLIPVisionEncode",
+  "inputs": {
+   "crop": "center",
+   "clip_vision": [
+    "1",
+    1
+   ],
+   "image": [
+    "2",
+    0
+   ]
+  }
+ },
+ "6": {
+  "class_type": "Hunyuan3Dv2Conditioning",
+  "inputs": {
+   "clip_vision_output": [
+    "13",
+    0
+   ]
+  }
+ },
+ "4": {
+  "class_type": "EmptyLatentHunyuan3Dv2",
+  "inputs": {
+   "resolution": 4096,
+   "batch_size": 1
+  }
+ }
+}

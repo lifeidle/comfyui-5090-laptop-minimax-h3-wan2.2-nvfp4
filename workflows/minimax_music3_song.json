@@ -1,0 +1,141 @@
+{
+ "35": {
+  "class_type": "SaveAudioAdvanced",
+  "inputs": {
+   "filename_prefix": "minimax_music3_song",
+   "format": "mp3",
+   "format.quality": "V0",
+   "audio": [
+    "1050",
+    0
+   ]
+  }
+ },
+ "1040": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "minimax_music3_dit_int8_convrot.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "1041": {
+  "class_type": "MiniMaxMusic3TextEncode",
+  "inputs": {
+   "caption": "Chinese folk pop song, warm female vocal, guzheng and bamboo flute, mid tempo, gentle and lyrical",
+   "lyrics": "[Verse]\n春风吹过山岗\n桃花开满了村庄\n溪水绕过青石旁\n谁在轻轻把歌唱\n[Chorus]\n一路向前走啊\n把歌儿唱到天亮\n不管山高水又长\n心里有光就不慌",
+   "seed": 20260922,
+   "max_duration": 60.0,
+   "cfg_scale": 1.7,
+   "top_k": 50,
+   "clip": [
+    "1042",
+    0
+   ]
+  }
+ },
+ "1042": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "minimax_music3_text_encoder_pruned_int8_convrot.safetensors",
+   "type": "minimax",
+   "device": "default"
+  }
+ },
+ "1043": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "minimax_music3_dav.safetensors"
+  }
+ },
+ "1044": {
+  "class_type": "ConditioningZeroOut",
+  "inputs": {
+   "conditioning": [
+    "1041",
+    0
+   ]
+  }
+ },
+ "1045": {
+  "class_type": "EmptyMiniMaxMusic3LatentAudio",
+  "inputs": {
+   "seconds": 60.0,
+   "batch_size": 1
+  }
+ },
+ "1046": {
+  "class_type": "KSampler",
+  "inputs": {
+   "seed": 20260922,
+   "steps": 30,
+   "cfg": 1.7,
+   "sampler_name": "euler",
+   "scheduler": "simple",
+   "denoise": 1,
+   "model": [
+    "1040",
+    0
+   ],
+   "positive": [
+    "1041",
+    0
+   ],
+   "negative": [
+    "1044",
+    0
+   ],
+   "latent_image": [
+    "1045",
+    0
+   ]
+  }
+ },
+ "1047": {
+  "class_type": "VAEDecodeAudio",
+  "inputs": {
+   "samples": [
+    "1046",
+    0
+   ],
+   "vae": [
+    "1043",
+    0
+   ]
+  }
+ },
+ "1048": {
+  "class_type": "SeedNode",
+  "inputs": {
+   "seed": 20260922
+  }
+ },
+ "1049": {
+  "class_type": "VAEDecodeAudioTiled",
+  "inputs": {
+   "tile_size": 1536,
+   "overlap": 64,
+   "samples": [
+    "1046",
+    0
+   ],
+   "vae": [
+    "1043",
+    0
+   ]
+  }
+ },
+ "1050": {
+  "class_type": "ComfySwitchNode",
+  "inputs": {
+   "switch": false,
+   "on_false": [
+    "1047",
+    0
+   ],
+   "on_true": [
+    "1049",
+    0
+   ]
+  }
+ }
+}

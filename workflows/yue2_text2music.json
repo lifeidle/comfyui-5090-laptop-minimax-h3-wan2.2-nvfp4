@@ -1,0 +1,182 @@
+{
+ "10": {
+  "class_type": "SaveAudioAdvanced",
+  "inputs": {
+   "filename_prefix": "yue2_text2music",
+   "format": "flac",
+   "audio": [
+    "1051",
+    0
+   ]
+  }
+ },
+ "1040": {
+  "class_type": "CheckpointLoaderSimple",
+  "inputs": {
+   "ckpt_name": "yue2_3b_int8_convrot.safetensors"
+  }
+ },
+ "1041": {
+  "class_type": "YuE2GenerateABC",
+  "inputs": {
+   "style": "Chinese folk pop, guzheng and bamboo flute, warm female vocal, mid tempo, gentle and lyrical, clean studio mix",
+   "lyrics": "[Verse]\n春风吹过山岗\n桃花开满了村庄\n溪水绕过青石旁\n谁在轻轻把歌唱\n[Chorus]\n一路向前走啊\n把歌儿唱到天亮\n不管山高水又长\n心里有光就不慌",
+   "seed": 20260922,
+   "mode": "full",
+   "max_abc_tokens": 8192,
+   "temperature": 0.7,
+   "top_p": 0.9,
+   "top_k": 30,
+   "repetition_penalty": 1.005,
+   "penalty_window": 100,
+   "clip": [
+    "1040",
+    1
+   ]
+  }
+ },
+ "1042": {
+  "class_type": "PreviewAny",
+  "inputs": {
+   "source": [
+    "1043",
+    0
+   ]
+  }
+ },
+ "1043": {
+  "class_type": "ComfySwitchNode",
+  "inputs": {
+   "switch": [
+    "1046",
+    0
+   ],
+   "on_false": [
+    "1044",
+    0
+   ],
+   "on_true": [
+    "1041",
+    0
+   ]
+  }
+ },
+ "1044": {
+  "class_type": "PrimitiveString",
+  "inputs": {
+   "value": ""
+  }
+ },
+ "1045": {
+  "class_type": "YuE2GenerateMusic",
+  "inputs": {
+   "style": "Chinese folk pop, guzheng and bamboo flute, warm female vocal, mid tempo, gentle and lyrical, clean studio mix",
+   "lyrics": "[Verse]\n春风吹过山岗\n桃花开满了村庄\n溪水绕过青石旁\n谁在轻轻把歌唱\n[Chorus]\n一路向前走啊\n把歌儿唱到天亮\n不管山高水又长\n心里有光就不慌",
+   "abc": [
+    "1042",
+    0
+   ],
+   "seed": 20260922,
+   "mode": "full",
+   "max_duration": 60,
+   "temperature": 1,
+   "top_p": 0.95,
+   "top_k": 100,
+   "repetition_penalty": 1.2,
+   "cfg_scale": 1.0,
+   "clip": [
+    "1040",
+    1
+   ]
+  }
+ },
+ "1046": {
+  "class_type": "PrimitiveBoolean",
+  "inputs": {
+   "value": false
+  }
+ },
+ "1047": {
+  "class_type": "ConditioningZeroOut",
+  "inputs": {
+   "conditioning": [
+    "1045",
+    0
+   ]
+  }
+ },
+ "1048": {
+  "class_type": "PreviewAny",
+  "inputs": {
+   "source": [
+    "1045",
+    1
+   ]
+  }
+ },
+ "1049": {
+  "class_type": "KSampler",
+  "inputs": {
+   "seed": 20260922,
+   "steps": 32,
+   "cfg": 1,
+   "sampler_name": "dpm_2",
+   "scheduler": "sgm_uniform",
+   "denoise": 1,
+   "model": [
+    "1040",
+    0
+   ],
+   "positive": [
+    "1045",
+    0
+   ],
+   "negative": [
+    "1047",
+    0
+   ],
+   "latent_image": [
+    "1050",
+    0
+   ]
+  }
+ },
+ "1050": {
+  "class_type": "EmptyYuE2LatentAudio",
+  "inputs": {
+   "seconds": 60.0,
+   "batch_size": 1
+  }
+ },
+ "1051": {
+  "class_type": "VAEDecodeAudio",
+  "inputs": {
+   "samples": [
+    "1049",
+    0
+   ],
+   "vae": [
+    "1040",
+    2
+   ]
+  }
+ },
+ "1052": {
+  "class_type": "SeedNode",
+  "inputs": {
+   "seed": 20260922
+  }
+ },
+ "1053": {
+  "class_type": "PrimitiveStringMultiline",
+  "inputs": {
+   "value": "pirate shanties style\nFiddles and Violins: Used for dancing and entertainment below deck.Fifes, Flutes, and Tin Whistles: High-pitched woodwinds that cut through ocean wind and noise.Small Drums and Bodhráns: Provided rhythmic accompaniment for work songs and morale.Lutes, Mandolins, and Guitars: Early plucked string instruments found in taverns and ports\n1"
+  }
+ },
+ "1054": {
+  "class_type": "PrimitiveStringMultiline",
+  "inputs": {
+   "value": "[Verse]\nMorning light across the window\nCity waking down below\nI can hear the streets are calling\nFeels like somewhere we should go\n\n[Chorus]\nRun with me into the sunlight\nLeave the shadows far behind\nWe don't need to know tomorrow\nTonight the whole world feels alive\n\n[Verse]\nRadio playing through the open door\nLaughing like we did before\nEvery mile becomes a memory\nAnd I just want a little more\n\n[Chorus]\nRun with me into the sunlight\nLeave the shadows far behind\nWe don't need to know tomorrow\nTonight the whole world feels alive"
+  }
+ }
+}
