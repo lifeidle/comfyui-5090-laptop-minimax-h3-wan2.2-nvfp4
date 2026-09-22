@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 400" width="920" height="400" role="img" aria-label="该选哪种量化？">
+<rect x="0.0" y="0.0" width="920.0" height="400.0" rx="12" fill="#ffffff"/>
+<text x="24" y="34" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="19" fill="#0f172a" font-weight="700">该选哪种量化？</text>
+<text x="24" y="56" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#64748b">两个问题就能定下几乎全部情况。这正是本项目实际走过的路径。</text>
+<defs><marker id="a" markerWidth="9" markerHeight="9" refX="7.5" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#94a3b8"/></marker></defs>
+<rect x="340.0" y="78.0" width="250.0" height="52.0" rx="8" fill="#2563eb" opacity="0.1"/>
+<rect x="340.0" y="78.0" width="250.0" height="52.0" rx="8" fill="none" stroke="#2563eb" stroke-width="1.5"/>
+<text x="465.0" y="101" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13.5" fill="#0f172a" font-weight="600" text-anchor="middle">能装进 24 GB 吗？</text>
+<text x="465.0" y="119" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#64748b" text-anchor="middle">权重 + 编码器 + VAE</text>
+<rect x="340.0" y="176.0" width="250.0" height="52.0" rx="8" fill="#2563eb" opacity="0.1"/>
+<rect x="340.0" y="176.0" width="250.0" height="52.0" rx="8" fill="none" stroke="#2563eb" stroke-width="1.5"/>
+<text x="465.0" y="199" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13.5" fill="#0f172a" font-weight="600" text-anchor="middle">显卡是 Blackwell？</text>
+<text x="465.0" y="217" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#64748b" text-anchor="middle">sm_120 / sm_121</text>
+<rect x="672.0" y="176.0" width="224.0" height="52.0" rx="8" fill="#059669" opacity="0.1"/>
+<rect x="672.0" y="176.0" width="224.0" height="52.0" rx="8" fill="none" stroke="#059669" stroke-width="1.5"/>
+<text x="784.0" y="199" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13.5" fill="#0f172a" font-weight="600" text-anchor="middle">NVFP4</text>
+<text x="784.0" y="217" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#64748b" text-anchor="middle">原生 4-bit 张量核</text>
+<rect x="340.0" y="274.0" width="250.0" height="52.0" rx="8" fill="#d97706" opacity="0.1"/>
+<rect x="340.0" y="274.0" width="250.0" height="52.0" rx="8" fill="none" stroke="#d97706" stroke-width="1.5"/>
+<text x="465.0" y="297" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13.5" fill="#0f172a" font-weight="600" text-anchor="middle">INT8 + ConvRot</text>
+<text x="465.0" y="315" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#64748b" text-anchor="middle">走 BF16 路径，任何显卡都能跑</text>
+<rect x="28.0" y="78.0" width="232.0" height="52.0" rx="8" fill="#dc2626" opacity="0.1"/>
+<rect x="28.0" y="78.0" width="232.0" height="52.0" rx="8" fill="none" stroke="#dc2626" stroke-width="1.5"/>
+<text x="144.0" y="101" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13.5" fill="#0f172a" font-weight="600" text-anchor="middle">权重溢出</text>
+<text x="144.0" y="119" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#64748b" text-anchor="middle">必须 offload 或拆分</text>
+<rect x="28.0" y="274.0" width="232.0" height="52.0" rx="8" fill="#dc2626" opacity="0.1"/>
+<rect x="28.0" y="274.0" width="232.0" height="52.0" rx="8" fill="none" stroke="#dc2626" stroke-width="1.5"/>
+<text x="144.0" y="297" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13.5" fill="#0f172a" font-weight="600" text-anchor="middle">W4A16（GGUF / NF4）</text>
+<text x="144.0" y="315" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#64748b" text-anchor="middle">省显存，但不会更快</text>
+<line x1="340" y1="104" x2="262" y2="104" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#a)"/>
+<text x="292" y="98" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#64748b">否</text>
+<line x1="465" y1="130" x2="465" y2="176" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#a)"/>
+<text x="473" y="156" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#64748b">是</text>
+<line x1="590" y1="202" x2="670" y2="202" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#a)"/>
+<text x="624" y="196" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#64748b">是</text>
+<line x1="465" y1="228" x2="465" y2="274" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#a)"/>
+<text x="473" y="254" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#64748b">否</text>
+<line x1="144" y1="130" x2="144" y2="274" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#a)"/>
+<line x1="24.0" y1="348.0" x2="896.0" y2="348.0" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="24" y="370" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="600">W4A16 只省显存，不提速。W4A4 / NVFP4 既省显存、又更快。</text>
+<text x="24" y="390" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#64748b">别信文件名 —— NVFP4 靠张量键识别（weight_scale、weight_scale_2、input_scale、pre_quant_scale + TensorCoreNVFP4Layout）。</text>
+</svg>

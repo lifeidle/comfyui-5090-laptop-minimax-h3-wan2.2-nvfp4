@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 300" width="920" height="300" role="img" aria-label="Does a single weight file fit in 24 GB?">
+<rect x="0.0" y="0.0" width="920.0" height="300.0" rx="12" fill="#ffffff"/>
+<text x="24" y="34" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="19" fill="#0f172a" font-weight="700">Does a single weight file fit in 24 GB?</text>
+<text x="24" y="56" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#64748b">Anything crossing the red line cannot stay resident on its own - ComfyUI must offload it every step</text>
+<line x1="320.0" y1="94.0" x2="320.0" y2="284.0" stroke="#e2e8f0" stroke-width="1"/>
+<text x="320.0" y="298" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle">0</text>
+<line x1="403.3" y1="94.0" x2="403.3" y2="284.0" stroke="#e2e8f0" stroke-width="1"/>
+<text x="403.3333333333333" y="298" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle">4</text>
+<line x1="486.7" y1="94.0" x2="486.7" y2="284.0" stroke="#e2e8f0" stroke-width="1"/>
+<text x="486.66666666666663" y="298" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle">8</text>
+<line x1="570.0" y1="94.0" x2="570.0" y2="284.0" stroke="#e2e8f0" stroke-width="1"/>
+<text x="570.0" y="298" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle">12</text>
+<line x1="653.3" y1="94.0" x2="653.3" y2="284.0" stroke="#e2e8f0" stroke-width="1"/>
+<text x="653.3333333333333" y="298" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle">16</text>
+<line x1="736.7" y1="94.0" x2="736.7" y2="284.0" stroke="#e2e8f0" stroke-width="1"/>
+<text x="736.6666666666667" y="298" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle">20</text>
+<line x1="820.0" y1="94.0" x2="820.0" y2="284.0" stroke="#e2e8f0" stroke-width="1"/>
+<text x="820.0" y="298" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle">24</text>
+<text x="570.0" y="314" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#64748b" text-anchor="middle">GB</text>
+<line x1="820.0" y1="86.0" x2="820.0" y2="284.0" stroke="#dc2626" stroke-width="2" stroke-dasharray="5 3"/>
+<text x="825.0" y="82" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#dc2626" font-weight="700">24 GB</text>
+<text x="24" y="117" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">MiniMax H3 DiT (int8 + ConvRot)</text>
+<rect x="320.0" y="106.0" width="436.9" height="16.0" rx="4" fill="#dc2626" opacity="0.45"/>
+<text x="763.875" y="118" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#64748b">20.97  offload required</text>
+<text x="24" y="143" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">HunyuanVideo 1.5 (720p / 480p)</text>
+<rect x="320.0" y="132.0" width="346.9" height="16.0" rx="4" fill="#94a3b8" opacity="0.45"/>
+<text x="673.875" y="144" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#64748b">16.65  offload required</text>
+<text x="24" y="169" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">Qwen3-VL 32B - MiniMax H3 encoder</text>
+<rect x="320.0" y="158.0" width="326.9" height="16.0" rx="4" fill="#2563eb" opacity="0.45"/>
+<text x="653.875" y="170" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#64748b">15.69  offload required</text>
+<text x="24" y="195" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">Z-Image-Turbo + bf16 encoder</text>
+<rect x="320.0" y="184.0" width="174.6" height="16.0" rx="4" fill="#d97706" opacity="1"/>
+<text x="501.58333333333326" y="196" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#0f172a" font-weight="700">8.38</text>
+<text x="24" y="221" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">Z-Image-Turbo int8 + fp4 encoder</text>
+<rect x="320.0" y="210.0" width="201.7" height="16.0" rx="4" fill="#94a3b8" opacity="1"/>
+<text x="528.6666666666666" y="222" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#0f172a" font-weight="700">9.68</text>
+<text x="24" y="247" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">Z-Image-Turbo nvfp4 + fp4 encoder</text>
+<rect x="320.0" y="236.0" width="166.5" height="16.0" rx="4" fill="#059669" opacity="1"/>
+<text x="493.45833333333337" y="248" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#0f172a" font-weight="700">7.99</text>
+<text x="24" y="273" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a">FLUX.2 Klein 4B fp8</text>
+<rect x="320.0" y="262.0" width="84.8" height="16.0" rx="4" fill="#059669" opacity="1"/>
+<text x="411.7916666666667" y="274" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#0f172a" font-weight="700">4.07</text>
+</svg>

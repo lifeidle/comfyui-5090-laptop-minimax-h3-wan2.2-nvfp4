@@ -254,7 +254,7 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:22px 0 0;color:v
 真正决定你能跑什么、不能跑什么的，是<strong>显存能不能装下</strong>。而最新一代开源生成模型的一个共同趋势是：
 <strong>主模型越来越大，而且都要求配一个独立的、同样巨大的文本编码器。</strong></p>
 <p>看下面这张图，注意那条 24 GB 红线：</p>
-<p><img src="assets/chart2-model-footprint.svg" alt="单个权重文件体积 vs 24 GB 显存" /></p>
+<p><img src="assets/zh/chart2-model-footprint.svg" alt="单个权重文件体积 vs 24 GB 显存" /></p>
 <p>三条线（MiniMax H3 的 DiT 21 GB、HunyuanVideo 1.5 的 16.7 GB、MiniMax H3 的文本编码器 15.7 GB）
 <strong>每一个单独拿出来就超过了 24 GB</strong>。这意味着：</p>
 <blockquote>
@@ -388,13 +388,13 @@ TensorCoreNVFP4Layout   (group_size = 16)
 qwen_3_4b_fp4_mixed.safetensors    3.48 GB  1081 tensors   BF16, F32, F8_E4M3, U8   ✅ 真 NVFP4
 </code></pre>
 <p><strong>下面这张决策树就是完整的选型逻辑</strong>：</p>
-<p><img src="assets/chart4-quant-decision-tree.svg" alt="量化格式选型决策树" /></p>
+<p><img src="assets/zh/chart4-quant-decision-tree.svg" alt="量化格式选型决策树" /></p>
 <hr />
 <h2 id="3-怎么下把-1256-gb-拉下来">3. 怎么下：把 125.6 GB 拉下来</h2>
 <p>下载这件事看着简单，但<strong>125.6 GB × 不稳定的源</strong>足以让一个天真实现跑一整天。
 先说结论：我们最后跑了 <strong>34 个文件 / 125.6 GB / 零损坏</strong>，核心是三个机制。</p>
 <h3 id="31-三个源的速度实测">3.1 三个源的速度实测</h3>
-<p><img src="assets/chart1-download-sources.svg" alt="下载源吞吐实测" /></p>
+<p><img src="assets/zh/chart1-download-sources.svg" alt="下载源吞吐实测" /></p>
 <p>差距是<strong>量级级别</strong>的：modelscope 比 hf-mirror 快 7 倍、比 huggingface 快 12 倍。
 所以&quot;多源回退&quot;不是锦上添花，而是必需品。</p>
 <h3 id="32-机制一三级回退">3.2 机制一：三级回退</h3>
@@ -551,7 +551,7 @@ int8 版配的是 <code>qwen_3_4b.safetensors</code>（bf16），nvfp4 版配的
 <p><strong>判据</strong>：如果 <code>cross</code> 的相似度 <strong>高于</strong> <code>seed</code> 的相似度，就说明<strong>量化造成的扰动比采样的随机性还小</strong>，
 即量化误差可以忽略。</p>
 <h3 id="54-结果">5.4 结果</h3>
-<p><img src="assets/chart3-quant-ab-psnr.svg" alt="受控 A/B：量化损失是真实存在的吗" /></p>
+<p><img src="assets/zh/chart3-quant-ab-psnr.svg" alt="受控 A/B：量化损失是真实存在的吗" /></p>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -844,7 +844,7 @@ ComfyUI 无法加载分片目录。</p>
 这是一个很多人会忽略的前置条件。</p>
 </blockquote>
 <h3 id="66-基准总表">6.6 基准总表</h3>
-<p><img src="assets/chart5-model-benchmark.svg" alt="各工作流实测耗时" /></p>
+<p><img src="assets/zh/chart5-model-benchmark.svg" alt="各工作流实测耗时" /></p>
 <blockquote>
 <p>所有时间都取自 ComfyUI 服务端的 <code>execution_start</code> / <code>execution_success</code> 时间戳，
 <strong>而不是墙钟时间或 API 往返时间</strong> —— 后者会把排队、加载模型的耗时算进来，读数虚高。</p>
@@ -857,7 +857,7 @@ ComfyUI 无法加载分片目录。</p>
 </blockquote>
 <hr />
 <h2 id="7-优化清单可以直接抄的配置">7. 优化清单（可以直接抄的配置）</h2>
-<p><img src="assets/chart6-nvfp4-gain.svg" alt="NVFP4 实际带来什么" /></p>
+<p><img src="assets/zh/chart6-nvfp4-gain.svg" alt="NVFP4 实际带来什么" /></p>
 <h3 id="71-按收益排序">7.1 按收益排序</h3>
 <div class="tw"><table>
 <thead>
@@ -1050,11 +1050,14 @@ python tools/ab_metrics.py
 ├── README.md              # 中文（本文件）
 ├── README_EN.md           # English
 ├── index.html             # 在线阅读版（按浏览器语言自动适配）
-├── assets/                # 全部 SVG 图表（由 tools/make_charts.py 生成）
+├── assets/
+│   ├── zh/                # 中文图表（README.md 引用）
+│   └── en/                # 英文图表（README_EN.md 引用）
 ├── data/                  # 实测原始数据
 ├── docs/                  # 深挖文章
 ├── scripts/               # 可复现脚本
-└── tools/                 # 分析与图表工具
+├── tools/                 # 分析与图表工具
+└── workflows/             # API 格式工作流
 </code></pre>
 <hr />
 <h2 id="10-结论与后续">10. 结论与后续</h2>
@@ -1487,7 +1490,7 @@ reproducible method.</p>
 shares a trend: <strong>the base model keeps getting bigger, and it now demands a separate text encoder
 that is just as big.</strong></p>
 <p>Look at the chart below. Note the 24 GB red line.</p>
-<p><img src="assets/chart2-model-footprint.svg" alt="Single-file weight size against 24 GB of VRAM" /></p>
+<p><img src="assets/en/chart2-model-footprint.svg" alt="Single-file weight size against 24 GB of VRAM" /></p>
 <p>Three of these files — MiniMax H3's DiT at 21 GB, HunyuanVideo 1.5 at 16.7 GB, and MiniMax H3's text
 encoder at 15.7 GB — <strong>each individually exceeds 24 GB</strong>. Which means:</p>
 <blockquote>
@@ -1628,14 +1631,14 @@ dtype list. For example:</p>
 qwen_3_4b_fp4_mixed.safetensors    3.48 GB  1081 tensors   BF16, F32, F8_E4M3, U8   ✅ real NVFP4
 </code></pre>
 <p><strong>The decision tree below is the complete selection logic:</strong></p>
-<p><img src="assets/chart4-quant-decision-tree.svg" alt="Quantization selection decision tree" /></p>
+<p><img src="assets/en/chart4-quant-decision-tree.svg" alt="Quantization selection decision tree" /></p>
 <hr />
 <h2 id="3-how-we-downloaded-moving-1256-gb">3. How we downloaded: moving 125.6 GB</h2>
 <p>Downloading looks trivial until you multiply <strong>125.6 GB</strong> by <strong>unstable mirrors</strong>. A naive
 implementation can spend a whole day on it. The outcome: <strong>34 files, 125.6 GB, zero corruption</strong> —
 built on three mechanisms.</p>
 <h3 id="31-throughput-measured">3.1 Throughput, measured</h3>
-<p><img src="assets/chart1-download-sources.svg" alt="Download source throughput" /></p>
+<p><img src="assets/en/chart1-download-sources.svg" alt="Download source throughput" /></p>
 <p>The gap is <strong>an order of magnitude</strong>: modelscope is 7× faster than hf-mirror and 12× faster than
 huggingface. Multi-source fallback is therefore not a nicety — it is mandatory.</p>
 <h3 id="32-mechanism-one-three-tier-fallback">3.2 Mechanism one: three-tier fallback</h3>
@@ -1807,7 +1810,7 @@ seed changed&quot; controls:</p>
 caused by quantization is smaller than the randomness of sampling</strong> — meaning quantization error is
 negligible.</p>
 <h3 id="54-results">5.4 Results</h3>
-<p><img src="assets/chart3-quant-ab-psnr.svg" alt="Controlled A/B: is the quantization loss real?" /></p>
+<p><img src="assets/en/chart3-quant-ab-psnr.svg" alt="Controlled A/B: is the quantization loss real?" /></p>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -2116,7 +2119,7 @@ Three ways out:</p>
 format loadable by my tooling?&quot;</strong> Many people overlook this precondition.</p>
 </blockquote>
 <h3 id="66-benchmark-summary">6.6 Benchmark summary</h3>
-<p><img src="assets/chart5-model-benchmark.svg" alt="Measured generation time per workflow" /></p>
+<p><img src="assets/en/chart5-model-benchmark.svg" alt="Measured generation time per workflow" /></p>
 <blockquote>
 <p>All times are read from ComfyUI's server-side <code>execution_start</code> / <code>execution_success</code> timestamps —
 <strong>never wall-clock time or API round-trip time</strong>, which would fold queueing and model-loading into
@@ -2130,7 +2133,7 @@ power limits), but <strong>the relative result — nvfp4 is 22–25% faster than
 </blockquote>
 <hr />
 <h2 id="7-optimization-checklist-configs-you-can-copy">7. Optimization checklist (configs you can copy)</h2>
-<p><img src="assets/chart6-nvfp4-gain.svg" alt="What NVFP4 actually buys you" /></p>
+<p><img src="assets/en/chart6-nvfp4-gain.svg" alt="What NVFP4 actually buys you" /></p>
 <h3 id="71-ordered-by-payoff">7.1 Ordered by payoff</h3>
 <div class="tw"><table>
 <thead>
@@ -2324,11 +2327,14 @@ python tools/ab_metrics.py
 ├── README.md              # Chinese
 ├── README_EN.md           # English (this file)
 ├── index.html             # Online edition (adapts to your browser language)
-├── assets/                # All SVG charts, generated by tools/make_charts.py
+├── assets/
+│   ├── zh/                # Chinese charts (used by README.md)
+│   └── en/                # English charts (used by README_EN.md)
 ├── data/                  # Raw measurements
 ├── docs/                  # Deep dives
 ├── scripts/               # Reproducible scripts
-└── tools/                 # Analysis and charting tools
+├── tools/                 # Analysis and charting tools
+└── workflows/             # API-format workflows
 </code></pre>
 <hr />
 <h2 id="10-conclusion-and-what-is-next">10. Conclusion and what is next</h2>

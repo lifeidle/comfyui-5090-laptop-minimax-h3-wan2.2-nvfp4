@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 336" width="920" height="336" role="img" aria-label="受控 A/B：量化的画质损失是真的吗？">
+<rect x="0.0" y="0.0" width="920.0" height="336.0" rx="12" fill="#ffffff"/>
+<text x="24" y="34" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="19" fill="#0f172a" font-weight="700">受控 A/B：量化的画质损失是真的吗？</text>
+<text x="24" y="56" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#64748b">Z-Image-Turbo。同一编码器、同一提示词、同一 1024×1024 / 8 步配置 —— 只改 DiT 的量化格式。</text>
+<line x1="268.0" y1="100.0" x2="268.0" y2="270.0" stroke="#e2e8f0" stroke-width="1"/>
+<text x="268.0" y="286" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#94a3b8" text-anchor="middle">0</text>
+<line x1="404.0" y1="100.0" x2="404.0" y2="270.0" stroke="#e2e8f0" stroke-width="1"/>
+<text x="404.0" y="286" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#94a3b8" text-anchor="middle">5</text>
+<line x1="540.0" y1="100.0" x2="540.0" y2="270.0" stroke="#e2e8f0" stroke-width="1"/>
+<text x="540.0" y="286" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#94a3b8" text-anchor="middle">10</text>
+<line x1="676.0" y1="100.0" x2="676.0" y2="270.0" stroke="#e2e8f0" stroke-width="1"/>
+<text x="676.0" y="286" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#94a3b8" text-anchor="middle">15</text>
+<line x1="812.0" y1="100.0" x2="812.0" y2="270.0" stroke="#e2e8f0" stroke-width="1"/>
+<text x="812.0" y="286" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#94a3b8" text-anchor="middle">20</text>
+<text x="540.0" y="304" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#64748b" text-anchor="middle">PSNR（dB）—— 越高表示两张图越相似</text>
+<rect x="597.1" y="100.0" width="9.5" height="154.0" rx="0" fill="#94a3b8" opacity="0.16"/>
+<text x="601.88" y="92" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#64748b" text-anchor="middle">种子噪声地板</text>
+<text x="24" y="125" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="14" fill="#0f172a" font-weight="600">跨量化</text>
+<text x="24" y="142" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#64748b">NVFP4 vs INT8，同种子</text>
+<rect x="268.0" y="111.0" width="458.0" height="24.0" rx="5" fill="#059669" opacity="1"/>
+<text x="735.048" y="129" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="15" fill="#0f172a" font-weight="700">16.84</text>
+<text x="24" y="181" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="14" fill="#0f172a" font-weight="600">种子噪声</text>
+<text x="24" y="198" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#64748b">NVFP4，换种子</text>
+<rect x="268.0" y="167.0" width="338.6" height="24.0" rx="5" fill="#94a3b8" opacity="0.45"/>
+<text x="615.64" y="185" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="15" fill="#0f172a" font-weight="700">12.45</text>
+<text x="24" y="237" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="14" fill="#0f172a" font-weight="600">种子噪声</text>
+<text x="24" y="254" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#64748b">INT8，换种子</text>
+<rect x="268.0" y="223.0" width="329.1" height="24.0" rx="5" fill="#94a3b8" opacity="0.45"/>
+<text x="606.12" y="241" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="15" fill="#0f172a" font-weight="700">12.10</text>
+<line x1="24.0" y1="284.0" x2="896.0" y2="284.0" stroke="#e2e8f0" stroke-width="1"/>
+<text x="24" y="304" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#0f172a" font-weight="600">同量化 + 同种子重跑，实测 PSNR = ∞（逐字节完全一致）。</text>
+<text x="24" y="321" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" fill="#64748b">所以跨量化的差异 100% 可归因于量化 —— 而它仍然小于换一次种子的差异。</text>
+</svg>

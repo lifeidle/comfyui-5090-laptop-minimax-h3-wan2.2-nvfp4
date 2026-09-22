@@ -52,7 +52,7 @@
 
 看下面这张图，注意那条 24 GB 红线：
 
-![单个权重文件体积 vs 24 GB 显存](assets/chart2-model-footprint.svg)
+![单个权重文件体积 vs 24 GB 显存](assets/zh/chart2-model-footprint.svg)
 
 三条线（MiniMax H3 的 DiT 21 GB、HunyuanVideo 1.5 的 16.7 GB、MiniMax H3 的文本编码器 15.7 GB）
 **每一个单独拿出来就超过了 24 GB**。这意味着：
@@ -141,7 +141,7 @@ qwen_3_4b_fp4_mixed.safetensors    3.48 GB  1081 tensors   BF16, F32, F8_E4M3, U
 
 **下面这张决策树就是完整的选型逻辑**：
 
-![量化格式选型决策树](assets/chart4-quant-decision-tree.svg)
+![量化格式选型决策树](assets/zh/chart4-quant-decision-tree.svg)
 
 ---
 
@@ -152,7 +152,7 @@ qwen_3_4b_fp4_mixed.safetensors    3.48 GB  1081 tensors   BF16, F32, F8_E4M3, U
 
 ### 3.1 三个源的速度实测
 
-![下载源吞吐实测](assets/chart1-download-sources.svg)
+![下载源吞吐实测](assets/zh/chart1-download-sources.svg)
 
 差距是**量级级别**的：modelscope 比 hf-mirror 快 7 倍、比 huggingface 快 12 倍。
 所以"多源回退"不是锦上添花，而是必需品。
@@ -300,7 +300,7 @@ PSNR = 13.82 dB
 
 ### 5.4 结果
 
-![受控 A/B：量化损失是真实存在的吗](assets/chart3-quant-ab-psnr.svg)
+![受控 A/B：量化损失是真实存在的吗](assets/zh/chart3-quant-ab-psnr.svg)
 
 | 对比组 | 变量 | PSNR | 平均像素差 |
 |---|---|---|---|
@@ -480,7 +480,7 @@ ComfyUI 无法加载分片目录。
 
 ### 6.6 基准总表
 
-![各工作流实测耗时](assets/chart5-model-benchmark.svg)
+![各工作流实测耗时](assets/zh/chart5-model-benchmark.svg)
 
 > 所有时间都取自 ComfyUI 服务端的 `execution_start` / `execution_success` 时间戳，
 > **而不是墙钟时间或 API 往返时间** —— 后者会把排队、加载模型的耗时算进来，读数虚高。
@@ -495,7 +495,7 @@ ComfyUI 无法加载分片目录。
 
 ## 7. 优化清单（可以直接抄的配置）
 
-![NVFP4 实际带来什么](assets/chart6-nvfp4-gain.svg)
+![NVFP4 实际带来什么](assets/zh/chart6-nvfp4-gain.svg)
 
 ### 7.1 按收益排序
 
@@ -582,11 +582,14 @@ python tools/ab_metrics.py
 ├── README.md              # 中文（本文件）
 ├── README_EN.md           # English
 ├── index.html             # 在线阅读版（按浏览器语言自动适配）
-├── assets/                # 全部 SVG 图表（由 tools/make_charts.py 生成）
+├── assets/
+│   ├── zh/                # 中文图表（README.md 引用）
+│   └── en/                # 英文图表（README_EN.md 引用）
 ├── data/                  # 实测原始数据
 ├── docs/                  # 深挖文章
 ├── scripts/               # 可复现脚本
-└── tools/                 # 分析与图表工具
+├── tools/                 # 分析与图表工具
+└── workflows/             # API 格式工作流
 ```
 
 ---
