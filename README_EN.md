@@ -640,11 +640,44 @@ contact sheet shows a temporally stable, subject-consistent result — *"a potte
 slowly turns, wet clay is pulled taller into a vase between two hands, warm rim light from the left,
 blurred wooden shelves of bisque ware behind"* — **every element of the prompt is present.**
 
+#### Same-prompt comparison (this matters more than the table above)
+
+The table above lists each config separately. **A real comparison needs the same prompt** — we ran
+all three lines on one identical Chinese prompt (*"extreme close-up: a hummingbird hovers at red
+flowers sipping nectar, wings beating fast, sunlight through the petals, bokeh background, slow
+lateral camera move"*):
+
+| Model | Prompt | Resolution/frames | Exec | Followed the prompt? |
+|---|---|---|---|---|
+| **Wan 2.2 5B TI2V** | Chinese (same) | 1280×704 / 121 frames | 355.1 s | ✅ **fully** (hummingbird, red flowers, wing blur, shallow DoF all present) |
+| **MiniMax H3 8-step** | Chinese (same) | 1344×768 / 124 frames | 539.5 s | ✅ **fully** — composition and detail arguably better than Wan |
+| **LTX-Video 2B distilled** | Chinese (same) | 1216×704 / 121 frames | 23.2 s | ❌ **completely unrelated** (a Mediterranean coastline; no hummingbird) |
+
+**LTX produced an entirely unrelated scene** — not a rendering error, the prompt was simply not
+followed. We ran a three-step diagnosis:
+
+1. **Switch to the English version** of the same prompt → **still the same coastline** → rules out
+   "Chinese not supported"
+2. **Change the seed** (20260922 → 777) → still the coastline → rules out bad luck
+3. **Switch to a completely different common prompt** ("a red sports car driving on a desert highway
+   at sunset") → the output **became a parking lot / road** (road, arid terrain — but no car)
+
+**Conclusion: LTX-Video 2B distilled at CFG=1 / 8 steps has very weak prompt adherence.** It captures
+the **broad scene type** (outdoor, road, arid) but **not specific subjects** (a hummingbird, a sports
+car). The cause is the configuration we chose for speed — *distilled + CFG-free + 8 steps* — and
+**that speed is paid for with prompt adherence**.
+
+> **This is the most important counter-example in the document: "it runs fast" and "it is usable"
+> are two different things.** LTX is 18× faster, but at CFG=1 / 8 steps it **cannot reliably render
+> what the prompt asks for**. If you need prompt adherence, either raise CFG/steps (and get slower)
+> or use Wan / MiniMax H3.
+
 #### Choosing between the three
 
 | What you need | Pick | Why |
 |---|---|---|
-| **Fast iteration / composition check** | LTX-Video 2B | 19 seconds, 18× faster; accept smaller motion |
+| **Reliably following the prompt** | **Wan 2.2 5B / MiniMax H3** | Both follow fully; MiniMax H3 has better detail and ships audio |
+| **Blind material generation** | LTX-Video 2B | 19 seconds a clip, but **the content is not controllable** |
 | **Best quality / believable action (light)** | Wan 2.2 5B | Best prompt adherence and physical plausibility; ~6 minutes |
 | **Best quality (flagship)** | **Wan 2.2 14B MoE** | Dual experts + 4-step LoRA — the flagship in **94 seconds** |
 | **1080p** | ⚠️ no workable option yet | HV1.5's 720p+SR ran 70 minutes without finishing on 24 GB (see the HunyuanVideo 1.5 block above) |
@@ -1001,9 +1034,9 @@ to Python (`scripts/push_site.py`), matching the original line by line:
 | **Image** | **Qwen-Image 2512 + Lightning** | **12.2 s** @1328²/4 steps | **68% more pixels than Lens turbo (13.6 s @1024²) and faster**; the only model with **character-exact verified Chinese rendering**. Sole cost is 30.06 GB needing offload — and 12.2 s already includes that |
 | Image (resident-VRAM tier) | Z-Image-Turbo nvfp4 | 13.8 s @1024²/8 steps | 8.33 GB fully resident, zero offload — least fussy for heavy use |
 | **Image editing** | **FLUX.2 Klein 9B fp8** (⚠️ non-commercial licence — use the 4B commercially, see Appendix F.3) | **18.9 s** | Two-pass 9B fits in 18.3 GB; 4B (42.3 s) is both lower quality and slower |
-| **Video (quality first)** | **Wan 2.2 14B MoE + 4-step LoRA** | **93.8 s** @832×480/81 frames | Flagship MoE quality; 4 steps is **7.9× faster than 20** (which takes 739 s — not worth it) |
-| Video (speed first) | LTX-Video 2B distilled | **19.2 s** @1216×704/121 frames | 4.9× faster than Wan 14B; accept subtler motion |
-| **Video + audio** | **MiniMax H3 + 4-step LoRA** | **286.2 s** | 4 steps is **1.81× faster than 8**; the only line with a native audio track |
+| **Video (quality first)** | **Wan 2.2 14B MoE + 4-step LoRA** | **93.8 s** @832×480/81 frames | Flagship MoE quality; 4 steps is **7.9× faster than 20**. **Followed the prompt exactly** in the same-prompt test (§6.4) |
+| Video (speed first) | ~~LTX-Video 2B distilled~~ → **Wan 2.2 14B MoE + 4-step LoRA** | 93.8 s | **LTX demoted**: in the same-prompt test it did not follow the prompt at all (§6.4) — 18× faster but the content is uncontrollable |
+| **Video + audio** | **MiniMax H3 + 4-step LoRA** | **286.2 s** | 4 steps is **1.81× faster than 8**; the only line with a native audio track. **In the same-prompt test its composition and detail beat Wan** (§6.4). ⚠️ licence excludes four Western territories |
 | **Music** | **ACE-Step 1.5 XL turbo** | **28.6 s** / 60 s song | **Apache 2.0, commercially usable.** Stable Audio 3 is faster (13.8 s) but is an SFX / short-clip model |
 | **Image → 3D** | Hunyuan3D 2.1 | **54.7 s** | One file produces a 520k-triangle GLB |
 
@@ -1052,9 +1085,9 @@ decided by that model's own licence**.
 
 | Model | Licence | Commercial? | Notes |
 |---|---|---|---|
-| **Qwen-Image 2512** | Apache 2.0 | ✅ | §11's image pick, clean |
-| **Wan 2.2 (5B / 14B)** | Apache 2.0 | ✅ | §11's video pick, clean |
-| **ACE-Step 1.5** | Apache 2.0 | ✅ | §11's music pick, clean |
+| **Qwen-Image 2512** | **Apache 2.0** ✅ verified | ✅ | §11's image pick, clean |
+| **Wan 2.2 (5B / 14B)** | **Apache 2.0** ✅ verified | ✅ | §11's video pick. **Note: "Wan 2.7 is open source" is false** — the open-weight line ends at 2.2; 2.5/2.6/2.7 are API-only |
+| **ACE-Step 1.5** | Apache 2.0 (one source says MIT — defer to the repo's LICENSE) | ✅ | §11's music pick; two sources disagree on the exact licence, but neither has a revenue threshold |
 | **FLUX.2 Klein 4B** | **Apache 2.0** | ✅ | ⚠️ **opposite** of the 9B, see F.3 |
 | **FLUX.2 Klein 9B** | **FLUX Non-Commercial Licence** | ❌ **no** | ⚠️ §11 recommends it for editing — **non-commercial only**; use 4B for commercial work |
 | FLUX.1-dev | FLUX.1-dev Non-Commercial | ❌ | Used here only as a baseline |
@@ -1063,10 +1096,11 @@ decided by that model's own licence**.
 | HunyuanVideo 1.5 | Tencent Community Licence | ⚠️ conditional | Also **excludes the EU, UK and South Korea** |
 | LTX-Video 2B / LTX-2.3 | LTX Community Licence | ⚠️ conditional | Free commercial use under **$10M annual revenue** (frequently mis-described as Apache 2.0) |
 | **YuE2** | **CC-BY-NC 4.0** | ❌ **no** | "The weights download" ≠ "the output is usable" |
-| MiniMax Music 3 | see the official repo | ⚠️ unverified | Check before use |
-| MiniMax H3 | see the official repo | ⚠️ unverified | Check before use |
-| Stable Audio 3 Medium | see the official repo | ⚠️ unverified | Stability-family community licences usually carry a revenue threshold |
-| Lens / ERNIE-Image | see the official repo | ⚠️ unverified | Newer; the model card governs |
+| **MiniMax Music 3** | ⚠️ **sources conflict** | ⚠️ check yourself | One source reports **CC BY-NC 4.0 (no commercial use)**; others report the MiniMax-Music3 Community Licence (commercial with on-screen attribution + a $20M threshold). **Both claims exist — read the LICENSE file in the repo directly before use** |
+| **MiniMax H3** | MiniMax Community Licence | ⚠️ **conditional** | **Excluded territories include the United States** (EU/UK/Korea/US may not deploy locally); commercial use allowed under $20M annual revenue with prominent "MiniMax H3" attribution; MiniMax states the regional carve-out stems from its ongoing generative-video copyright litigation with major Hollywood studios |
+| **Stable Audio 3 Medium** | Stability AI Community Licence | ✅ **under $1M annual revenue** | Trained entirely on licensed audio (806k AudioSparx + 473k Freesound, plus UMG/Warner partnerships); above $1M needs an Enterprise licence. **Note: instrumental only — no vocals or lyrics** |
+| **ERNIE-Image** | **Apache 2.0** ✅ verified | ✅ | 8B DiT + an 8-step Turbo build; GenEval 0.8856 / LongTextBench 0.9733 — **best-in-class text rendering and layout among open models** |
+| **Lens** | see the official repo | ⚠️ unverified | Comfy-Org/Lens is a repackage; **the original vendor and licence are still unverified**; the encoder is gpt_oss_20b nvfp4 |
 
 ### F.3 The biggest trap: FLUX.2 Klein's 4B and 9B have **opposite** licences
 
@@ -1263,6 +1297,7 @@ See the [`data/`](data/) directory:
 - [`data/download-manifest.md`](data/download-manifest.md) — size and dtype of all 34 files
 - [`data/coverage-round2.md`](data/coverage-round2.md)
 - [`data/coverage-round3.md`](data/coverage-round3.md) — **round 3**: Wan 2.2 14B (4- vs 20-step), MiniMax H3 4-step, FLUX.2 Klein 9B unblocked, Lens, ERNIE, Stable Audio 3, plus the full 21-row benchmark — **raw data for the round-2 coverage expansion** (timings and output specs for the four music lines + Wan 2.2 14B + LTX + Hunyuan3D, the VAE trap, and the cu130 kernel evidence)
+- [`data/licences-and-video-comparison.md`](data/licences-and-video-comparison.md) — **licence verification + same-prompt video comparison** (three models on one prompt, and the three-step LTX diagnosis)
 
 ## Appendix C: Glossary
 

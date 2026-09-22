@@ -1093,6 +1093,60 @@ expected input[1, 16, 21, 60, 104] to have 48 channels, but got 16 channels inst
 抽帧拼图后时序稳定、主体一致 ——「陶艺工作室拉坯成瓶，陶轮旋转、双手塑形、左侧暖黄轮廓光、
 背景虚化木架素坯」，<strong>提示词里的每个要素都对上了</strong>。</p>
 <h4 id="三条线怎么选">三条线怎么选</h4>
+<h5 id="同提示词对比实验这一节比上面的表格重要">同提示词对比实验（这一节比上面的表格重要）</h5>
+<p>上面的表格是各自的配置。<strong>真正的对比必须是同提示词</strong> —— 我们用同一句中文提示词
+（「特写镜头，一只蜂鸟悬停在红色花丛前采蜜，翅膀高速振动，阳光透过花瓣，背景虚化，镜头缓慢横移」）
+跑了三条线，结果<strong>推翻了速度排名的含义</strong>：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>模型</th>
+<th>提示词</th>
+<th>分辨率/帧数</th>
+<th>耗时</th>
+<th>是否跟随提示词</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Wan 2.2 5B TI2V</strong></td>
+<td>中文（同一句）</td>
+<td>1280×704 / 121 帧</td>
+<td>355.1 s</td>
+<td>✅ <strong>完全跟随</strong>（蜂鸟、红花、振翅、浅景深全对）</td>
+</tr>
+<tr>
+<td><strong>MiniMax H3 8 步</strong></td>
+<td>中文（同一句）</td>
+<td>1344×768 / 124 帧</td>
+<td>539.5 s</td>
+<td>✅ <strong>完全跟随</strong>，构图与细节甚至更好</td>
+</tr>
+<tr>
+<td><strong>LTX-Video 2B 蒸馏</strong></td>
+<td>中文（同一句）</td>
+<td>1216×704 / 121 帧</td>
+<td>23.2 s</td>
+<td>❌ <strong>完全无关</strong>（生成地中海海岸，没有蜂鸟）</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>LTX 生成了完全不相干的画面</strong> —— 这不是渲染误差，是<strong>提示词根本没有被遵循</strong>。
+我们做了三步排查来定位原因：</p>
+<ol>
+<li><strong>换英文提示词</strong>（同一句的英文版）→ <strong>仍是同一幅海岸</strong> → 排除「中文不支持」</li>
+<li><strong>换种子</strong>（20260922 → 777）→ 仍是海岸 → 排除偶然性</li>
+<li><strong>换一个完全不同的常见提示词</strong>（「红色跑车驶过沙漠公路」）→ 输出<strong>变成了停车场/公路</strong>（有路、有干旱地貌，但没有车）</li>
+</ol>
+<p><strong>结论：LTX-Video 2B 蒸馏在 CFG=1 / 8 步下，提示词遵循极弱。</strong>
+它能捕捉<strong>粗略的场景类型</strong>（户外、公路、干旱），但<strong>抓不住具体主体</strong>（蜂鸟、跑车）。
+原因是我们为速度选择了「蒸馏版 + CFG-free + 8 步」这套配置 —— <strong>这笔速度是用「提示词遵循」换来的</strong>。</p>
+<blockquote>
+<p><strong>这是本手册最重要的一条反例</strong>：<strong>「跑得快」和「能用」是两件事。</strong>
+LTX 快 18 倍，但在 CFG=1/8 步下它<strong>不能可靠地按提示词出片</strong>。
+如果需要提示词遵循，要么提高 CFG/步数（会变慢），要么换 Wan / MiniMax H3。</p>
+</blockquote>
+<h5 id="选型结论按提示词遵循修正后">选型结论（按「提示词遵循」修正后）</h5>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -1103,24 +1157,19 @@ expected input[1, 16, 21, 60, 104] to have 48 channels, but got 16 channels inst
 </thead>
 <tbody>
 <tr>
-<td><strong>快速迭代 / 看构图</strong></td>
+<td><strong>可靠地按提示词出片</strong></td>
+<td><strong>Wan 2.2 5B / MiniMax H3</strong></td>
+<td>两者都完全跟随；MiniMax H3 细节更好且带音轨</td>
+</tr>
+<tr>
+<td><strong>盲出素材 / 不在乎内容</strong></td>
 <td>LTX-Video 2B</td>
-<td>19 秒出片，快 18 倍；接受运动小</td>
-</tr>
-<tr>
-<td><strong>最佳画质 / 动作可信（轻量档）</strong></td>
-<td>Wan 2.2 5B</td>
-<td>提示词遵循与物理真实感最好；但要 6 分钟</td>
-</tr>
-<tr>
-<td><strong>最佳画质（旗舰档）</strong></td>
-<td><strong>Wan 2.2 14B MoE</strong></td>
-<td>双专家 + 4 步 LoRA，<strong>94 秒</strong>就能跑旗舰模型</td>
+<td>19 秒一张，但<strong>内容不可控</strong></td>
 </tr>
 <tr>
 <td><strong>要 1080p</strong></td>
 <td>⚠️ 目前没有可用方案</td>
-<td>HV1.5 的 720p+SR 在 24 GB 上跑满 70 分钟未完成（见上方 HunyuanVideo 1.5 小节）</td>
+<td>HV1.5 的 720p+SR 在 24 GB 上跑满 70 分钟未完成</td>
 </tr>
 <tr>
 <td><strong>要声音</strong></td>
@@ -1856,19 +1905,19 @@ python tools/ab_metrics.py
 <td><strong>视频（质量优先）</strong></td>
 <td><strong>Wan 2.2 14B MoE + 4步 LoRA</strong></td>
 <td><strong>93.8 s</strong> @832×480/81帧</td>
-<td>旗舰 MoE 画质；4 步比 20 步<strong>快 7.9×</strong>（20 步要 739 s，不值）</td>
+<td>旗舰 MoE 画质；4 步比 20 步<strong>快 7.9×</strong>。<strong>同提示词对比中提示词遵循完全正确</strong>（见 §6.4）</td>
 </tr>
 <tr>
 <td>视频（速度优先）</td>
-<td>LTX-Video 2B 蒸馏</td>
-<td><strong>19.2 s</strong> @1216×704/121帧</td>
-<td>比 Wan 14B 快 4.9×；接受运动幅度小</td>
+<td><s>LTX-Video 2B 蒸馏</s> → <strong>Wan 2.2 14B MoE + 4步 LoRA</strong></td>
+<td>93.8 s</td>
+<td><strong>LTX 被降级</strong>：同提示词对比中它完全不跟随提示词（见 §6.4），快 18× 但内容不可控</td>
 </tr>
 <tr>
 <td><strong>视频 + 音频</strong></td>
 <td><strong>MiniMax H3 + 4步 LoRA</strong></td>
 <td><strong>286.2 s</strong></td>
-<td>4 步比 8 步<strong>快 1.81×</strong>；唯一原生出音轨</td>
+<td>4 步比 8 步<strong>快 1.81×</strong>；唯一原生出音轨。<strong>同提示词对比中构图与细节甚至优于 Wan</strong>（见 §6.4）。⚠️ 授权排除欧美四地</td>
 </tr>
 <tr>
 <td><strong>音乐</strong></td>
@@ -1925,21 +1974,21 @@ python tools/ab_metrics.py
 <tbody>
 <tr>
 <td><strong>Qwen-Image 2512</strong></td>
-<td>Apache 2.0</td>
+<td><strong>Apache 2.0</strong> ✅ 已核实</td>
 <td>✅</td>
 <td>§11 的图像首选，授权干净</td>
 </tr>
 <tr>
 <td><strong>Wan 2.2（5B / 14B）</strong></td>
-<td>Apache 2.0</td>
+<td><strong>Apache 2.0</strong> ✅ 已核实</td>
 <td>✅</td>
-<td>§11 的视频首选，授权干净</td>
+<td>§11 的视频首选。<strong>注意：「Wan 2.7 开源」是假消息</strong> —— Wan 开源线到 2.2 为止，2.5/2.6/2.7 均为 API 专属</td>
 </tr>
 <tr>
 <td><strong>ACE-Step 1.5</strong></td>
-<td>Apache 2.0</td>
+<td>Apache 2.0（一说 MIT，以仓库 LICENSE 为准）</td>
 <td>✅</td>
-<td>§11 的音乐首选，授权干净</td>
+<td>§11 的音乐首选；两个信源对具体许可证有分歧，但都无营收门槛</td>
 </tr>
 <tr>
 <td><strong>FLUX.2 Klein 4B</strong></td>
@@ -1990,28 +2039,34 @@ python tools/ab_metrics.py
 <td>权重能下载 ≠ 产出能用</td>
 </tr>
 <tr>
-<td>MiniMax Music 3</td>
-<td>见官方仓库</td>
-<td>⚠️ 未核实</td>
-<td>用前必须自查</td>
+<td><strong>MiniMax Music 3</strong></td>
+<td>⚠️ <strong>信源冲突</strong></td>
+<td>⚠️ 需自查</td>
+<td>一说 <strong>CC BY-NC 4.0（禁商用）</strong>，一说 MiniMax-Music3 Community License（可商用 + 界面标注 + 2000 万美元门槛）。<strong>两说并存，用前必须直接读仓库里的 LICENSE 文件</strong></td>
 </tr>
 <tr>
-<td>MiniMax H3</td>
-<td>见官方仓库</td>
-<td>⚠️ 未核实</td>
-<td>用前必须自查</td>
+<td><strong>MiniMax H3</strong></td>
+<td>MiniMax Community License</td>
+<td>⚠️ <strong>有条件</strong></td>
+<td><strong>排除地区含美国</strong>（EU/UK/韩国/美国四地不可本地部署）；商用 &lt; 2000 万美元年收入可用，须显著标注「MiniMax H3」；官方称地域排除源于与好莱坞的生成式视频版权诉讼</td>
 </tr>
 <tr>
-<td>Stable Audio 3 Medium</td>
-<td>见官方仓库</td>
-<td>⚠️ 未核实</td>
-<td>Stability 系社区授权通常有营收门槛</td>
+<td><strong>Stable Audio 3 Medium</strong></td>
+<td>Stability AI Community License</td>
+<td>✅ <strong>&lt; 100 万美元年收入</strong></td>
+<td>训练数据全部授权（AudioSparx 80.6 万 + Freesound 47.3 万，另有 UMG/华纳合作）；超过 100 万美元需 Enterprise 授权。<strong>注意：只生成器乐，不生成人声/歌词</strong></td>
 </tr>
 <tr>
-<td>Lens / ERNIE-Image</td>
+<td><strong>ERNIE-Image</strong></td>
+<td><strong>Apache 2.0</strong> ✅ 已核实</td>
+<td>✅</td>
+<td>8B DiT + Turbo 8 步版；GenEval 0.8856 / LongTextBench 0.9733，<strong>文字渲染与排版在开源里排第一</strong></td>
+</tr>
+<tr>
+<td><strong>Lens</strong></td>
 <td>见官方仓库</td>
 <td>⚠️ 未核实</td>
-<td>较新，条款以模型卡为准</td>
+<td>Comfy-Org/Lens 是 repackage，<strong>原始厂商与授权待查</strong>；编码器是 gpt_oss_20b nvfp4</td>
 </tr>
 </tbody>
 </table></div>
@@ -2495,6 +2550,7 @@ python tools/ab_metrics.py
 <li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/download-manifest.md"><code>data/download-manifest.md</code></a> —— 34 个文件的体积与 dtype</li>
 <li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/coverage-round2.md"><code>data/coverage-round2.md</code></a> —— <strong>第二轮覆盖度扩展的原始数据</strong>（音乐 4 条线 + Wan 2.2 14B + LTX + Hunyuan3D 的耗时与产物规格、VAE 踩坑记录、cu130 内核禁用证据）</li>
 <li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/coverage-round3.md"><code>data/coverage-round3.md</code></a> —— <strong>第三轮的原始数据</strong>（Wan 2.2 14B 4步 vs 20步、MiniMax H3 4步、FLUX.2 Klein 9B 解封、Lens、ERNIE、Stable Audio 3，以及全部 21 组基准）</li>
+<li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/licences-and-video-comparison.md"><code>data/licences-and-video-comparison.md</code></a> —— <strong>授权核实结果 + 同提示词视频对比</strong>（三个模型同一句提示词的三方对比、LTX 提示词遵循的三步诊断）</li>
 </ul>
 <h2 id="附录-c术语表">附录 C：术语表</h2>
 <div class="tw"><table>
@@ -3799,6 +3855,64 @@ usable as an iteration sketch. Recommended workflow: <strong>prototype prompts a
 contact sheet shows a temporally stable, subject-consistent result — <em>&quot;a pottery studio: the wheel
 slowly turns, wet clay is pulled taller into a vase between two hands, warm rim light from the left,
 blurred wooden shelves of bisque ware behind&quot;</em> — <strong>every element of the prompt is present.</strong></p>
+<h4 id="same-prompt-comparison-this-matters-more-than-the-table-above">Same-prompt comparison (this matters more than the table above)</h4>
+<p>The table above lists each config separately. <strong>A real comparison needs the same prompt</strong> — we ran
+all three lines on one identical Chinese prompt (<em>&quot;extreme close-up: a hummingbird hovers at red
+flowers sipping nectar, wings beating fast, sunlight through the petals, bokeh background, slow
+lateral camera move&quot;</em>):</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Prompt</th>
+<th>Resolution/frames</th>
+<th>Exec</th>
+<th>Followed the prompt?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Wan 2.2 5B TI2V</strong></td>
+<td>Chinese (same)</td>
+<td>1280×704 / 121 frames</td>
+<td>355.1 s</td>
+<td>✅ <strong>fully</strong> (hummingbird, red flowers, wing blur, shallow DoF all present)</td>
+</tr>
+<tr>
+<td><strong>MiniMax H3 8-step</strong></td>
+<td>Chinese (same)</td>
+<td>1344×768 / 124 frames</td>
+<td>539.5 s</td>
+<td>✅ <strong>fully</strong> — composition and detail arguably better than Wan</td>
+</tr>
+<tr>
+<td><strong>LTX-Video 2B distilled</strong></td>
+<td>Chinese (same)</td>
+<td>1216×704 / 121 frames</td>
+<td>23.2 s</td>
+<td>❌ <strong>completely unrelated</strong> (a Mediterranean coastline; no hummingbird)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>LTX produced an entirely unrelated scene</strong> — not a rendering error, the prompt was simply not
+followed. We ran a three-step diagnosis:</p>
+<ol>
+<li><strong>Switch to the English version</strong> of the same prompt → <strong>still the same coastline</strong> → rules out
+&quot;Chinese not supported&quot;</li>
+<li><strong>Change the seed</strong> (20260922 → 777) → still the coastline → rules out bad luck</li>
+<li><strong>Switch to a completely different common prompt</strong> (&quot;a red sports car driving on a desert highway
+at sunset&quot;) → the output <strong>became a parking lot / road</strong> (road, arid terrain — but no car)</li>
+</ol>
+<p><strong>Conclusion: LTX-Video 2B distilled at CFG=1 / 8 steps has very weak prompt adherence.</strong> It captures
+the <strong>broad scene type</strong> (outdoor, road, arid) but <strong>not specific subjects</strong> (a hummingbird, a sports
+car). The cause is the configuration we chose for speed — <em>distilled + CFG-free + 8 steps</em> — and
+<strong>that speed is paid for with prompt adherence</strong>.</p>
+<blockquote>
+<p><strong>This is the most important counter-example in the document: &quot;it runs fast&quot; and &quot;it is usable&quot;
+are two different things.</strong> LTX is 18× faster, but at CFG=1 / 8 steps it <strong>cannot reliably render
+what the prompt asks for</strong>. If you need prompt adherence, either raise CFG/steps (and get slower)
+or use Wan / MiniMax H3.</p>
+</blockquote>
 <h4 id="choosing-between-the-three">Choosing between the three</h4>
 <div class="tw"><table>
 <thead>
@@ -3810,9 +3924,14 @@ blurred wooden shelves of bisque ware behind&quot;</em> — <strong>every elemen
 </thead>
 <tbody>
 <tr>
-<td><strong>Fast iteration / composition check</strong></td>
+<td><strong>Reliably following the prompt</strong></td>
+<td><strong>Wan 2.2 5B / MiniMax H3</strong></td>
+<td>Both follow fully; MiniMax H3 has better detail and ships audio</td>
+</tr>
+<tr>
+<td><strong>Blind material generation</strong></td>
 <td>LTX-Video 2B</td>
-<td>19 seconds, 18× faster; accept smaller motion</td>
+<td>19 seconds a clip, but <strong>the content is not controllable</strong></td>
 </tr>
 <tr>
 <td><strong>Best quality / believable action (light)</strong></td>
@@ -4578,19 +4697,19 @@ single line: <strong>if this 24 GB 5090 laptop could keep only one configuration
 <td><strong>Video (quality first)</strong></td>
 <td><strong>Wan 2.2 14B MoE + 4-step LoRA</strong></td>
 <td><strong>93.8 s</strong> @832×480/81 frames</td>
-<td>Flagship MoE quality; 4 steps is <strong>7.9× faster than 20</strong> (which takes 739 s — not worth it)</td>
+<td>Flagship MoE quality; 4 steps is <strong>7.9× faster than 20</strong>. <strong>Followed the prompt exactly</strong> in the same-prompt test (§6.4)</td>
 </tr>
 <tr>
 <td>Video (speed first)</td>
-<td>LTX-Video 2B distilled</td>
-<td><strong>19.2 s</strong> @1216×704/121 frames</td>
-<td>4.9× faster than Wan 14B; accept subtler motion</td>
+<td><s>LTX-Video 2B distilled</s> → <strong>Wan 2.2 14B MoE + 4-step LoRA</strong></td>
+<td>93.8 s</td>
+<td><strong>LTX demoted</strong>: in the same-prompt test it did not follow the prompt at all (§6.4) — 18× faster but the content is uncontrollable</td>
 </tr>
 <tr>
 <td><strong>Video + audio</strong></td>
 <td><strong>MiniMax H3 + 4-step LoRA</strong></td>
 <td><strong>286.2 s</strong></td>
-<td>4 steps is <strong>1.81× faster than 8</strong>; the only line with a native audio track</td>
+<td>4 steps is <strong>1.81× faster than 8</strong>; the only line with a native audio track. <strong>In the same-prompt test its composition and detail beat Wan</strong> (§6.4). ⚠️ licence excludes four Western territories</td>
 </tr>
 <tr>
 <td><strong>Music</strong></td>
@@ -4655,21 +4774,21 @@ decided by that model's own licence</strong>.</p>
 <tbody>
 <tr>
 <td><strong>Qwen-Image 2512</strong></td>
-<td>Apache 2.0</td>
+<td><strong>Apache 2.0</strong> ✅ verified</td>
 <td>✅</td>
 <td>§11's image pick, clean</td>
 </tr>
 <tr>
 <td><strong>Wan 2.2 (5B / 14B)</strong></td>
-<td>Apache 2.0</td>
+<td><strong>Apache 2.0</strong> ✅ verified</td>
 <td>✅</td>
-<td>§11's video pick, clean</td>
+<td>§11's video pick. <strong>Note: &quot;Wan 2.7 is open source&quot; is false</strong> — the open-weight line ends at 2.2; 2.5/2.6/2.7 are API-only</td>
 </tr>
 <tr>
 <td><strong>ACE-Step 1.5</strong></td>
-<td>Apache 2.0</td>
+<td>Apache 2.0 (one source says MIT — defer to the repo's LICENSE)</td>
 <td>✅</td>
-<td>§11's music pick, clean</td>
+<td>§11's music pick; two sources disagree on the exact licence, but neither has a revenue threshold</td>
 </tr>
 <tr>
 <td><strong>FLUX.2 Klein 4B</strong></td>
@@ -4720,28 +4839,34 @@ decided by that model's own licence</strong>.</p>
 <td>&quot;The weights download&quot; ≠ &quot;the output is usable&quot;</td>
 </tr>
 <tr>
-<td>MiniMax Music 3</td>
-<td>see the official repo</td>
-<td>⚠️ unverified</td>
-<td>Check before use</td>
+<td><strong>MiniMax Music 3</strong></td>
+<td>⚠️ <strong>sources conflict</strong></td>
+<td>⚠️ check yourself</td>
+<td>One source reports <strong>CC BY-NC 4.0 (no commercial use)</strong>; others report the MiniMax-Music3 Community Licence (commercial with on-screen attribution + a $20M threshold). <strong>Both claims exist — read the LICENSE file in the repo directly before use</strong></td>
 </tr>
 <tr>
-<td>MiniMax H3</td>
-<td>see the official repo</td>
-<td>⚠️ unverified</td>
-<td>Check before use</td>
+<td><strong>MiniMax H3</strong></td>
+<td>MiniMax Community Licence</td>
+<td>⚠️ <strong>conditional</strong></td>
+<td><strong>Excluded territories include the United States</strong> (EU/UK/Korea/US may not deploy locally); commercial use allowed under $20M annual revenue with prominent &quot;MiniMax H3&quot; attribution; MiniMax states the regional carve-out stems from its ongoing generative-video copyright litigation with major Hollywood studios</td>
 </tr>
 <tr>
-<td>Stable Audio 3 Medium</td>
-<td>see the official repo</td>
-<td>⚠️ unverified</td>
-<td>Stability-family community licences usually carry a revenue threshold</td>
+<td><strong>Stable Audio 3 Medium</strong></td>
+<td>Stability AI Community Licence</td>
+<td>✅ <strong>under $1M annual revenue</strong></td>
+<td>Trained entirely on licensed audio (806k AudioSparx + 473k Freesound, plus UMG/Warner partnerships); above $1M needs an Enterprise licence. <strong>Note: instrumental only — no vocals or lyrics</strong></td>
 </tr>
 <tr>
-<td>Lens / ERNIE-Image</td>
+<td><strong>ERNIE-Image</strong></td>
+<td><strong>Apache 2.0</strong> ✅ verified</td>
+<td>✅</td>
+<td>8B DiT + an 8-step Turbo build; GenEval 0.8856 / LongTextBench 0.9733 — <strong>best-in-class text rendering and layout among open models</strong></td>
+</tr>
+<tr>
+<td><strong>Lens</strong></td>
 <td>see the official repo</td>
 <td>⚠️ unverified</td>
-<td>Newer; the model card governs</td>
+<td>Comfy-Org/Lens is a repackage; <strong>the original vendor and licence are still unverified</strong>; the encoder is gpt_oss_20b nvfp4</td>
 </tr>
 </tbody>
 </table></div>
@@ -5236,6 +5361,7 @@ byte size as well. <strong>Total: 100 files / 458.4 GB (after <code>realpath</co
 <li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/download-manifest.md"><code>data/download-manifest.md</code></a> — size and dtype of all 34 files</li>
 <li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/coverage-round2.md"><code>data/coverage-round2.md</code></a></li>
 <li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/coverage-round3.md"><code>data/coverage-round3.md</code></a> — <strong>round 3</strong>: Wan 2.2 14B (4- vs 20-step), MiniMax H3 4-step, FLUX.2 Klein 9B unblocked, Lens, ERNIE, Stable Audio 3, plus the full 21-row benchmark — <strong>raw data for the round-2 coverage expansion</strong> (timings and output specs for the four music lines + Wan 2.2 14B + LTX + Hunyuan3D, the VAE trap, and the cu130 kernel evidence)</li>
+<li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/licences-and-video-comparison.md"><code>data/licences-and-video-comparison.md</code></a> — <strong>licence verification + same-prompt video comparison</strong> (three models on one prompt, and the three-step LTX diagnosis)</li>
 </ul>
 <h2 id="appendix-c-glossary">Appendix C: Glossary</h2>
 <div class="tw"><table>
