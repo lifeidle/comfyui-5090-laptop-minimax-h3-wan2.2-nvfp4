@@ -183,40 +183,54 @@ S = {
     "c5_leg_3d": {"zh": "3D", "en": "3D"},
     "c5_axis": {"zh": "秒", "en": "seconds"},
     "c5_unit": {"zh": " 秒", "en": " s"},
-    "c5_items": {"zh": [["Qwen-Image 2512 + Lightning · 图像", "1328²，4 步"],
-                        ["Z-Image-Turbo nvfp4 · 图像", "1024²，8 步"],
-                        ["SDXL base 1.0 · 图像", "1024²，20 步"],
-                        ["Z-Image-Turbo int8 · 图像", "1024²，8 步"],
-                        ["LTX-Video 2B 蒸馏 · 视频", "1216×704，121 帧，8 步"],
-                        ["ACE-Step 1.5 turbo · 音乐", "60 s 歌曲，8 步"],
-                        ["ACE-Step 1.5 XL turbo · 音乐", "60 s 歌曲，8 步"],
-                        ["FLUX.1-dev fp8 · 图像", "1024²，20 步"],
-                        ["FLUX.2 Klein 4B fp8 · 图像编辑", "单张 1024²"],
-                        ["Hunyuan3D 2.1 · 图生 3D", "30 步，octree 256"],
-                        ["YuE2-3B · 音乐", "60 s 歌曲，32 步"],
-                        ["Wan 2.2 14B MoE · 视频", "832×480，81 帧，4 步"],
-                        ["HunyuanVideo 1.5 480p · 视频", "848×480，121 帧，4 步"],
-                        ["Qwen-Image 2512（无 LoRA） · 图像", "1328²，50 步"],
-                        ["Wan 2.2 5B TI2V · 视频", "1280×704，121 帧，20 步"],
-                        ["MiniMax Music 3 · 音乐", "60 s 歌曲，30 步"],
-                        ["MiniMax H3 · 视频 + 音频", "1344×768，124 帧含音轨"]],
-                 "en": [["Qwen-Image 2512 + Lightning - image", "1328², 4 steps"],
-                        ["Z-Image-Turbo nvfp4 - image", "1024², 8 steps"],
-                        ["SDXL base 1.0 - image", "1024², 20 steps"],
-                        ["Z-Image-Turbo int8 - image", "1024², 8 steps"],
-                        ["LTX-Video 2B distilled - video", "1216x704, 121 frames, 8 steps"],
-                        ["ACE-Step 1.5 turbo - music", "60 s song, 8 steps"],
-                        ["ACE-Step 1.5 XL turbo - music", "60 s song, 8 steps"],
-                        ["FLUX.1-dev fp8 - image", "1024², 20 steps"],
-                        ["FLUX.2 Klein 4B fp8 - image edit", "single 1024²"],
-                        ["Hunyuan3D 2.1 - image to 3D", "30 steps, octree 256"],
-                        ["YuE2-3B - music", "60 s song, 32 steps"],
-                        ["Wan 2.2 14B MoE - video", "832x480, 81 frames, 4 steps"],
-                        ["HunyuanVideo 1.5 480p - video", "848x480, 121 frames, 4 steps"],
-                        ["Qwen-Image 2512 (no LoRA) - image", "1328², 50 steps"],
-                        ["Wan 2.2 5B TI2V - video", "1280x704, 121 frames, 20 steps"],
-                        ["MiniMax Music 3 - music", "60 s song, 30 steps"],
-                        ["MiniMax H3 - video + audio", "1344x768, 124 frames with audio"]]},
+    "c5_items": {"zh": [
+        ["Qwen-Image 2512 + Lightning · 图像", "1328²，4 步"],
+        ["Lens turbo · 图像", "1024²，4 步"],
+        ["Stable Audio 3 Medium · 音乐", "60 s 歌曲，8 步"],
+        ["Z-Image-Turbo nvfp4 · 图像", "1024²，8 步"],
+        ["SDXL base 1.0 · 图像", "1024²，20 步"],
+        ["Z-Image-Turbo int8 · 图像", "1024²，8 步"],
+        ["FLUX.2 Klein 9B fp8 · 图像编辑", "1024²，双 pass，4 步"],
+        ["LTX-Video 2B 蒸馏 · 视频", "1216×704，121 帧，8 步"],
+        ["ACE-Step 1.5 turbo · 音乐", "60 s 歌曲，8 步"],
+        ["ACE-Step 1.5 XL turbo · 音乐", "60 s 歌曲，8 步"],
+        ["FLUX.1-dev fp8 · 图像", "1024²，20 步"],
+        ["ERNIE-Image turbo · 图像", "1024²，8 步 + LLM 增强"],
+        ["FLUX.2 Klein 4B fp8 · 图像编辑", "1024²"],
+        ["Hunyuan3D 2.1 · 图生 3D", "30 步，octree 256"],
+        ["YuE2-3B · 音乐", "60 s 歌曲，32 步"],
+        ["Wan 2.2 14B MoE · 视频", "832×480，81 帧，4 步"],
+        ["HunyuanVideo 1.5 480p · 视频", "848×480，121 帧，4 步"],
+        ["Qwen-Image 2512（无 LoRA） · 图像", "1328²，50 步"],
+        ["MiniMax H3 · 视频 + 音频", "1344×768，124 帧，4 步"],
+        ["Wan 2.2 5B TI2V · 视频", "1280×704，121 帧，20 步"],
+        ["MiniMax Music 3 · 音乐", "60 s 歌曲，30 步"],
+        ["MiniMax H3 · 视频 + 音频", "1344×768，124 帧，8 步"],
+        ["Wan 2.2 14B MoE · 视频", "832×480，81 帧，20 步"]],
+     "en": [
+        ["Qwen-Image 2512 + Lightning - image", "1328², 4 steps"],
+        ["Lens turbo - image", "1024², 4 steps"],
+        ["Stable Audio 3 Medium - music", "60 s song, 8 steps"],
+        ["Z-Image-Turbo nvfp4 - image", "1024², 8 steps"],
+        ["SDXL base 1.0 - image", "1024², 20 steps"],
+        ["Z-Image-Turbo int8 - image", "1024², 8 steps"],
+        ["FLUX.2 Klein 9B fp8 - image edit", "1024², two-pass, 4 steps"],
+        ["LTX-Video 2B distilled - video", "1216x704, 121 frames, 8 steps"],
+        ["ACE-Step 1.5 turbo - music", "60 s song, 8 steps"],
+        ["ACE-Step 1.5 XL turbo - music", "60 s song, 8 steps"],
+        ["FLUX.1-dev fp8 - image", "1024², 20 steps"],
+        ["ERNIE-Image turbo - image", "1024², 8 steps + LLM enhancer"],
+        ["FLUX.2 Klein 4B fp8 - image edit", "1024²"],
+        ["Hunyuan3D 2.1 - image to 3D", "30 steps, octree 256"],
+        ["YuE2-3B - music", "60 s song, 32 steps"],
+        ["Wan 2.2 14B MoE - video", "832x480, 81 frames, 4 steps"],
+        ["HunyuanVideo 1.5 480p - video", "848x480, 121 frames, 4 steps"],
+        ["Qwen-Image 2512 (no LoRA) - image", "1328², 50 steps"],
+        ["MiniMax H3 - video + audio", "1344x768, 124 frames, 4 steps"],
+        ["Wan 2.2 5B TI2V - video", "1280x704, 121 frames, 20 steps"],
+        ["MiniMax Music 3 - music", "60 s song, 30 steps"],
+        ["MiniMax H3 - video + audio", "1344x768, 124 frames, 8 steps"],
+        ["Wan 2.2 14B MoE - video", "832x480, 81 frames, 20 steps"]]},
 
     # ---------------------------------------------------------------- chart 6
     "c6_title": {"zh": "NVFP4 实际带来什么", "en": "What NVFP4 actually buys you"},
@@ -380,20 +394,22 @@ def chart_benchmarks(lang):
     import math
     # 按耗时升序：图像(蓝) / 视频(琥珀) / 音乐(紫) / 3D(绿)
     IMG, VID, MUS, THREE = "#2563eb", "#d97706", "#7c3aed", "#059669"
-    vals = [12.2, 13.8, 14.1, 17.7, 19.2, 22.9, 28.6, 32.1, 42.3, 54.7, 93.7, 93.8, 117.0, 206.7, 355.1, 458.2, 519.1]
-    cols = [IMG, IMG, IMG, IMG, VID, MUS, MUS, IMG, IMG, THREE, MUS, VID, VID, IMG, VID, MUS, VID]
+    vals = [12.2, 13.6, 13.8, 13.8, 14.1, 17.7, 18.9, 19.2, 22.9, 28.6, 32.1, 37.3, 42.3, 54.7,
+            93.7, 93.8, 117.0, 206.7, 286.2, 355.1, 458.2, 519.1, 739.0]
+    cols = [IMG, IMG, MUS, IMG, IMG, IMG, IMG, VID, MUS, MUS, IMG, IMG, IMG, THREE,
+            MUS, VID, VID, IMG, VID, VID, MUS, VID, VID]
     items = [(n, c, v, col) for (n, c), v, col in zip(g("c5_items", lang), vals, cols)]
     rowh = 30
     h = 130 + len(items) * rowh + 56
     p = header(g("c5_title", lang), g("c5_sub", lang))
     x0, x1 = 388, 800
-    lo, hi = math.log10(10), math.log10(600)
+    lo, hi = math.log10(10), math.log10(1000)
     y0 = 106
 
     def sx(v):
         return x0 + (x1 - x0) * (math.log10(v) - lo) / (hi - lo)
 
-    for gv in [10, 20, 30, 50, 100, 200, 300, 500]:
+    for gv in [10, 20, 30, 50, 100, 200, 300, 500, 1000]:
         gx = sx(gv)
         p.append(line(gx, y0 - 12, gx, y0 + len(items) * rowh - 8))
         p.append(t(gx, y0 + len(items) * rowh + 8, gv, 11, DIM, anchor="middle"))

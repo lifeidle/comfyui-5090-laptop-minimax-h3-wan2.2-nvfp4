@@ -34,6 +34,7 @@ reproducible method.
 | [8](#8-troubleshooting-table) | Troubleshooting | Symptom → cause → fix |
 | [9](#9-toolchain) | Toolchain | Reusable scripts + **a template→API converter** |
 | [10](#10-conclusion-and-what-is-next) | Conclusion | What is still open |
+| [11](#11-final-verdict-one-best-choice) | **Final verdict** | **The one best pick per domain, with the evidence chain** |
 | [Appendix E](#appendix-e-coverage-audit-what-we-ran-what-we-did-not-and-why) | **Coverage audit** | **What was run, what was not, and the exact reason for every skip** |
 
 ---
@@ -987,6 +988,50 @@ to Python (`scripts/push_site.py`), matching the original line by line:
 
 ---
 
+## 11. Final verdict: one best choice
+
+> Once all 21 measurements are in, the question collapses from "what can each domain run" to a
+> single line: **if this 24 GB 5090 laptop could keep only one configuration, what would it be?**
+
+### 11.1 The single best choice per domain
+
+| Domain | Final pick | Measured | Why it beats the runner-up |
+|---|---|---|---|
+| **Image** | **Qwen-Image 2512 + Lightning** | **12.2 s** @1328²/4 steps | **68% more pixels than Lens turbo (13.6 s @1024²) and faster**; the only model with **character-exact verified Chinese rendering**. Sole cost is 30.06 GB needing offload — and 12.2 s already includes that |
+| Image (resident-VRAM tier) | Z-Image-Turbo nvfp4 | 13.8 s @1024²/8 steps | 8.33 GB fully resident, zero offload — least fussy for heavy use |
+| **Image editing** | **FLUX.2 Klein 9B fp8** | **18.9 s** | Two-pass 9B fits in 18.3 GB; 4B (42.3 s) is both lower quality and slower |
+| **Video (quality first)** | **Wan 2.2 14B MoE + 4-step LoRA** | **93.8 s** @832×480/81 frames | Flagship MoE quality; 4 steps is **7.9× faster than 20** (which takes 739 s — not worth it) |
+| Video (speed first) | LTX-Video 2B distilled | **19.2 s** @1216×704/121 frames | 4.9× faster than Wan 14B; accept subtler motion |
+| **Video + audio** | **MiniMax H3 + 4-step LoRA** | **286.2 s** | 4 steps is **1.81× faster than 8**; the only line with a native audio track |
+| **Music** | **ACE-Step 1.5 XL turbo** | **28.6 s** / 60 s song | **Apache 2.0, commercially usable.** Stable Audio 3 is faster (13.8 s) but is an SFX / short-clip model |
+| **Image → 3D** | Hunyuan3D 2.1 | **54.7 s** | One file produces a 520k-triangle GLB |
+
+### 11.2 If only one line survives — the answer is "image: Qwen-Image 2512 + Lightning"
+
+The chain of reasons, each backed by a measurement:
+
+1. **Speed**: 12.2 s at 1328² is the fastest image configuration in the whole table
+   (Lens turbo at 13.6 s and 1024² is second)
+2. **Resolution**: 1328² carries **68% more pixels** than 1024² — the same twelve-odd seconds buys
+   a materially larger usable image
+3. **Chinese**: 30/30 characters exact — the only model whose Chinese rendering was verified
+4. **The cost is contained**: 30.06 GB exceeds VRAM by 6 GB, and the offload penalty **is already
+   inside the 12.2 s**
+
+> **One sentence**: **image = Qwen-Image 2512 + Lightning; video = Wan 2.2 14B MoE + 4-step LoRA;
+> music = ACE-Step 1.5 XL turbo; image editing = FLUX.2 Klein 9B fp8; 3D = Hunyuan3D 2.1.**
+> Five lines covering image / video / music / 3D, **every one of them measured end to end on this
+> 24 GB laptop**.
+
+### 11.3 The quantization verdict stands
+
+**If the GPU is Blackwell (sm_120/121), always pick NVFP4.**
+Across five same-model dual-format comparisons on this machine, NVFP4 was always faster and
+smaller, with the quality delta below the noise floor. And §5's "22% faster" was measured with the
+optimized kernels disabled — a **lower bound** (see Appendix E ④).
+
+---
+
 ## Appendix A: Complete model manifest (100 files / 458.4 GB)
 
 > **⚠️ A scope correction**: an early version of this document put the manifest at
@@ -1133,7 +1178,8 @@ See the [`data/`](data/) directory:
 - [`data/quant-ab-metrics.md`](data/quant-ab-metrics.md) — full controlled A/B metrics
 - [`data/benchmark-results.md`](data/benchmark-results.md) — server-side time per workflow
 - [`data/download-manifest.md`](data/download-manifest.md) — size and dtype of all 34 files
-- [`data/coverage-round2.md`](data/coverage-round2.md) — **raw data for the round-2 coverage expansion** (timings and output specs for the four music lines + Wan 2.2 14B + LTX + Hunyuan3D, the VAE trap, and the cu130 kernel evidence)
+- [`data/coverage-round2.md`](data/coverage-round2.md)
+- [`data/coverage-round3.md`](data/coverage-round3.md) — **round 3**: Wan 2.2 14B (4- vs 20-step), MiniMax H3 4-step, FLUX.2 Klein 9B unblocked, Lens, ERNIE, Stable Audio 3, plus the full 21-row benchmark — **raw data for the round-2 coverage expansion** (timings and output specs for the four music lines + Wan 2.2 14B + LTX + Hunyuan3D, the VAE trap, and the cu130 kernel evidence)
 
 ## Appendix C: Glossary
 
@@ -1200,9 +1246,9 @@ Until then, the **benefits of the single repo — reusable, comparable, explaine
 
 | Domain | Ran and produced output | Downloaded, not run | Deliberately skipped | Coverage |
 |---|---|---|---|---|
-| **Image** | 7 lines (SDXL / FLUX.1-dev / Qwen-Image 2512 ×2 / Z-Image ×2 / FLUX.2 Klein 4B) | 1 (Qwen bf16 shards) | 2 (FLUX.2-dev, Nunchaku Qwen NVFP4) | Fairly complete |
+| **Image** | **10 lines** (SDXL / FLUX.1-dev / Qwen-Image 2512 ×2 / Z-Image ×2 / FLUX.2 Klein 4B / **FLUX.2 Klein 9B / Lens / ERNIE-Image**) | 1 (Qwen bf16 shards) | 2 (FLUX.2-dev, Nunchaku Qwen NVFP4) | Complete |
 | **Video** | **5 lines (MiniMax H3 / HunyuanVideo 1.5 / Wan 2.2 5B / Wan 2.2 14B / LTX-Video 2B)** | 2 (HV1.0, HV1.5 720p) | 2 (LTX-2.3, LTX-2.5) | **Moderate-high** |
-| **Music** | **4 lines (ACE-Step ×2 / YuE2 / MiniMax Music 3)** | 1 (Stable Audio 3) | 0 | **0 → 4 this round** |
+| **Music** | **5 lines (ACE-Step ×2 / YuE2 / MiniMax Music 3 / Stable Audio 3)** | 0 | 0 | **0 → 5 this round** |
 | **3D** | 1 (Hunyuan3D 2.1) | 0 | 0 | Complete |
 
 ### E.2 The models we deliberately skipped, and exactly why
@@ -1274,15 +1320,28 @@ Until then, the **benefits of the single repo — reusable, comparable, explaine
   1.5 already runs. Running 1.0 again has archaeological value only — no selection value.
 - **Why they are kept**: for archival comparison, and the llava-llama3 encoder may still be useful elsewhere.
 
-#### ⑦ Stable Audio 3 Medium — downloaded, not run
+#### ⑦ Stable Audio 3 Medium — ✅ run this round
 
-- The base model (9.22 GB) plus two encoders (`qwen3.5_2b` 4.55 GB, `t5gemma_b_b_ul2` 1.19 GB)
-  are **all downloaded**.
-- **Why not run**: it is the **sound-effects / short-clip** route (≤47 s), whereas "generate a full song
-  from lyrics" is already covered and verified by ACE-Step / YuE2 / MiniMax Music 3.
-  It is a complement rather than a gap, so it waits for the next round.
+- The base model (9.22 GB) plus two encoders (`qwen3.5_2b` 4.55 GB, `t5gemma_b_b_ul2` 1.19 GB) were
+  all in place, and it ran.
+- **Measured 13.8 s** for a 60 s track (mp3 48 kHz stereo) — **the fastest music model**.
+- But note its positioning: it is the **SFX / short-clip / backing-track** route, not "a song from
+  lyrics". For full songs, ACE-Step 1.5 (commercially usable) and YuE2 (highest quality) remain the picks.
 
-#### ⑧ MusicGen / Stable Audio Open (early) — the licence forbids it
+#### ⑧ FLUX.2 Klein 9B — ⚠️ **a second misjudgement, corrected: it was never blocked**
+
+- **The original verdict**: "the 9B needs a ~16.4 GB Qwen3-VL encoder that BFL ships only as diffusers
+  shards, which ComfyUI cannot load."
+- **What was wrong**: that was true of the **BFL repository only**. **`Comfy-Org/flux2-klein-9B`
+  publishes a single-file encoder**, `qwen_3_8b_fp8mixed.safetensors` (8.66 GB). Together with the
+  DiT from `black-forest-labs/FLUX.2-klein-9b-fp8` (9.43 GB) and the small decoder (0.25 GB),
+  that is **18.3 GB in total — fits comfortably**.
+- **Measured**: **18.9 s** for a two-pass 9B edit at 1024², output produced.
+- **Lesson (same root as LTX-2.3)**: **"the official repo ships shards" is not "no single file exists
+  anywhere".** Check the **Comfy-Org repackage repositories first** — they are the de-facto standard
+  distribution channel for the ComfyUI ecosystem.
+
+#### ⑨ MusicGen / Stable Audio Open (early) — the licence forbids it
 
 - **Why excluded outright**: the weights are **CC-BY-NC (non-commercial)**.
   **"It downloads" is not the same as "you may use the output"** — for work that will be used long

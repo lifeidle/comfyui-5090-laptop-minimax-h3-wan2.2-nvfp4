@@ -1,0 +1,369 @@
+{
+ "1128": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+   "type": "wan",
+   "device": "default"
+  }
+ },
+ "1129": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "wan_2.1_vae.safetensors"
+  }
+ },
+ "1130": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "1131": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "1132": {
+  "class_type": "LoraLoaderModelOnly",
+  "inputs": {
+   "lora_name": "wan2.2_t2v_lightx2v_4steps_lora_v1.1_high_noise.safetensors",
+   "strength_model": 1.0000000000000002,
+   "model": [
+    "1131",
+    0
+   ]
+  }
+ },
+ "1133": {
+  "class_type": "LoraLoaderModelOnly",
+  "inputs": {
+   "lora_name": "wan2.2_t2v_lightx2v_4steps_lora_v1.1_low_noise.safetensors",
+   "strength_model": 1.0000000000000002,
+   "model": [
+    "1130",
+    0
+   ]
+  }
+ },
+ "1134": {
+  "class_type": "ModelSamplingSD3",
+  "inputs": {
+   "shift": 5.000000000000001,
+   "model": [
+    "1150",
+    0
+   ]
+  }
+ },
+ "1135": {
+  "class_type": "ModelSamplingSD3",
+  "inputs": {
+   "shift": 5.000000000000001,
+   "model": [
+    "1149",
+    0
+   ]
+  }
+ },
+ "1136": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "text": "特写镜头，一只蜂鸟悬停在红色花丛前采蜜，翅膀高速振动，阳光透过花瓣，背景虚化，镜头缓慢横移",
+   "clip": [
+    "1128",
+    0
+   ]
+  }
+ },
+ "1137": {
+  "class_type": "KSamplerAdvanced",
+  "inputs": {
+   "add_noise": "enable",
+   "noise_seed": 20260922,
+   "steps": [
+    "1151",
+    0
+   ],
+   "cfg": [
+    "1153",
+    0
+   ],
+   "sampler_name": "euler",
+   "scheduler": "simple",
+   "start_at_step": 0,
+   "end_at_step": [
+    "1152",
+    0
+   ],
+   "return_with_leftover_noise": "enable",
+   "model": [
+    "1135",
+    0
+   ],
+   "positive": [
+    "1136",
+    0
+   ],
+   "negative": [
+    "1140",
+    0
+   ],
+   "latent_image": [
+    "1141",
+    0
+   ]
+  }
+ },
+ "1138": {
+  "class_type": "CreateVideo",
+  "inputs": {
+   "fps": 16.0,
+   "bit_depth": "auto",
+   "color_space": "sRGB",
+   "codec": "none",
+   "images": [
+    "1139",
+    0
+   ]
+  }
+ },
+ "1139": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "1142",
+    0
+   ],
+   "vae": [
+    "1129",
+    0
+   ]
+  }
+ },
+ "1140": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "text": "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量，JPEG压缩残留，丑陋的，残缺的，多余的手指，画得不好的手部，画得不好的脸部，畸形的，毁容的，形态畸形的肢体，手指融合，静止不动的画面，杂乱的背景，三条腿，背景人很多，倒着走，裸露，NSFW",
+   "clip": [
+    "1128",
+    0
+   ]
+  }
+ },
+ "1141": {
+  "class_type": "EmptyHunyuanLatentVideo",
+  "inputs": {
+   "width": 832,
+   "height": 480,
+   "length": [
+    "1157",
+    1
+   ],
+   "batch_size": 1
+  }
+ },
+ "1142": {
+  "class_type": "KSamplerAdvanced",
+  "inputs": {
+   "add_noise": "disable",
+   "noise_seed": 0,
+   "steps": [
+    "1151",
+    0
+   ],
+   "cfg": [
+    "1153",
+    0
+   ],
+   "sampler_name": "euler",
+   "scheduler": "simple",
+   "start_at_step": [
+    "1152",
+    0
+   ],
+   "end_at_step": [
+    "1151",
+    0
+   ],
+   "return_with_leftover_noise": "disable",
+   "model": [
+    "1134",
+    0
+   ],
+   "positive": [
+    "1136",
+    0
+   ],
+   "negative": [
+    "1140",
+    0
+   ],
+   "latent_image": [
+    "1137",
+    0
+   ]
+  }
+ },
+ "1143": {
+  "class_type": "PrimitiveInt",
+  "inputs": {
+   "value": 20
+  }
+ },
+ "1144": {
+  "class_type": "PrimitiveInt",
+  "inputs": {
+   "value": 10
+  }
+ },
+ "1145": {
+  "class_type": "PrimitiveInt",
+  "inputs": {
+   "value": 4
+  }
+ },
+ "1146": {
+  "class_type": "PrimitiveInt",
+  "inputs": {
+   "value": 2
+  }
+ },
+ "1147": {
+  "class_type": "PrimitiveFloat",
+  "inputs": {
+   "value": 1
+  }
+ },
+ "1148": {
+  "class_type": "PrimitiveFloat",
+  "inputs": {
+   "value": 3.5
+  }
+ },
+ "1149": {
+  "class_type": "ComfySwitchNode",
+  "inputs": {
+   "switch": [
+    "1156",
+    0
+   ],
+   "on_false": [
+    "1131",
+    0
+   ],
+   "on_true": [
+    "1132",
+    0
+   ]
+  }
+ },
+ "1150": {
+  "class_type": "ComfySwitchNode",
+  "inputs": {
+   "switch": [
+    "1156",
+    0
+   ],
+   "on_false": [
+    "1130",
+    0
+   ],
+   "on_true": [
+    "1133",
+    0
+   ]
+  }
+ },
+ "1151": {
+  "class_type": "ComfySwitchNode",
+  "inputs": {
+   "switch": [
+    "1156",
+    0
+   ],
+   "on_false": [
+    "1143",
+    0
+   ],
+   "on_true": [
+    "1145",
+    0
+   ]
+  }
+ },
+ "1152": {
+  "class_type": "ComfySwitchNode",
+  "inputs": {
+   "switch": [
+    "1156",
+    0
+   ],
+   "on_false": [
+    "1144",
+    0
+   ],
+   "on_true": [
+    "1146",
+    0
+   ]
+  }
+ },
+ "1153": {
+  "class_type": "ComfySwitchNode",
+  "inputs": {
+   "switch": [
+    "1156",
+    0
+   ],
+   "on_false": [
+    "1148",
+    0
+   ],
+   "on_true": [
+    "1147",
+    0
+   ]
+  }
+ },
+ "1154": {
+  "class_type": "PrimitiveFloat",
+  "inputs": {
+   "value": 16.0
+  }
+ },
+ "1155": {
+  "class_type": "PrimitiveFloat",
+  "inputs": {
+   "value": 5
+  }
+ },
+ "1156": {
+  "class_type": "PrimitiveBoolean",
+  "inputs": {
+   "value": false
+  }
+ },
+ "1157": {
+  "class_type": "ComfyMathExpression",
+  "inputs": {
+   "expression": "a",
+   "values.a": 81
+  }
+ },
+ "80": {
+  "class_type": "SaveVideo",
+  "inputs": {
+   "filename_prefix": "wan22_14b_t2v_20step",
+   "format": "auto",
+   "format.codec": "auto",
+   "video": [
+    "1138",
+    0
+   ]
+  }
+ }
+}

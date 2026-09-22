@@ -1,0 +1,200 @@
+{
+ "1050": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "flux2-vae.safetensors"
+  }
+ },
+ "1051": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "gpt_oss_20b_nvfp4.safetensors",
+   "type": "lens",
+   "device": "default"
+  }
+ },
+ "1052": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "text": "特写镜头，一只青花瓷茶壶置于纯白背景正中，柔和均匀布光，器型完整、纹样清晰、边缘干净，产品摄影",
+   "clip": [
+    "1051",
+    0
+   ]
+  }
+ },
+ "1053": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "text": "",
+   "clip": [
+    "1051",
+    0
+   ]
+  }
+ },
+ "1054": {
+  "class_type": "EmptyLatentImage",
+  "inputs": {
+   "width": [
+    "1062",
+    1
+   ],
+   "height": [
+    "1063",
+    1
+   ],
+   "batch_size": 1
+  }
+ },
+ "1055": {
+  "class_type": "BasicScheduler",
+  "inputs": {
+   "scheduler": "simple",
+   "steps": 4,
+   "denoise": 1,
+   "model": [
+    "1061",
+    0
+   ]
+  }
+ },
+ "1056": {
+  "class_type": "KSamplerSelect",
+  "inputs": {
+   "sampler_name": "euler"
+  }
+ },
+ "1057": {
+  "class_type": "CFGNorm",
+  "inputs": {
+   "strength": 1,
+   "pre_cfg": false,
+   "model": [
+    "1061",
+    0
+   ]
+  }
+ },
+ "1058": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "lens_turbo_bf16.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "1059": {
+  "class_type": "SamplerCustom",
+  "inputs": {
+   "add_noise": true,
+   "noise_seed": 20260922,
+   "cfg": 1,
+   "model": [
+    "1057",
+    0
+   ],
+   "positive": [
+    "1052",
+    0
+   ],
+   "negative": [
+    "1053",
+    0
+   ],
+   "sampler": [
+    "1056",
+    0
+   ],
+   "sigmas": [
+    "1055",
+    0
+   ],
+   "latent_image": [
+    "1054",
+    0
+   ]
+  }
+ },
+ "1060": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "1059",
+    0
+   ],
+   "vae": [
+    "1050",
+    0
+   ]
+  }
+ },
+ "1061": {
+  "class_type": "ModelSamplingFlux",
+  "inputs": {
+   "max_shift": 1.15,
+   "base_shift": 0.5,
+   "width": [
+    "1062",
+    1
+   ],
+   "height": [
+    "1063",
+    1
+   ],
+   "model": [
+    "1058",
+    0
+   ]
+  }
+ },
+ "1062": {
+  "class_type": "ComfyMathExpression",
+  "inputs": {
+   "expression": "a & -8",
+   "values.a": [
+    "1065",
+    0
+   ]
+  }
+ },
+ "1063": {
+  "class_type": "ComfyMathExpression",
+  "inputs": {
+   "expression": "a & -8",
+   "values.a": [
+    "1064",
+    0
+   ]
+  }
+ },
+ "1064": {
+  "class_type": "PrimitiveInt",
+  "inputs": {
+   "value": 1024
+  }
+ },
+ "1065": {
+  "class_type": "PrimitiveInt",
+  "inputs": {
+   "value": 1024
+  }
+ },
+ "35": {
+  "class_type": "ResolutionSelector",
+  "inputs": {
+   "aspect_ratio": "1:1 (Square)",
+   "megapixels": 2,
+   "multiple": 8
+  }
+ },
+ "43": {
+  "class_type": "SaveImage",
+  "inputs": {
+   "filename_prefix": "lens_turbo",
+   "images": [
+    "1060",
+    0
+   ]
+  }
+ }
+}

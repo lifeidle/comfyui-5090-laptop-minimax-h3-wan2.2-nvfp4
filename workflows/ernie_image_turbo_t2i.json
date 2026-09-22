@@ -1,0 +1,225 @@
+{
+ "73": {
+  "class_type": "SaveImage",
+  "inputs": {
+   "filename_prefix": "ernie_image_turbo",
+   "images": [
+    "1091",
+    0
+   ]
+  }
+ },
+ "1089": {
+  "class_type": "EmptyFlux2LatentImage",
+  "inputs": {
+   "width": 1024,
+   "height": 1024,
+   "batch_size": 1
+  }
+ },
+ "1090": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "ernie-image-turbo.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "1091": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "1092",
+    0
+   ],
+   "vae": [
+    "1095",
+    0
+   ]
+  }
+ },
+ "1092": {
+  "class_type": "KSampler",
+  "inputs": {
+   "seed": 20260922,
+   "steps": 8,
+   "cfg": 1,
+   "sampler_name": "euler",
+   "scheduler": "simple",
+   "denoise": 1,
+   "model": [
+    "1090",
+    0
+   ],
+   "positive": [
+    "1093",
+    0
+   ],
+   "negative": [
+    "1096",
+    0
+   ],
+   "latent_image": [
+    "1089",
+    0
+   ]
+  }
+ },
+ "1093": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "text": [
+    "1101",
+    0
+   ],
+   "clip": [
+    "1094",
+    0
+   ]
+  }
+ },
+ "1094": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "ministral-3-3b.safetensors",
+   "type": "flux2",
+   "device": "default"
+  }
+ },
+ "1095": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "flux2-vae.safetensors"
+  }
+ },
+ "1096": {
+  "class_type": "ConditioningZeroOut",
+  "inputs": {
+   "conditioning": [
+    "1093",
+    0
+   ]
+  }
+ },
+ "1097": {
+  "class_type": "StringReplace",
+  "inputs": {
+   "string": "<s>[SYSTEM_PROMPT]你是一个专业的文生图 Prompt 增强助手。你将收到用户的简短图片描述及目标生成分辨率，请据此扩写为一段内容丰富、细节充分的视觉描述，以帮助文生图模型生成高质量的图片。仅输出增强后的描述，不要包含任何解释或前缀。[/SYSTEM_PROMPT][INST]{\"prompt\": \"{prompt}\", \"width\": {width}, \"height\": {height}}[/INST]",
+   "find": "{prompt}",
+   "replace": [
+    "1098",
+    0
+   ]
+  }
+ },
+ "1098": {
+  "class_type": "PrimitiveStringMultiline",
+  "inputs": {
+   "value": "特写镜头，一只青花瓷茶壶置于纯白背景正中，柔和均匀布光，器型完整、纹样清晰、边缘干净，产品摄影"
+  }
+ },
+ "1099": {
+  "class_type": "TextGenerate",
+  "inputs": {
+   "prompt": [
+    "1106",
+    0
+   ],
+   "max_length": 2048,
+   "sampling_mode": "on",
+   "sampling_mode.temperature": 0.6,
+   "sampling_mode.top_k": 64,
+   "sampling_mode.top_p": 0.8,
+   "sampling_mode.min_p": 0.05,
+   "sampling_mode.repetition_penalty": 1.05,
+   "sampling_mode.seed": 0,
+   "sampling_mode.presence_penalty": 0,
+   "thinking": false,
+   "use_default_template": true,
+   "mtp": "auto",
+   "clip": [
+    "1102",
+    0
+   ]
+  }
+ },
+ "1100": {
+  "class_type": "PrimitiveBoolean",
+  "inputs": {
+   "value": true
+  }
+ },
+ "1101": {
+  "class_type": "ComfySwitchNode",
+  "inputs": {
+   "switch": [
+    "1100",
+    0
+   ],
+   "on_false": [
+    "1098",
+    0
+   ],
+   "on_true": [
+    "1099",
+    0
+   ]
+  }
+ },
+ "1102": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "ernie-image-prompt-enhancer.safetensors",
+   "type": "flux2",
+   "device": "default"
+  }
+ },
+ "1103": {
+  "class_type": "PreviewAny",
+  "inputs": {
+   "source": 1024
+  }
+ },
+ "1104": {
+  "class_type": "PreviewAny",
+  "inputs": {
+   "source": 1024
+  }
+ },
+ "1105": {
+  "class_type": "StringReplace",
+  "inputs": {
+   "string": [
+    "1097",
+    0
+   ],
+   "find": "{width}",
+   "replace": [
+    "1103",
+    0
+   ]
+  }
+ },
+ "1106": {
+  "class_type": "StringReplace",
+  "inputs": {
+   "string": [
+    "1105",
+    0
+   ],
+   "find": "{height}",
+   "replace": [
+    "1104",
+    0
+   ]
+  }
+ },
+ "1107": {
+  "class_type": "PreviewAny",
+  "inputs": {
+   "source": [
+    "1101",
+    0
+   ]
+  }
+ }
+}

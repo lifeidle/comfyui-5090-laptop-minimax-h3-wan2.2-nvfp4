@@ -1,0 +1,477 @@
+{
+ "76": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "klein_input.png"
+  }
+ },
+ "9": {
+  "class_type": "SaveImage",
+  "inputs": {
+   "filename_prefix": "flux2_klein_9b",
+   "images": [
+    "1124",
+    0
+   ]
+  }
+ },
+ "1122": {
+  "class_type": "KSamplerSelect",
+  "inputs": {
+   "sampler_name": "euler"
+  }
+ },
+ "1123": {
+  "class_type": "SamplerCustomAdvanced",
+  "inputs": {
+   "noise": [
+    "1144",
+    0
+   ],
+   "guider": [
+    "1141",
+    0
+   ],
+   "sampler": [
+    "1139",
+    0
+   ],
+   "sigmas": [
+    "1140",
+    0
+   ],
+   "latent_image": [
+    "1149",
+    0
+   ]
+  }
+ },
+ "1124": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "1142",
+    0
+   ],
+   "vae": [
+    "1155",
+    0
+   ]
+  }
+ },
+ "1125": {
+  "class_type": "RandomNoise",
+  "inputs": {
+   "noise_seed": 20260922
+  }
+ },
+ "1126": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "flux-2-klein-9b-fp8.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "1127": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "qwen_3_8b_fp8mixed.safetensors",
+   "type": "flux2",
+   "device": "default"
+  }
+ },
+ "1128": {
+  "class_type": "EmptyFlux2LatentImage",
+  "inputs": {
+   "width": [
+    "1150",
+    0
+   ],
+   "height": [
+    "1150",
+    1
+   ],
+   "batch_size": 1
+  }
+ },
+ "1129": {
+  "class_type": "CFGGuider",
+  "inputs": {
+   "cfg": 1,
+   "model": [
+    "1145",
+    0
+   ],
+   "positive": [
+    "1135",
+    0
+   ],
+   "negative": [
+    "1132",
+    0
+   ]
+  }
+ },
+ "1130": {
+  "class_type": "Flux2Scheduler",
+  "inputs": {
+   "steps": 4,
+   "width": [
+    "1150",
+    0
+   ],
+   "height": [
+    "1150",
+    1
+   ]
+  }
+ },
+ "1131": {
+  "class_type": "GetImageSize",
+  "inputs": {
+   "image": [
+    "1158",
+    0
+   ]
+  }
+ },
+ "1132": {
+  "class_type": "ReferenceLatent",
+  "inputs": {
+   "conditioning": [
+    "1137",
+    0
+   ],
+   "latent": [
+    "1138",
+    0
+   ]
+  }
+ },
+ "1133": {
+  "class_type": "ImageScaleToTotalPixels",
+  "inputs": {
+   "upscale_method": "nearest-exact",
+   "megapixels": 1,
+   "resolution_steps": 1,
+   "image": [
+    "76",
+    0
+   ]
+  }
+ },
+ "1134": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "full_encoder_small_decoder.safetensors"
+  }
+ },
+ "1135": {
+  "class_type": "ReferenceLatent",
+  "inputs": {
+   "conditioning": [
+    "1136",
+    0
+   ],
+   "latent": [
+    "1138",
+    0
+   ]
+  }
+ },
+ "1136": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "text": "Replace the background with a quiet coastal cliff at overcast sunset. Remove all buildings and streets. Add wind-shaped grass and a distant ocean horizon. Keep the subject’s pose and framing unchanged.",
+   "clip": [
+    "1146",
+    0
+   ]
+  }
+ },
+ "1137": {
+  "class_type": "ConditioningZeroOut",
+  "inputs": {
+   "conditioning": [
+    "1136",
+    0
+   ]
+  }
+ },
+ "1138": {
+  "class_type": "VAEEncode",
+  "inputs": {
+   "pixels": [
+    "1133",
+    0
+   ],
+   "vae": [
+    "1134",
+    0
+   ]
+  }
+ },
+ "122": {
+  "class_type": "SaveImage",
+  "inputs": {
+   "filename_prefix": "flux2_klein_9b",
+   "images": [
+    "1143",
+    0
+   ]
+  }
+ },
+ "121": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "example.png"
+  }
+ },
+ "1139": {
+  "class_type": "KSamplerSelect",
+  "inputs": {
+   "sampler_name": "euler"
+  }
+ },
+ "1140": {
+  "class_type": "Flux2Scheduler",
+  "inputs": {
+   "steps": 4,
+   "width": [
+    "1150",
+    0
+   ],
+   "height": [
+    "1150",
+    1
+   ]
+  }
+ },
+ "1141": {
+  "class_type": "CFGGuider",
+  "inputs": {
+   "cfg": 1,
+   "model": [
+    "1145",
+    0
+   ],
+   "positive": [
+    "1153",
+    0
+   ],
+   "negative": [
+    "1152",
+    0
+   ]
+  }
+ },
+ "1142": {
+  "class_type": "SamplerCustomAdvanced",
+  "inputs": {
+   "noise": [
+    "1144",
+    0
+   ],
+   "guider": [
+    "1141",
+    0
+   ],
+   "sampler": [
+    "1139",
+    0
+   ],
+   "sigmas": [
+    "1140",
+    0
+   ],
+   "latent_image": [
+    "1149",
+    0
+   ]
+  }
+ },
+ "1143": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "1142",
+    0
+   ],
+   "vae": [
+    "1155",
+    0
+   ]
+  }
+ },
+ "1144": {
+  "class_type": "RandomNoise",
+  "inputs": {
+   "noise_seed": 20260922
+  }
+ },
+ "1145": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "flux-2-klein-9b-fp8.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "1146": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "qwen_3_8b_fp8mixed.safetensors",
+   "type": "flux2",
+   "device": "default"
+  }
+ },
+ "1147": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "text": "Let this character hold the bag with both hands",
+   "clip": [
+    "1146",
+    0
+   ]
+  }
+ },
+ "1148": {
+  "class_type": "ConditioningZeroOut",
+  "inputs": {
+   "conditioning": [
+    "1147",
+    0
+   ]
+  }
+ },
+ "1149": {
+  "class_type": "EmptyFlux2LatentImage",
+  "inputs": {
+   "width": [
+    "1150",
+    0
+   ],
+   "height": [
+    "1150",
+    1
+   ],
+   "batch_size": 1
+  }
+ },
+ "1150": {
+  "class_type": "GetImageSize",
+  "inputs": {
+   "image": [
+    "1158",
+    0
+   ]
+  }
+ },
+ "1151": {
+  "class_type": "VAEEncode",
+  "inputs": {
+   "pixels": [
+    "1158",
+    0
+   ],
+   "vae": [
+    "1155",
+    0
+   ]
+  }
+ },
+ "1152": {
+  "class_type": "ReferenceLatent",
+  "inputs": {
+   "conditioning": [
+    "1157",
+    0
+   ],
+   "latent": [
+    "1154",
+    0
+   ]
+  }
+ },
+ "1153": {
+  "class_type": "ReferenceLatent",
+  "inputs": {
+   "conditioning": [
+    "1156",
+    0
+   ],
+   "latent": [
+    "1154",
+    0
+   ]
+  }
+ },
+ "1154": {
+  "class_type": "VAEEncode",
+  "inputs": {
+   "pixels": [
+    "1159",
+    0
+   ],
+   "vae": [
+    "1155",
+    0
+   ]
+  }
+ },
+ "1155": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "full_encoder_small_decoder.safetensors"
+  }
+ },
+ "1156": {
+  "class_type": "ReferenceLatent",
+  "inputs": {
+   "conditioning": [
+    "1147",
+    0
+   ],
+   "latent": [
+    "1151",
+    0
+   ]
+  }
+ },
+ "1157": {
+  "class_type": "ReferenceLatent",
+  "inputs": {
+   "conditioning": [
+    "1148",
+    0
+   ],
+   "latent": [
+    "1151",
+    0
+   ]
+  }
+ },
+ "1158": {
+  "class_type": "ImageScaleToTotalPixels",
+  "inputs": {
+   "upscale_method": "lanczos",
+   "megapixels": 1,
+   "resolution_steps": 1,
+   "image": [
+    "76",
+    0
+   ]
+  }
+ },
+ "1159": {
+  "class_type": "ImageScaleToTotalPixels",
+  "inputs": {
+   "upscale_method": "lanczos",
+   "megapixels": 1,
+   "resolution_steps": 1,
+   "image": [
+    "121",
+    0
+   ]
+  }
+ }
+}

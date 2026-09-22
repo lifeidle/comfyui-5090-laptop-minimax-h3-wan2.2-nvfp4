@@ -1,0 +1,185 @@
+{
+ "_meta": {
+  "title": "MiniMax H3 文生视频+音频 (t2va) — 8step Turbo LoRA",
+  "source": "拓扑照抄本机 ComfyUI 0.37.0 官方蓝图 definitions/subgraphs 的 Image to Video (MiniMax H3)",
+  "notes": [
+   "MiniMaxH3ImageToVideo 的 first_frame/last_frame 均不接 => t2va（纯文生视频+音频）",
+   "length 必须是 17k+5 的帧数（24fps）：124 帧 ≈ 5.17 秒",
+   "官方蓝图未使用 MiniMaxH3SigmaShift，默认 shift 由模型内部处理，此处同样省略",
+   "采样器 res_multistep + simple，denoise=1.0",
+   "torbo LoRA 走 LoraLoaderModelOnly；官方蓝图默认关闭，这里开启用于加速基线"
+  ]
+ },
+ "1": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "minimax_h3_fl2va_pruned_int8_convrot.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "2": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors",
+   "type": "minimax",
+   "device": "default"
+  }
+ },
+ "3": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "minimax_h3_video_vae_fp16.safetensors"
+  }
+ },
+ "4": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "minimax_h3_audio_vae_fp32.safetensors"
+  }
+ },
+ "5": {
+  "class_type": "LoraLoaderModelOnly",
+  "inputs": {
+   "model": [
+    "1",
+    0
+   ],
+   "lora_name": "minimax_h3_fl2v_turbo_4step_v1.0_768p_comfyui_bf16.safetensors",
+   "strength_model": 1.0
+  }
+ },
+ "6": {
+  "class_type": "MiniMaxH3ImageToVideo",
+  "inputs": {
+   "clip": [
+    "2",
+    0
+   ],
+   "vae": [
+    "3",
+    0
+   ],
+   "prompt": "Vaporwave title sequence look: pink and blue gradient palette, VHS tracking artifacts, Greek statue motifs, chrome palm trees, RGB chromatic aberration, lo-fi retro atmosphere, mood languid and nostalgic.\n\nTimeline:\n[0s-1s] VHS static opens the frame, the title \"COMFYUI\" appears with RGB split, humming analog synth drone rises.\n[1s-2s] Camera pans right past a chrome palm tree; a deep synth bass note swells in sync with the pan.\n[2s-3s] A marble Greek statue head rotates slowly toward camera; a soft chime rings out, matching the rotation.\n[3s-4s] Pink and blue gradient sky pulses; tape hiss and a distant seagull cry layer over the synth pad.\n[4s-5s] The chrome palm trees glow as the sun sets; the analog synth resolves into a warm sustained chord.\n\nAudio: continuous analog synth pad, tape hiss, one chime, one deep bass swell, one distant seagull cry.",
+   "width": 1344,
+   "height": 768,
+   "length": 124
+  }
+ },
+ "7": {
+  "class_type": "KSamplerSelect",
+  "inputs": {
+   "sampler_name": "res_multistep"
+  }
+ },
+ "8": {
+  "class_type": "BasicScheduler",
+  "inputs": {
+   "model": [
+    "5",
+    0
+   ],
+   "scheduler": "simple",
+   "steps": 4,
+   "denoise": 1.0
+  }
+ },
+ "9": {
+  "class_type": "BasicGuider",
+  "inputs": {
+   "model": [
+    "5",
+    0
+   ],
+   "conditioning": [
+    "6",
+    0
+   ]
+  }
+ },
+ "10": {
+  "class_type": "RandomNoise",
+  "inputs": {
+   "noise_seed": 20260922
+  }
+ },
+ "11": {
+  "class_type": "SamplerCustomAdvanced",
+  "inputs": {
+   "noise": [
+    "10",
+    0
+   ],
+   "guider": [
+    "9",
+    0
+   ],
+   "sampler": [
+    "7",
+    0
+   ],
+   "sigmas": [
+    "8",
+    0
+   ],
+   "latent_image": [
+    "6",
+    1
+   ]
+  }
+ },
+ "12": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "11",
+    0
+   ],
+   "vae": [
+    "3",
+    0
+   ]
+  }
+ },
+ "13": {
+  "class_type": "VAEDecodeAudio",
+  "inputs": {
+   "samples": [
+    "11",
+    0
+   ],
+   "vae": [
+    "4",
+    0
+   ]
+  }
+ },
+ "14": {
+  "class_type": "CreateVideo",
+  "inputs": {
+   "images": [
+    "12",
+    0
+   ],
+   "audio": [
+    "13",
+    0
+   ],
+   "fps": 24.0,
+   "bit_depth": "auto",
+   "color_space": "sRGB",
+   "codec": "none"
+  }
+ },
+ "15": {
+  "class_type": "SaveVideo",
+  "inputs": {
+   "video": [
+    "14",
+    0
+   ],
+   "filename_prefix": "minimax_h3/t2va_4step",
+   "format": "mp4",
+   "codec": "h264"
+  }
+ }
+}

@@ -216,6 +216,11 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:22px 0 0;color:v
 <td>还没做的事</td>
 </tr>
 <tr>
+<td><a href="#11-最终结论一条最佳选择">11</a></td>
+<td><strong>最终结论</strong></td>
+<td><strong>每个领域的一条最佳选择 + 证据链</strong></td>
+</tr>
+<tr>
 <td><a href="#附录-e覆盖度审计我们试过什么没试什么为什么放弃">附录 E</a></td>
 <td><strong>覆盖度审计</strong></td>
 <td><strong>试过什么、没试什么、每个放弃的确切理由</strong></td>
@@ -1808,6 +1813,91 @@ python tools/ab_metrics.py
 </tbody>
 </table></div>
 <hr />
+<h2 id="11-最终结论一条最佳选择">11. 最终结论：一条最佳选择</h2>
+<blockquote>
+<p>21 组实测跑完之后，问题从「每个领域能跑什么」收敛成一句话：
+<strong>如果这台 24 GB 的 5090 笔记本只保留一套配置，应该是什么？</strong></p>
+</blockquote>
+<h3 id="111-每个领域的一条最佳">11.1 每个领域的一条最佳</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>领域</th>
+<th>最终选择</th>
+<th>实测</th>
+<th>为什么是它（而不是第二名）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>图像</strong></td>
+<td><strong>Qwen-Image 2512 + Lightning</strong></td>
+<td><strong>12.2 s</strong> @1328²/4步</td>
+<td>比 Lens turbo（13.6 s @1024²）<strong>像素多 68% 且更快</strong>；是唯一<strong>逐字核验过中文渲染</strong>的模型。唯一代价是 30.06 GB 需 offload，而 12.2 s 已是含 offload 的实测值</td>
+</tr>
+<tr>
+<td>图像（常驻显存档）</td>
+<td>Z-Image-Turbo nvfp4</td>
+<td>13.8 s @1024²/8步</td>
+<td>8.33 GB 全常驻、零 offload —— 高频使用最省心</td>
+</tr>
+<tr>
+<td><strong>图像编辑</strong></td>
+<td><strong>FLUX.2 Klein 9B fp8</strong></td>
+<td><strong>18.9 s</strong></td>
+<td>双 pass 9B 只占 18.3 GB；4B（42.3 s）质量更低还更慢</td>
+</tr>
+<tr>
+<td><strong>视频（质量优先）</strong></td>
+<td><strong>Wan 2.2 14B MoE + 4步 LoRA</strong></td>
+<td><strong>93.8 s</strong> @832×480/81帧</td>
+<td>旗舰 MoE 画质；4 步比 20 步<strong>快 7.9×</strong>（20 步要 739 s，不值）</td>
+</tr>
+<tr>
+<td>视频（速度优先）</td>
+<td>LTX-Video 2B 蒸馏</td>
+<td><strong>19.2 s</strong> @1216×704/121帧</td>
+<td>比 Wan 14B 快 4.9×；接受运动幅度小</td>
+</tr>
+<tr>
+<td><strong>视频 + 音频</strong></td>
+<td><strong>MiniMax H3 + 4步 LoRA</strong></td>
+<td><strong>286.2 s</strong></td>
+<td>4 步比 8 步<strong>快 1.81×</strong>；唯一原生出音轨</td>
+</tr>
+<tr>
+<td><strong>音乐</strong></td>
+<td><strong>ACE-Step 1.5 XL turbo</strong></td>
+<td><strong>28.6 s</strong> / 60 s 歌</td>
+<td><strong>Apache 2.0 可商用</strong>。Stable Audio 3 更快（13.8 s）但定位是音效/短片段</td>
+</tr>
+<tr>
+<td><strong>图生 3D</strong></td>
+<td>Hunyuan3D 2.1</td>
+<td><strong>54.7 s</strong></td>
+<td>一个文件出 52 万面 GLB</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="112-如果只保留一条--答案是图像qwen-image-2512--lightning">11.2 如果只保留一条 —— 答案是「图像：Qwen-Image 2512 + Lightning」</h3>
+<p>理由链，每一步都有实测支撑：</p>
+<ol>
+<li><strong>速度</strong>：12.2 s @1328²，是全表最快的图像配置（Lens turbo 13.6 s @1024² 次之）</li>
+<li><strong>分辨率</strong>：1328² 比 1024² <strong>多 68% 像素</strong> —— 同样十二三秒，拿到的是更大的可用画面</li>
+<li><strong>中文</strong>：30/30 逐字全对，是唯一被核验过中文能力的模型</li>
+<li><strong>代价可控</strong>：30.06 GB 超显存 6 GB，offload 的代价<strong>已经包含在 12.2 s 里了</strong></li>
+</ol>
+<blockquote>
+<p><strong>一句话总结</strong>：
+<strong>图像 = Qwen-Image 2512 + Lightning；视频 = Wan 2.2 14B MoE + 4 步 LoRA；
+音乐 = ACE-Step 1.5 XL turbo；图像编辑 = FLUX.2 Klein 9B fp8；3D = Hunyuan3D 2.1。</strong>
+五条线覆盖图像 / 视频 / 音乐 / 3D，<strong>全部在这台 24 GB 笔记本上实测跑通</strong>。</p>
+</blockquote>
+<h3 id="113-量化格式的最终结论不变">11.3 量化格式的最终结论（不变）</h3>
+<p><strong>只要显卡是 Blackwell（sm_120/121），一律选 NVFP4。</strong>
+本机 5 组同模型双格式对比，NVFP4 每次都更快、更小，画质差异落在噪声地板之下。
+而且 §5 的「快 22%」是在优化内核被禁用的前提下测得的<strong>下界</strong>（见附录 E ④）。</p>
+<hr />
 <h2 id="附录-a完整模型清单100-文件--4584-gb">附录 A：完整模型清单（100 文件 / 458.4 GB）</h2>
 <blockquote>
 <p><strong>⚠️ 口径修正</strong>：本手册早期版本把清单写成「34 文件 / 125.6 GB」，<strong>那只是当时最后一批的量</strong>，
@@ -2385,10 +2475,10 @@ python tools/ab_metrics.py
 <tbody>
 <tr>
 <td><strong>图像</strong></td>
-<td>7 条（SDXL / FLUX.1-dev / Qwen-Image 2512 ×2 / Z-Image ×2 / FLUX.2 Klein 4B）</td>
+<td><strong>10 条</strong>（SDXL / FLUX.1-dev / Qwen-Image 2512 ×2 / Z-Image ×2 / FLUX.2 Klein 4B / <strong>FLUX.2 Klein 9B / Lens / ERNIE-Image</strong>）</td>
 <td>1（Qwen bf16 分片）</td>
 <td>2（FLUX.2-dev、Nunchaku Qwen NVFP4）</td>
-<td>较充分</td>
+<td>充分</td>
 </tr>
 <tr>
 <td><strong>视频</strong></td>
@@ -2399,10 +2489,10 @@ python tools/ab_metrics.py
 </tr>
 <tr>
 <td><strong>音乐</strong></td>
-<td><strong>4 条（ACE-Step ×2 / YuE2 / MiniMax Music 3）</strong></td>
-<td>1（Stable Audio 3）</td>
+<td><strong>5 条（ACE-Step ×2 / YuE2 / MiniMax Music 3 / Stable Audio 3）</strong></td>
 <td>0</td>
-<td><strong>从 0 补到 4</strong></td>
+<td>0</td>
+<td><strong>从 0 补到 5</strong></td>
 </tr>
 <tr>
 <td><strong>3D</strong></td>
@@ -2479,14 +2569,24 @@ python tools/ab_metrics.py
 再跑 1.0 只有考古价值，没有选型价值。</li>
 <li><strong>保留原因</strong>：留档对比；且 llava-llama3 编码器对其他线可能还有用。</li>
 </ul>
-<h4 id="⑦-stable-audio-3-medium--权重已下未跑">⑦ Stable Audio 3 Medium —— 权重已下，未跑</h4>
+<h4 id="⑦-stable-audio-3-medium---已跑通本轮补上">⑦ Stable Audio 3 Medium —— ✅ 已跑通（本轮补上）</h4>
 <ul>
-<li>主模型 9.22 GB + 两个编码器（<code>qwen3.5_2b</code> 4.55 GB、<code>t5gemma_b_b_ul2</code> 1.19 GB）<strong>已全部下载</strong>。</li>
-<li><strong>为什么没跑</strong>：它是<strong>音效 / 短片段</strong>路线（≤47 s），而「按歌词生成整首歌」这个任务
-已有 ACE-Step / YuE2 / MiniMax Music 3 三条线跑通并复核。
-它的定位是<strong>补充而非缺口</strong>，排在下一轮。</li>
+<li>主模型 9.22 GB + 两个编码器（<code>qwen3.5_2b</code> 4.55 GB、<code>t5gemma_b_b_ul2</code> 1.19 GB）全部就位后跑通。</li>
+<li><strong>实测 13.8 s</strong> 出 60 s 音轨（mp3 48 kHz 立体声），是<strong>最快的音乐模型</strong>。</li>
+<li>但要认清定位：它是<strong>音效 / 短片段 / 伴奏</strong>路线，不是「按歌词生成整首歌」；
+整首歌仍以 ACE-Step 1.5（可商用）与 YuE2（质量最高）为主。</li>
 </ul>
-<h4 id="⑧-musicgen--stable-audio-open早期版-授权不允许">⑧ MusicGen / Stable Audio Open（早期版）—— 授权不允许</h4>
+<h4 id="⑧-flux2-klein-9b---第二次误判纠正它从来没被卡住">⑧ FLUX.2 Klein 9B —— ⚠️ <strong>第二次误判纠正：它从来没被卡住</strong></h4>
+<ul>
+<li><strong>当时的结论</strong>：「9B 需要 ~16.4 GB 的 Qwen3-VL 编码器，官方只发 diffusers 分片格式，ComfyUI 无法加载。」</li>
+<li><strong>错在哪</strong>：那只对 <strong>BFL 官方仓库</strong>成立。<strong><code>Comfy-Org/flux2-klein-9B</code> 发布了单文件编码器</strong>
+<code>qwen_3_8b_fp8mixed.safetensors</code>（8.66 GB），配合 <code>black-forest-labs/FLUX.2-klein-9b-fp8</code> 的 DiT（9.43 GB）
+加上小解码器（0.25 GB）<strong>总共 18.3 GB，完全装得下</strong>。</li>
+<li><strong>实测</strong>：<strong>18.9 s</strong> 完成双 pass 9B 编辑（1024²），成功出图。</li>
+<li><strong>教训（与 LTX-2.3 同源）</strong>：<strong>「官方仓库发分片」≠「哪里都没有单文件」。</strong>
+下结论前先查 <strong>Comfy-Org 的 repackage 仓库</strong> —— 那是 ComfyUI 生态事实上的标准发布渠道。</li>
+</ul>
+<h4 id="⑨-musicgen--stable-audio-open早期版-授权不允许">⑨ MusicGen / Stable Audio Open（早期版）—— 授权不允许</h4>
 <ul>
 <li><strong>为什么直接排除</strong>：权重是 <strong>CC-BY-NC（非商用）</strong>。
 <strong>「能下载」不等于「产出能用」</strong> —— 对需要长期使用、可能商用的场景，直接出局。
@@ -2614,6 +2714,11 @@ reproducible method.</p>
 <td><a href="#10-conclusion-and-what-is-next">10</a></td>
 <td>Conclusion</td>
 <td>What is still open</td>
+</tr>
+<tr>
+<td><a href="#11-final-verdict-one-best-choice">11</a></td>
+<td><strong>Final verdict</strong></td>
+<td><strong>The one best pick per domain, with the evidence chain</strong></td>
 </tr>
 <tr>
 <td><a href="#appendix-e-coverage-audit-what-we-ran-what-we-did-not-and-why">Appendix E</a></td>
@@ -4277,6 +4382,95 @@ badly misread</li>
 </tbody>
 </table></div>
 <hr />
+<h2 id="11-final-verdict-one-best-choice">11. Final verdict: one best choice</h2>
+<blockquote>
+<p>Once all 21 measurements are in, the question collapses from &quot;what can each domain run&quot; to a
+single line: <strong>if this 24 GB 5090 laptop could keep only one configuration, what would it be?</strong></p>
+</blockquote>
+<h3 id="111-the-single-best-choice-per-domain">11.1 The single best choice per domain</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Final pick</th>
+<th>Measured</th>
+<th>Why it beats the runner-up</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Image</strong></td>
+<td><strong>Qwen-Image 2512 + Lightning</strong></td>
+<td><strong>12.2 s</strong> @1328²/4 steps</td>
+<td><strong>68% more pixels than Lens turbo (13.6 s @1024²) and faster</strong>; the only model with <strong>character-exact verified Chinese rendering</strong>. Sole cost is 30.06 GB needing offload — and 12.2 s already includes that</td>
+</tr>
+<tr>
+<td>Image (resident-VRAM tier)</td>
+<td>Z-Image-Turbo nvfp4</td>
+<td>13.8 s @1024²/8 steps</td>
+<td>8.33 GB fully resident, zero offload — least fussy for heavy use</td>
+</tr>
+<tr>
+<td><strong>Image editing</strong></td>
+<td><strong>FLUX.2 Klein 9B fp8</strong></td>
+<td><strong>18.9 s</strong></td>
+<td>Two-pass 9B fits in 18.3 GB; 4B (42.3 s) is both lower quality and slower</td>
+</tr>
+<tr>
+<td><strong>Video (quality first)</strong></td>
+<td><strong>Wan 2.2 14B MoE + 4-step LoRA</strong></td>
+<td><strong>93.8 s</strong> @832×480/81 frames</td>
+<td>Flagship MoE quality; 4 steps is <strong>7.9× faster than 20</strong> (which takes 739 s — not worth it)</td>
+</tr>
+<tr>
+<td>Video (speed first)</td>
+<td>LTX-Video 2B distilled</td>
+<td><strong>19.2 s</strong> @1216×704/121 frames</td>
+<td>4.9× faster than Wan 14B; accept subtler motion</td>
+</tr>
+<tr>
+<td><strong>Video + audio</strong></td>
+<td><strong>MiniMax H3 + 4-step LoRA</strong></td>
+<td><strong>286.2 s</strong></td>
+<td>4 steps is <strong>1.81× faster than 8</strong>; the only line with a native audio track</td>
+</tr>
+<tr>
+<td><strong>Music</strong></td>
+<td><strong>ACE-Step 1.5 XL turbo</strong></td>
+<td><strong>28.6 s</strong> / 60 s song</td>
+<td><strong>Apache 2.0, commercially usable.</strong> Stable Audio 3 is faster (13.8 s) but is an SFX / short-clip model</td>
+</tr>
+<tr>
+<td><strong>Image → 3D</strong></td>
+<td>Hunyuan3D 2.1</td>
+<td><strong>54.7 s</strong></td>
+<td>One file produces a 520k-triangle GLB</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="112-if-only-one-line-survives--the-answer-is-quotimage-qwen-image-2512--lightningquot">11.2 If only one line survives — the answer is &quot;image: Qwen-Image 2512 + Lightning&quot;</h3>
+<p>The chain of reasons, each backed by a measurement:</p>
+<ol>
+<li><strong>Speed</strong>: 12.2 s at 1328² is the fastest image configuration in the whole table
+(Lens turbo at 13.6 s and 1024² is second)</li>
+<li><strong>Resolution</strong>: 1328² carries <strong>68% more pixels</strong> than 1024² — the same twelve-odd seconds buys
+a materially larger usable image</li>
+<li><strong>Chinese</strong>: 30/30 characters exact — the only model whose Chinese rendering was verified</li>
+<li><strong>The cost is contained</strong>: 30.06 GB exceeds VRAM by 6 GB, and the offload penalty <strong>is already
+inside the 12.2 s</strong></li>
+</ol>
+<blockquote>
+<p><strong>One sentence</strong>: <strong>image = Qwen-Image 2512 + Lightning; video = Wan 2.2 14B MoE + 4-step LoRA;
+music = ACE-Step 1.5 XL turbo; image editing = FLUX.2 Klein 9B fp8; 3D = Hunyuan3D 2.1.</strong>
+Five lines covering image / video / music / 3D, <strong>every one of them measured end to end on this
+24 GB laptop</strong>.</p>
+</blockquote>
+<h3 id="113-the-quantization-verdict-stands">11.3 The quantization verdict stands</h3>
+<p><strong>If the GPU is Blackwell (sm_120/121), always pick NVFP4.</strong>
+Across five same-model dual-format comparisons on this machine, NVFP4 was always faster and
+smaller, with the quality delta below the noise floor. And §5's &quot;22% faster&quot; was measured with the
+optimized kernels disabled — a <strong>lower bound</strong> (see Appendix E ④).</p>
+<hr />
 <h2 id="appendix-a-complete-model-manifest-100-files--4584-gb">Appendix A: Complete model manifest (100 files / 458.4 GB)</h2>
 <blockquote>
 <p><strong>⚠️ A scope correction</strong>: an early version of this document put the manifest at
@@ -4722,7 +4916,8 @@ byte size as well. <strong>Total: 100 files / 458.4 GB (after <code>realpath</co
 <li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/quant-ab-metrics.md"><code>data/quant-ab-metrics.md</code></a> — full controlled A/B metrics</li>
 <li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/benchmark-results.md"><code>data/benchmark-results.md</code></a> — server-side time per workflow</li>
 <li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/download-manifest.md"><code>data/download-manifest.md</code></a> — size and dtype of all 34 files</li>
-<li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/coverage-round2.md"><code>data/coverage-round2.md</code></a> — <strong>raw data for the round-2 coverage expansion</strong> (timings and output specs for the four music lines + Wan 2.2 14B + LTX + Hunyuan3D, the VAE trap, and the cu130 kernel evidence)</li>
+<li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/coverage-round2.md"><code>data/coverage-round2.md</code></a></li>
+<li><a href="https://github.com/lifeidle/comfyui-5090-laptop-playbook/blob/main/data/coverage-round3.md"><code>data/coverage-round3.md</code></a> — <strong>round 3</strong>: Wan 2.2 14B (4- vs 20-step), MiniMax H3 4-step, FLUX.2 Klein 9B unblocked, Lens, ERNIE, Stable Audio 3, plus the full 21-row benchmark — <strong>raw data for the round-2 coverage expansion</strong> (timings and output specs for the four music lines + Wan 2.2 14B + LTX + Hunyuan3D, the VAE trap, and the cu130 kernel evidence)</li>
 </ul>
 <h2 id="appendix-c-glossary">Appendix C: Glossary</h2>
 <div class="tw"><table>
@@ -4857,10 +5052,10 @@ ledger, with <strong>the exact reason for every deliberate skip</strong> — inc
 <tbody>
 <tr>
 <td><strong>Image</strong></td>
-<td>7 lines (SDXL / FLUX.1-dev / Qwen-Image 2512 ×2 / Z-Image ×2 / FLUX.2 Klein 4B)</td>
+<td><strong>10 lines</strong> (SDXL / FLUX.1-dev / Qwen-Image 2512 ×2 / Z-Image ×2 / FLUX.2 Klein 4B / <strong>FLUX.2 Klein 9B / Lens / ERNIE-Image</strong>)</td>
 <td>1 (Qwen bf16 shards)</td>
 <td>2 (FLUX.2-dev, Nunchaku Qwen NVFP4)</td>
-<td>Fairly complete</td>
+<td>Complete</td>
 </tr>
 <tr>
 <td><strong>Video</strong></td>
@@ -4871,10 +5066,10 @@ ledger, with <strong>the exact reason for every deliberate skip</strong> — inc
 </tr>
 <tr>
 <td><strong>Music</strong></td>
-<td><strong>4 lines (ACE-Step ×2 / YuE2 / MiniMax Music 3)</strong></td>
-<td>1 (Stable Audio 3)</td>
+<td><strong>5 lines (ACE-Step ×2 / YuE2 / MiniMax Music 3 / Stable Audio 3)</strong></td>
 <td>0</td>
-<td><strong>0 → 4 this round</strong></td>
+<td>0</td>
+<td><strong>0 → 5 this round</strong></td>
 </tr>
 <tr>
 <td><strong>3D</strong></td>
@@ -4956,15 +5151,28 @@ See §6.4 and the §8 troubleshooting table.</li>
 1.5 already runs. Running 1.0 again has archaeological value only — no selection value.</li>
 <li><strong>Why they are kept</strong>: for archival comparison, and the llava-llama3 encoder may still be useful elsewhere.</li>
 </ul>
-<h4 id="⑦-stable-audio-3-medium--downloaded-not-run">⑦ Stable Audio 3 Medium — downloaded, not run</h4>
+<h4 id="⑦-stable-audio-3-medium---run-this-round">⑦ Stable Audio 3 Medium — ✅ run this round</h4>
 <ul>
-<li>The base model (9.22 GB) plus two encoders (<code>qwen3.5_2b</code> 4.55 GB, <code>t5gemma_b_b_ul2</code> 1.19 GB)
-are <strong>all downloaded</strong>.</li>
-<li><strong>Why not run</strong>: it is the <strong>sound-effects / short-clip</strong> route (≤47 s), whereas &quot;generate a full song
-from lyrics&quot; is already covered and verified by ACE-Step / YuE2 / MiniMax Music 3.
-It is a complement rather than a gap, so it waits for the next round.</li>
+<li>The base model (9.22 GB) plus two encoders (<code>qwen3.5_2b</code> 4.55 GB, <code>t5gemma_b_b_ul2</code> 1.19 GB) were
+all in place, and it ran.</li>
+<li><strong>Measured 13.8 s</strong> for a 60 s track (mp3 48 kHz stereo) — <strong>the fastest music model</strong>.</li>
+<li>But note its positioning: it is the <strong>SFX / short-clip / backing-track</strong> route, not &quot;a song from
+lyrics&quot;. For full songs, ACE-Step 1.5 (commercially usable) and YuE2 (highest quality) remain the picks.</li>
 </ul>
-<h4 id="⑧-musicgen--stable-audio-open-early--the-licence-forbids-it">⑧ MusicGen / Stable Audio Open (early) — the licence forbids it</h4>
+<h4 id="⑧-flux2-klein-9b---a-second-misjudgement-corrected-it-was-never-blocked">⑧ FLUX.2 Klein 9B — ⚠️ <strong>a second misjudgement, corrected: it was never blocked</strong></h4>
+<ul>
+<li><strong>The original verdict</strong>: &quot;the 9B needs a ~16.4 GB Qwen3-VL encoder that BFL ships only as diffusers
+shards, which ComfyUI cannot load.&quot;</li>
+<li><strong>What was wrong</strong>: that was true of the <strong>BFL repository only</strong>. <strong><code>Comfy-Org/flux2-klein-9B</code>
+publishes a single-file encoder</strong>, <code>qwen_3_8b_fp8mixed.safetensors</code> (8.66 GB). Together with the
+DiT from <code>black-forest-labs/FLUX.2-klein-9b-fp8</code> (9.43 GB) and the small decoder (0.25 GB),
+that is <strong>18.3 GB in total — fits comfortably</strong>.</li>
+<li><strong>Measured</strong>: <strong>18.9 s</strong> for a two-pass 9B edit at 1024², output produced.</li>
+<li><strong>Lesson (same root as LTX-2.3)</strong>: <strong>&quot;the official repo ships shards&quot; is not &quot;no single file exists
+anywhere&quot;.</strong> Check the <strong>Comfy-Org repackage repositories first</strong> — they are the de-facto standard
+distribution channel for the ComfyUI ecosystem.</li>
+</ul>
+<h4 id="⑨-musicgen--stable-audio-open-early--the-licence-forbids-it">⑨ MusicGen / Stable Audio Open (early) — the licence forbids it</h4>
 <ul>
 <li><strong>Why excluded outright</strong>: the weights are <strong>CC-BY-NC (non-commercial)</strong>.
 <strong>&quot;It downloads&quot; is not the same as &quot;you may use the output&quot;</strong> — for work that will be used long
