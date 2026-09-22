@@ -2,7 +2,7 @@
 
 **A complete field manual: model selection, downloads, graph construction, measurement, and the verdict.**
 
-[中文](README.md) · **English** · [📖 Read online (language auto-detected)](https://lifeidle.github.io/comfyui-5090-laptop-playbook/)
+[中文](README.md) · **English** · [📖 Read online (language auto-detected)](https://lifeidle.github.io/comfyui-5090-laptop-minimax-h3-wan2.2-nvfp4/)
 
 ---
 

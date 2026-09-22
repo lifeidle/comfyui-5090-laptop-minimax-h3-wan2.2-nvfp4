@@ -2,7 +2,7 @@
 
 **一份从选型、下载、搭图、实测到定论的完整实战手册**
 
-**中文** · [English](README_EN.md) · [📖 在线阅读（自动适配语言）](https://lifeidle.github.io/comfyui-5090-laptop-playbook/)
+**中文** · [English](README_EN.md) · [📖 在线阅读（自动适配语言）](https://lifeidle.github.io/comfyui-5090-laptop-minimax-h3-wan2.2-nvfp4/)
 
 ---
 
