@@ -1616,6 +1616,10 @@ materials = 1   nodes = 1
 <td><code>tools/make_charts.py</code></td>
 <td>生成本文所有 SVG 图表（中英各一套）</td>
 </tr>
+<tr>
+<td><code>scripts/push_site.py</code></td>
+<td>经 git-data API 把整棵树推到 GitHub（<strong>Python 版</strong>；本环境 Node 无法 spawn 子进程，故原件 <code>.mjs</code> 不可用，见 §9.5）</td>
+</tr>
 </tbody>
 </table></div>
 <h3 id="92-快速开始">9.2 快速开始</h3>
@@ -1720,6 +1724,50 @@ python tools/ab_metrics.py
 结构/类型正确时只会报 <code>value_not_in_list</code>（缺模型），其余报错都是真问题。</p>
 </blockquote>
 <hr />
+<h3 id="95-一个环境坑node-无法-spawn-子进程">9.5 一个环境坑：Node 无法 spawn 子进程</h3>
+<p>推送脚本我们原本用 Node 写（<code>push-site.mjs</code>），因为它要用 <code>git hash-object -w --stdin-paths</code>
+做 CRLF 规范化。但在这个环境里 <strong>Node 的 <code>execFileSync</code> / <code>spawnSync</code> 完全不可用</strong> ——
+连 <code>cmd.exe</code> 都返回：</p>
+<pre><code>Error: spawnSync C:\Program Files\Git\cmd\git.exe EBUSY
+    errno: -4082, code: 'EBUSY'
+</code></pre>
+<p>实测对照（同一台机器、同一时刻）：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>调用方</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bash 直接执行 <code>git --version</code></td>
+<td>✅ 正常</td>
+</tr>
+<tr>
+<td><strong>Python</strong> <code>subprocess.run([git, '--version'])</code></td>
+<td>✅ <strong>正常</strong></td>
+</tr>
+<tr>
+<td><strong>Node</strong> <code>execFileSync(git, ['--version'])</code></td>
+<td>❌ <strong>EBUSY（连 <code>cmd.exe</code> 也一样）</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>结论：这个限制是「仅 Node」，不是「整个环境」。</strong> 所以正解是把脚本移植到 Python
+（<code>scripts/push_site.py</code>），逻辑逐条对齐原版：</p>
+<ol>
+<li><strong>绝不直接上传磁盘原始字节</strong> —— 本机 <code>core.autocrlf=true</code>，磁盘是 CRLF、git 存 LF。
+必须经 <code>git hash-object -w --stdin-paths</code> 落盘 → <code>git cat-file blob</code> 取回规范化字节再 base64 上传。</li>
+<li><strong>树构建用「祖先闭包」</strong> —— 只含子目录的中间目录也要登记，否则整棵子树会从提交里静静消失。</li>
+<li><strong>动 ref 之前先自检</strong> —— <code>GET trees/&lt;root&gt;?recursive=1</code> 核对 blob 数 == 本地文件数，不等就 abort。</li>
+</ol>
+<blockquote>
+<p><strong>通用教训</strong>：遇到「脚本莫名报 EBUSY / EPERM」时，<strong>先用最小用例确认限制的边界</strong>
+（换调用方、换目标程序），再决定是修脚本还是换工具链。
+我们一开始误以为是「scratch 目录被锁」，清理了目录、重启了进程都没用 ——
+直到测了「Node 能不能跑 <code>cmd.exe</code>」才定位到是<strong>整个 Node 子进程能力被禁</strong>。</p>
+</blockquote>
 <h2 id="10-结论与后续">10. 结论与后续</h2>
 <h3 id="101-结论">10.1 结论</h3>
 <ol>
@@ -4030,6 +4078,10 @@ Fix: use <code>VAEDecodeTiled</code>.</p>
 <td><code>tools/make_charts.py</code></td>
 <td>Regenerates every SVG chart (one set per language)</td>
 </tr>
+<tr>
+<td><code>scripts/push_site.py</code></td>
+<td>Pushes the whole tree to GitHub through the git-data API (<strong>Python port</strong>; the original <code>.mjs</code> cannot be used here because Node cannot spawn child processes — see §9.5)</td>
+</tr>
 </tbody>
 </table></div>
 <h3 id="92-quick-start">9.2 Quick start</h3>
@@ -4135,6 +4187,54 @@ dry-run submission</strong> (<code>POST /prompt</code>) after converting: when t
 reports only <code>value_not_in_list</code> (missing models). Anything else is a real problem.</p>
 </blockquote>
 <hr />
+<h3 id="95-an-environment-trap-node-cannot-spawn-child-processes">9.5 An environment trap: Node cannot spawn child processes</h3>
+<p>We originally wrote the push script in Node (<code>push-site.mjs</code>), because it needs
+<code>git hash-object -w --stdin-paths</code> for CRLF normalization. But in this environment <strong>Node's
+<code>execFileSync</code> / <code>spawnSync</code> are completely unusable</strong> — even <code>cmd.exe</code> returns:</p>
+<pre><code>Error: spawnSync C:\Program Files\Git\cmd\git.exe EBUSY
+    errno: -4082, code: 'EBUSY'
+</code></pre>
+<p>Measured side by side, same machine, same moment:</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Caller</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bash running <code>git --version</code> directly</td>
+<td>✅ fine</td>
+</tr>
+<tr>
+<td><strong>Python</strong> <code>subprocess.run([git, '--version'])</code></td>
+<td>✅ <strong>fine</strong></td>
+</tr>
+<tr>
+<td><strong>Node</strong> <code>execFileSync(git, ['--version'])</code></td>
+<td>❌ <strong>EBUSY (and <code>cmd.exe</code> too)</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Conclusion: the restriction is Node-only, not environment-wide.</strong> The fix is to port the script
+to Python (<code>scripts/push_site.py</code>), matching the original line by line:</p>
+<ol>
+<li><strong>Never upload raw on-disk bytes</strong> — this machine runs <code>core.autocrlf=true</code>, so disk is CRLF while
+git stores LF. Round-trip through <code>git hash-object -w --stdin-paths</code> → <code>git cat-file blob</code> to get
+the normalized bytes, then base64-upload those.</li>
+<li><strong>Build trees with an ancestor closure</strong> — intermediate directories containing only subdirectories
+must still be registered, or a whole subtree silently vanishes from the commit.</li>
+<li><strong>Self-check before touching the ref</strong> — <code>GET trees/&lt;root&gt;?recursive=1</code> and compare the blob count
+with the local file count; abort on any mismatch.</li>
+</ol>
+<blockquote>
+<p><strong>The general lesson</strong>: when a script suddenly reports EBUSY / EPERM, <strong>first pin down the boundary
+of the restriction with a minimal test</strong> (swap the caller, swap the target program) before deciding
+whether to fix the script or change tooling. We initially assumed &quot;the scratch directory is locked&quot;,
+cleaned it, restarted processes — all useless. Only testing &quot;can Node run <code>cmd.exe</code> at all?&quot; revealed
+that <strong>Node's entire child-process capability was disabled</strong>.</p>
+</blockquote>
 <h2 id="10-conclusion-and-what-is-next">10. Conclusion and what is next</h2>
 <h3 id="101-conclusions">10.1 Conclusions</h3>
 <ol>

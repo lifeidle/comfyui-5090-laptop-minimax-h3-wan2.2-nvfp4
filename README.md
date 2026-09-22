@@ -794,6 +794,7 @@ materials = 1   nodes = 1
 | `tools/compare_ab.py` | 受控 A/B：PSNR + 分区 PSNR + 差异热力图 + 并排图 |
 | `tools/ab_metrics.py` | 四组配对 PSNR + 质量代理指标（锐度/熵/高频/直方图） |
 | `tools/make_charts.py` | 生成本文所有 SVG 图表（中英各一套） |
+| `scripts/push_site.py` | 经 git-data API 把整棵树推到 GitHub（**Python 版**；本环境 Node 无法 spawn 子进程，故原件 `.mjs` 不可用，见 §9.5） |
 
 ### 9.2 快速开始
 
@@ -861,6 +862,39 @@ ComfyUI 官方的模板（`comfyui_workflow_templates_json/templates/` 与 `blue
 
 
 ---
+
+### 9.5 一个环境坑：Node 无法 spawn 子进程
+
+推送脚本我们原本用 Node 写（`push-site.mjs`），因为它要用 `git hash-object -w --stdin-paths`
+做 CRLF 规范化。但在这个环境里 **Node 的 `execFileSync` / `spawnSync` 完全不可用** ——
+连 `cmd.exe` 都返回：
+
+```
+Error: spawnSync C:\Program Files\Git\cmd\git.exe EBUSY
+    errno: -4082, code: 'EBUSY'
+```
+
+实测对照（同一台机器、同一时刻）：
+
+| 调用方 | 结果 |
+|---|---|
+| bash 直接执行 `git --version` | ✅ 正常 |
+| **Python** `subprocess.run([git, '--version'])` | ✅ **正常** |
+| **Node** `execFileSync(git, ['--version'])` | ❌ **EBUSY（连 `cmd.exe` 也一样）** |
+
+**结论：这个限制是「仅 Node」，不是「整个环境」。** 所以正解是把脚本移植到 Python
+（`scripts/push_site.py`），逻辑逐条对齐原版：
+
+1. **绝不直接上传磁盘原始字节** —— 本机 `core.autocrlf=true`，磁盘是 CRLF、git 存 LF。
+   必须经 `git hash-object -w --stdin-paths` 落盘 → `git cat-file blob` 取回规范化字节再 base64 上传。
+2. **树构建用「祖先闭包」** —— 只含子目录的中间目录也要登记，否则整棵子树会从提交里静静消失。
+3. **动 ref 之前先自检** —— `GET trees/<root>?recursive=1` 核对 blob 数 == 本地文件数，不等就 abort。
+
+> **通用教训**：遇到「脚本莫名报 EBUSY / EPERM」时，**先用最小用例确认限制的边界**
+> （换调用方、换目标程序），再决定是修脚本还是换工具链。
+> 我们一开始误以为是「scratch 目录被锁」，清理了目录、重启了进程都没用 ——
+> 直到测了「Node 能不能跑 `cmd.exe`」才定位到是**整个 Node 子进程能力被禁**。
+
 
 ## 10. 结论与后续
 

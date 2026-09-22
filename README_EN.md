@@ -859,6 +859,7 @@ Fix: use `VAEDecodeTiled`.
 | `tools/compare_ab.py` | Controlled A/B: PSNR + per-tile PSNR + difference heatmap + side-by-side |
 | `tools/ab_metrics.py` | Four-arm paired PSNR + quality proxies (sharpness/entropy/high-frequency/histogram) |
 | `tools/make_charts.py` | Regenerates every SVG chart (one set per language) |
+| `scripts/push_site.py` | Pushes the whole tree to GitHub through the git-data API (**Python port**; the original `.mjs` cannot be used here because Node cannot spawn child processes — see §9.5) |
 
 ### 9.2 Quick start
 
@@ -926,6 +927,42 @@ The traps it had to solve are worth listing separately — **every one of them f
 > reports only `value_not_in_list` (missing models). Anything else is a real problem.
 
 ---
+
+### 9.5 An environment trap: Node cannot spawn child processes
+
+We originally wrote the push script in Node (`push-site.mjs`), because it needs
+`git hash-object -w --stdin-paths` for CRLF normalization. But in this environment **Node's
+`execFileSync` / `spawnSync` are completely unusable** — even `cmd.exe` returns:
+
+```
+Error: spawnSync C:\Program Files\Git\cmd\git.exe EBUSY
+    errno: -4082, code: 'EBUSY'
+```
+
+Measured side by side, same machine, same moment:
+
+| Caller | Result |
+|---|---|
+| bash running `git --version` directly | ✅ fine |
+| **Python** `subprocess.run([git, '--version'])` | ✅ **fine** |
+| **Node** `execFileSync(git, ['--version'])` | ❌ **EBUSY (and `cmd.exe` too)** |
+
+**Conclusion: the restriction is Node-only, not environment-wide.** The fix is to port the script
+to Python (`scripts/push_site.py`), matching the original line by line:
+
+1. **Never upload raw on-disk bytes** — this machine runs `core.autocrlf=true`, so disk is CRLF while
+   git stores LF. Round-trip through `git hash-object -w --stdin-paths` → `git cat-file blob` to get
+   the normalized bytes, then base64-upload those.
+2. **Build trees with an ancestor closure** — intermediate directories containing only subdirectories
+   must still be registered, or a whole subtree silently vanishes from the commit.
+3. **Self-check before touching the ref** — `GET trees/<root>?recursive=1` and compare the blob count
+   with the local file count; abort on any mismatch.
+
+> **The general lesson**: when a script suddenly reports EBUSY / EPERM, **first pin down the boundary
+> of the restriction with a minimal test** (swap the caller, swap the target program) before deciding
+> whether to fix the script or change tooling. We initially assumed "the scratch directory is locked",
+> cleaned it, restarted processes — all useless. Only testing "can Node run `cmd.exe` at all?" revealed
+> that **Node's entire child-process capability was disabled**.
 
 ## 10. Conclusion and what is next
 
