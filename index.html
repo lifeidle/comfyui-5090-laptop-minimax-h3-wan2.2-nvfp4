@@ -279,7 +279,7 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:22px 0 0;color:v
 </tr>
 <tr>
 <td>引擎</td>
-<td>ComfyUI <strong>0.37.0</strong> / PyTorch 2.11.0+cu128 / Python 3.11.9</td>
+<td>ComfyUI <strong>0.38.0</strong>（2026-10-05 升级）/ PyTorch 2.11.0+cu128 / Python 3.11.9</td>
 </tr>
 <tr>
 <td>目标</td>
@@ -1222,7 +1222,7 @@ ComfyUI 无法加载分片目录。</p>
 <h3 id="66-音乐生成--从零补上的一个领域">6.6 音乐生成 —— 从零补上的一个领域</h3>
 <p><strong>这是本次覆盖度上最大的缺口</strong>：图像和视频早就跑通了，<strong>音乐一个字都没碰</strong>。
 （注意区分：MiniMax H3 出的音轨是<strong>视频伴音（音效/环境声）</strong>，跟「按歌词生成一首歌」是两件事。）</p>
-<p>我们把 ComfyUI 0.37 <strong>原生支持</strong>的四条音乐线全部跑了一遍：</p>
+<p>我们把 ComfyUI <strong>原生支持</strong>的五条音乐线全部跑了一遍（0.38.0 上复核）：</p>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -1469,6 +1469,70 @@ materials = 1   nodes = 1
 <p><strong>报告性能数据时，相对百分比比绝对值可信得多。</strong></p>
 </blockquote>
 <hr />
+<h3 id="66-环境升级与模型清理记录2026-10-05">6.6 环境升级与模型清理记录（2026-10-05）</h3>
+<p><strong>ComfyUI 0.37.0 → 0.38.0</strong>，因为 0.38.0（2026-09-29 发布）带来了直接影响本文数字的改动：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>0.38.0 的改动</th>
+<th>对本文的影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ACE-Step 1.5 自回归模型加 CUDA graphs + memory compiler</td>
+<td>§6.5 的音乐耗时<strong>可能已过时</strong>，需复核</td>
+</tr>
+<tr>
+<td>修复 MiniMax-H3 VAE <code>rms_rope</code> 在 offload <code>qk_norm_scale</code> 下崩溃</td>
+<td>§6.3 的 H3 结果更可信了</td>
+</tr>
+<tr>
+<td>Blend H3 VAE tiles against composited neighbours</td>
+<td>H3 画质改进</td>
+</tr>
+<tr>
+<td>Speedup YuE2 AR</td>
+<td>§6.5 的 YuE2 耗时<strong>可能已过时</strong></td>
+</tr>
+<tr>
+<td>FLUX 模型族移植了一批优化</td>
+<td>§6.2 的 FLUX.1-dev 耗时<strong>可能已过时</strong></td>
+</tr>
+<tr>
+<td>新增 <code>w6a8</code> 量化格式、<code>ModelAttentionBackend</code> 节点</td>
+<td>24 GB 机器多了一个降显存选项，值得试</td>
+</tr>
+<tr>
+<td>新增 <code>TextEncodeQwenImage21</code></td>
+<td><strong>Qwen-Image 2.1 已可用</strong>（Comfy-Org 有 int8 单文件版，17.3 GB 装得下）</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><strong>⚠️ 但有一件事没变</strong>：<code>comfy_kitchen</code> 的 CUDA 后端<strong>依然被禁用</strong>
+（<code>WARNING: You need pytorch with cu130 or higher</code>，本机是 cu128）。
+所以 <strong>§5 的「NVFP4 快 22%」仍然是下界</strong> —— 升级 ComfyUI 解决不了这个问题，
+它取决于 PyTorch 的 CUDA 版本。</p>
+</blockquote>
+<p><strong>同日模型清理</strong>：删掉 42 个文件 / 167.4 GB（515.6 GB → 348.2 GB），三类：</p>
+<ol>
+<li><strong>从未参与任何一次运行的 diffusers 原版重复件</strong>（Qwen-Image-2512 / LTX-Video / SDXL 的分片版，
+共 95.1 GB）—— 我们一直用的是 Comfy-Org 的单文件版。</li>
+<li><strong>被取代的旧模型</strong>（<code>hunyuan_video_custom_720p</code> 被 1.5 取代、<code>lens_bf16</code> 只用了 turbo、
+<code>llava_llama3_fp8</code> 被 <code>qwen_2.5_vl_7b_fp8</code> 取代等，42.1 GB）。</li>
+<li><strong>实测证明跑不通的失败路径权重</strong>（HV1.5 的 720p + 1080p SR 共 33.3 GB、FLUX.2 Klein 9B nvfp4 5.8 GB）。</li>
+</ol>
+<blockquote>
+<p><strong>两个操作教训（都踩过）</strong>：</p>
+<ol>
+<li><strong>删完模型必须停掉 ComfyUI 才能真正释放空间。</strong> ComfyUI 持有文件句柄时，
+Windows 把空间标为「待删除」，进程不退出就不回收 —— 当时删了 95 GB 但可用空间纹丝不动，
+停掉 ComfyUI 后立刻释放 46.5 GB。</li>
+<li><strong>统计磁盘占用不能用 <code>os.path.realpath</code>。</strong> 它不解析 junction，会把 515.6 GB 算成 852 GB。
+必须用 Windows 文件身份（卷序列号 + <code>nFileIndex</code>）。</li>
+</ol>
+</blockquote>
 <h2 id="7-优化清单可以直接抄的配置">7. 优化清单（可以直接抄的配置）</h2>
 <p><img src="assets/zh/chart6-nvfp4-gain.svg" alt="NVFP4 实际带来什么" /></p>
 <h3 id="71-按收益排序">7.1 按收益排序</h3>
@@ -2139,10 +2203,12 @@ $2000 万美元的营收门槛对个人和小团队不构成实际限制。
 </li>
 </ol>
 <hr />
-<h2 id="附录-a完整模型清单100-文件--4584-gb">附录 A：完整模型清单（100 文件 / 458.4 GB）</h2>
+<h2 id="附录-a完整模型清单73-文件--3482-gb">附录 A：完整模型清单（73 文件 / 348.2 GB）</h2>
 <blockquote>
-<p><strong>⚠️ 口径修正</strong>：本手册早期版本把清单写成「34 文件 / 125.6 GB」，<strong>那只是当时最后一批的量</strong>，
-不是全部。真实磁盘占用是 <strong>100 个权重文件 / 458.4 GB</strong>（按 <code>realpath</code> 去重，避免 junction 别名重复计数）。
+<p><strong>⚠️ 口径修正（两次）</strong>：本手册早期版本写「34 文件 / 125.6 GB」，那只是当时最后一批的量；
+后来修正为 100 文件 / 458.4 GB。<strong>2026-10-05 清理后为 73 文件 / 348.2 GB</strong>。</p>
+<p>去重必须用 <strong>Windows 文件身份（卷序列号 + <code>nFileIndex</code>）</strong>，不能用 <code>os.path.realpath</code> ——
+后者不解析 junction，会把 515.6 GB 重复算成 852 GB。
 下面按「用途」分组列全，并标出<strong>哪些跑过、哪些只是下载了</strong>。</p>
 </blockquote>
 <details>
@@ -2574,7 +2640,7 @@ $2000 万美元的营收门槛对个人和小团队不构成实际限制。
 </table></div>
 <p><strong>校验口径</strong>：<code>verify_models.py</code> 三层校验（字节大小 + safetensors 结构 + dtype）。
 第一批 34 文件 / 125.6 GB <strong>34/34 通过、0 损坏</strong>；后续批次同样以字节数校验通过。
-<strong>总计 100 文件 / 458.4 GB（realpath 去重后）。</strong></p>
+<strong>总计 73 文件 / 348.2 GB（Windows 文件身份去重后；2026-10-05 清理掉 42 个文件 / 167.4 GB）。</strong></p>
 </details>
 <h2 id="附录-b实测原始数据">附录 B：实测原始数据</h2>
 <p>见 <a href="data/"><code>data/</code></a> 目录：</p>
@@ -3018,7 +3084,7 @@ reproducible method.</p>
 </tr>
 <tr>
 <td>Engine</td>
-<td>ComfyUI <strong>0.37.0</strong> / PyTorch 2.11.0+cu128 / Python 3.11.9</td>
+<td>ComfyUI <strong>0.38.0</strong> (upgraded 2026-10-05) / PyTorch 2.11.0+cu128 / Python 3.11.9</td>
 </tr>
 <tr>
 <td>Goal</td>
@@ -4030,7 +4096,7 @@ format loadable by my tooling?&quot;</strong> Many people overlook this precondi
 <p><strong>This was the biggest coverage gap</strong>: image and video were done long ago, while <strong>music had not been
 touched at all.</strong> (Worth distinguishing: MiniMax H3's audio track is <strong>video accompaniment —
 sound effects and ambience</strong>; it is not &quot;generate a song from lyrics&quot;.)</p>
-<p>We ran all four music lines that ComfyUI 0.37 <strong>supports natively</strong>:</p>
+<p>We ran all five music lines that ComfyUI <strong>supports natively</strong> (re-verified on 0.38.0):</p>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -4282,6 +4348,71 @@ power limits), but <strong>the relative result — nvfp4 is 22–25% faster than
 <p><strong>When reporting performance, relative percentages are far more trustworthy than absolute values.</strong></p>
 </blockquote>
 <hr />
+<h3 id="66-environment-upgrade-and-model-cleanup-2026-10-05">6.6 Environment upgrade and model cleanup (2026-10-05)</h3>
+<p><strong>ComfyUI 0.37.0 → 0.38.0</strong>, because 0.38.0 (released 2026-09-29) contains changes that directly affect
+numbers in this document:</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>0.38.0 change</th>
+<th>Effect on this document</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CUDA graphs + memory compiler on the ACE-Step 1.5 autoregressive model</td>
+<td>The music timings in §6.5 <strong>may now be stale</strong> and need re-verification</td>
+</tr>
+<tr>
+<td>Fix MiniMax-H3 VAE <code>rms_rope</code> crash on offloaded <code>qk_norm_scale</code></td>
+<td>The H3 results in §6.3 are now more trustworthy</td>
+</tr>
+<tr>
+<td>Blend H3 VAE tiles against composited neighbours</td>
+<td>H3 image quality improved</td>
+</tr>
+<tr>
+<td>Speedup YuE2 AR</td>
+<td>The YuE2 timing in §6.5 <strong>may now be stale</strong></td>
+</tr>
+<tr>
+<td>Ported a batch of optimizations to the FLUX model family</td>
+<td>The FLUX.1-dev timing in §6.2 <strong>may now be stale</strong></td>
+</tr>
+<tr>
+<td>New <code>w6a8</code> quantization format and a <code>ModelAttentionBackend</code> node</td>
+<td>One more VRAM-saving option for a 24 GB machine — worth trying</td>
+</tr>
+<tr>
+<td>New <code>TextEncodeQwenImage21</code></td>
+<td><strong>Qwen-Image 2.1 is now usable</strong> (Comfy-Org ships a single-file int8 build, 17.3 GB, fits)</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><strong>⚠️ But one thing did not change</strong>: the <code>comfy_kitchen</code> CUDA backend <strong>is still disabled</strong>
+(<code>WARNING: You need pytorch with cu130 or higher</code>; this machine runs cu128).
+So <strong>§5's &quot;NVFP4 is 22% faster&quot; remains a lower bound</strong> — upgrading ComfyUI cannot fix this,
+because it depends on the PyTorch CUDA version.</p>
+</blockquote>
+<p><strong>Same-day model cleanup</strong>: 42 files / 167.4 GB removed (515.6 GB → 348.2 GB), in three groups:</p>
+<ol>
+<li><strong>diffusers originals that never took part in a single run</strong> (the sharded builds of
+Qwen-Image-2512 / LTX-Video / SDXL, 95.1 GB total) — we always used the Comfy-Org single-file builds.</li>
+<li><strong>Superseded models</strong> (<code>hunyuan_video_custom_720p</code> replaced by 1.5, <code>lens_bf16</code> when only turbo is used,
+<code>llava_llama3_fp8</code> replaced by <code>qwen_2.5_vl_7b_fp8</code>, etc. — 42.1 GB).</li>
+<li><strong>Weights on paths proven not to run</strong> (HV1.5's 720p + 1080p SR, 33.3 GB; FLUX.2 Klein 9B nvfp4, 5.8 GB).</li>
+</ol>
+<blockquote>
+<p><strong>Two operational lessons (both learned the hard way)</strong>:</p>
+<ol>
+<li><strong>You must stop ComfyUI before the space is actually reclaimed.</strong> While ComfyUI holds file
+handles, Windows marks the space delete-pending and does not reclaim it until the process exits —
+deleting 95 GB moved the free-space number not at all, and stopping ComfyUI released 46.5 GB at once.</li>
+<li><strong>Never use <code>os.path.realpath</code> to measure disk usage.</strong> It does not resolve junctions and inflated
+515.6 GB to 852 GB. Use the Windows file identity (volume serial + <code>nFileIndex</code>).</li>
+</ol>
+</blockquote>
 <h2 id="7-optimization-checklist-configs-you-can-copy">7. Optimization checklist (configs you can copy)</h2>
 <p><img src="assets/en/chart6-nvfp4-gain.svg" alt="What NVFP4 actually buys you" /></p>
 <h3 id="71-ordered-by-payoff">7.1 Ordered by payoff</h3>
@@ -4979,11 +5110,13 @@ it on licence grounds.</p>
 </li>
 </ol>
 <hr />
-<h2 id="appendix-a-complete-model-manifest-100-files--4584-gb">Appendix A: Complete model manifest (100 files / 458.4 GB)</h2>
+<h2 id="appendix-a-complete-model-manifest-73-files--3482-gb">Appendix A: Complete model manifest (73 files / 348.2 GB)</h2>
 <blockquote>
 <p><strong>⚠️ A scope correction</strong>: an early version of this document put the manifest at
 &quot;34 files / 125.6 GB&quot; — <strong>that was only the last batch</strong>, not the whole thing. The real on-disk
-footprint is <strong>100 weight files / 458.4 GB</strong> (deduplicated by <code>realpath</code>, so junction aliases are
+footprint is <strong>73 weight files / 348.2 GB</strong> after the 2026-10-05 cleanup (was 100 / 458.4 GB).
+Deduplication must use the <strong>Windows file identity (volume serial + <code>nFileIndex</code>)</strong>, not
+<code>os.path.realpath</code> — the latter does not resolve junctions and inflated 515.6 GB to 852 GB.
 not double-counted). Below it is grouped by purpose, and marked with <strong>what was run and what was
 merely downloaded</strong>.</p>
 </blockquote>
@@ -5416,7 +5549,7 @@ merely downloaded</strong>.</p>
 </table></div>
 <p><strong>Validation</strong>: <code>verify_models.py</code> applies three layers (byte size + safetensors structure + dtype).
 The first batch of 34 files / 125.6 GB passed <strong>34/34, 0 corrupt</strong>; later batches were validated by
-byte size as well. <strong>Total: 100 files / 458.4 GB (after <code>realpath</code> deduplication).</strong></p>
+byte size as well. <strong>Total: 73 files / 348.2 GB (after the 2026-10-05 cleanup; Windows file-identity dedup).</strong></p>
 </details>
 <h2 id="appendix-b-raw-measurements">Appendix B: Raw measurements</h2>
 <p>See the <a href="data/"><code>data/</code></a> directory:</p>

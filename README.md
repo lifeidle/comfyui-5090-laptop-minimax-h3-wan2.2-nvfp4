@@ -76,7 +76,7 @@
 | GPU | **RTX 5090 Laptop** —— 24435 MiB（**24 GB**），算力 **sm_120**（Blackwell） |
 | CUDA | 12.8 |
 | 内存 | 64 GB |
-| 引擎 | ComfyUI **0.37.0** / PyTorch 2.11.0+cu128 / Python 3.11.9 |
+| 引擎 | ComfyUI **0.38.0**（2026-10-05 升级）/ PyTorch 2.11.0+cu128 / Python 3.11.9 |
 | 目标 | 尽量用**最新**的开源模型，跑通**图像 / 视频 / 音乐**三类生成 |
 
 **为什么从 24 GB 讲起？** 因为它是这份手册里唯一真正的硬约束。
@@ -680,7 +680,7 @@ ComfyUI 无法加载分片目录。
 **这是本次覆盖度上最大的缺口**：图像和视频早就跑通了，**音乐一个字都没碰**。
 （注意区分：MiniMax H3 出的音轨是**视频伴音（音效/环境声）**，跟「按歌词生成一首歌」是两件事。）
 
-我们把 ComfyUI 0.37 **原生支持**的四条音乐线全部跑了一遍：
+我们把 ComfyUI **原生支持**的五条音乐线全部跑了一遍（0.38.0 上复核）：
 
 | 模型 | 授权 | 权重 | 参数 | 实测 | 特点 |
 |---|---|---|---|---|---|
@@ -781,6 +781,41 @@ materials = 1   nodes = 1
 > **报告性能数据时，相对百分比比绝对值可信得多。**
 
 ---
+
+### 6.6 环境升级与模型清理记录（2026-10-05）
+
+**ComfyUI 0.37.0 → 0.38.0**，因为 0.38.0（2026-09-29 发布）带来了直接影响本文数字的改动：
+
+| 0.38.0 的改动 | 对本文的影响 |
+|---|---|
+| ACE-Step 1.5 自回归模型加 CUDA graphs + memory compiler | §6.5 的音乐耗时**可能已过时**，需复核 |
+| 修复 MiniMax-H3 VAE `rms_rope` 在 offload `qk_norm_scale` 下崩溃 | §6.3 的 H3 结果更可信了 |
+| Blend H3 VAE tiles against composited neighbours | H3 画质改进 |
+| Speedup YuE2 AR | §6.5 的 YuE2 耗时**可能已过时** |
+| FLUX 模型族移植了一批优化 | §6.2 的 FLUX.1-dev 耗时**可能已过时** |
+| 新增 `w6a8` 量化格式、`ModelAttentionBackend` 节点 | 24 GB 机器多了一个降显存选项，值得试 |
+| 新增 `TextEncodeQwenImage21` | **Qwen-Image 2.1 已可用**（Comfy-Org 有 int8 单文件版，17.3 GB 装得下） |
+
+> **⚠️ 但有一件事没变**：`comfy_kitchen` 的 CUDA 后端**依然被禁用**
+> （`WARNING: You need pytorch with cu130 or higher`，本机是 cu128）。
+> 所以 **§5 的「NVFP4 快 22%」仍然是下界** —— 升级 ComfyUI 解决不了这个问题，
+> 它取决于 PyTorch 的 CUDA 版本。
+
+**同日模型清理**：删掉 42 个文件 / 167.4 GB（515.6 GB → 348.2 GB），三类：
+
+1. **从未参与任何一次运行的 diffusers 原版重复件**（Qwen-Image-2512 / LTX-Video / SDXL 的分片版，
+   共 95.1 GB）—— 我们一直用的是 Comfy-Org 的单文件版。
+2. **被取代的旧模型**（`hunyuan_video_custom_720p` 被 1.5 取代、`lens_bf16` 只用了 turbo、
+   `llava_llama3_fp8` 被 `qwen_2.5_vl_7b_fp8` 取代等，42.1 GB）。
+3. **实测证明跑不通的失败路径权重**（HV1.5 的 720p + 1080p SR 共 33.3 GB、FLUX.2 Klein 9B nvfp4 5.8 GB）。
+
+> **两个操作教训（都踩过）**：
+> 1. **删完模型必须停掉 ComfyUI 才能真正释放空间。** ComfyUI 持有文件句柄时，
+>    Windows 把空间标为「待删除」，进程不退出就不回收 —— 当时删了 95 GB 但可用空间纹丝不动，
+>    停掉 ComfyUI 后立刻释放 46.5 GB。
+> 2. **统计磁盘占用不能用 `os.path.realpath`。** 它不解析 junction，会把 515.6 GB 算成 852 GB。
+>    必须用 Windows 文件身份（卷序列号 + `nFileIndex`）。
+
 
 ## 7. 优化清单（可以直接抄的配置）
 
@@ -1095,10 +1130,13 @@ Error: spawnSync C:\Program Files\Git\cmd\git.exe EBUSY
 
 ---
 
-## 附录 A：完整模型清单（100 文件 / 458.4 GB）
+## 附录 A：完整模型清单（73 文件 / 348.2 GB）
 
-> **⚠️ 口径修正**：本手册早期版本把清单写成「34 文件 / 125.6 GB」，**那只是当时最后一批的量**，
-> 不是全部。真实磁盘占用是 **100 个权重文件 / 458.4 GB**（按 `realpath` 去重，避免 junction 别名重复计数）。
+> **⚠️ 口径修正（两次）**：本手册早期版本写「34 文件 / 125.6 GB」，那只是当时最后一批的量；
+> 后来修正为 100 文件 / 458.4 GB。**2026-10-05 清理后为 73 文件 / 348.2 GB**。
+>
+> 去重必须用 **Windows 文件身份（卷序列号 + `nFileIndex`）**，不能用 `os.path.realpath` ——
+> 后者不解析 junction，会把 515.6 GB 重复算成 852 GB。
 > 下面按「用途」分组列全，并标出**哪些跑过、哪些只是下载了**。
 
 <details>
@@ -1228,7 +1266,7 @@ Error: spawnSync C:\Program Files\Git\cmd\git.exe EBUSY
 
 **校验口径**：`verify_models.py` 三层校验（字节大小 + safetensors 结构 + dtype）。
 第一批 34 文件 / 125.6 GB **34/34 通过、0 损坏**；后续批次同样以字节数校验通过。
-**总计 100 文件 / 458.4 GB（realpath 去重后）。**
+**总计 73 文件 / 348.2 GB（Windows 文件身份去重后；2026-10-05 清理掉 42 个文件 / 167.4 GB）。**
 
 </details>
 
