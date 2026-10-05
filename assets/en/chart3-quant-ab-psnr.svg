@@ -17,7 +17,7 @@
 <text x="601.88" y="92" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#64748b" text-anchor="middle">seed-noise floor</text>
 <text x="24" y="125" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="14" fill="#0f172a" font-weight="600">cross-quant</text>
 <text x="24" y="142" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#64748b">NVFP4 vs INT8, same seed</text>
-<rect x="268.0" y="111.0" width="458.0" height="24.0" rx="5" fill="#059669" opacity="1"/>
+<rect x="268.0" y="111.0" width="458.0" height="24.0" rx="5" fill="#2563eb" opacity="1"/>
 <text x="735.048" y="129" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="15" fill="#0f172a" font-weight="700">16.84</text>
 <text x="24" y="181" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="14" fill="#0f172a" font-weight="600">seed noise</text>
 <text x="24" y="198" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" fill="#64748b">NVFP4, different seed</text>

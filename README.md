@@ -111,8 +111,8 @@
 | **视频（旗舰档）** | Wan 2.2 14B MoE | fp8 双专家 28.6 GB | **93.8 s**（832×480/81帧/**4步**） | 旗舰 MoE + LightX2V 4 步 LoRA，真的跑得动 |
 | 视频（电影感 + 1080p 超分） | HunyuanVideo 1.5 720p→1080p | fp16 + SR 模型 | ⚠️ **70 分钟未完成，24 GB 上不可行** | 见 §6.4「一个负面结果」 |
 | **视频 + 音频** | MiniMax H3 | int8 + ConvRot | 519.1 s（1344×768/124帧） | **唯一原生带音轨**的线 |
-| **音乐生成** | ACE-Step 1.5 XL turbo | bf16 9.97 GB | **28.6 s**（60 s 歌曲） | **Apache 2.0 可商用**，出片最快 |
-| 音乐生成（整首含人声） | YuE2-3B | int8 3.96 GB | 93.7 s（60 s 歌曲） | SongBench 最高；**但 cc-by-nc 非商用** |
+| **音乐生成** | ACE-Step 1.5 XL turbo | bf16 9.97 GB | **20.8 s**（60 s 歌曲，0.38.0 复核） | **Apache 2.0 可商用**，出片最快 |
+| 音乐生成（整首含人声） | YuE2-3B | int8 3.96 GB | **87.5 s**（60 s 歌曲，0.38.0 复核） | SongBench 最高；**但 cc-by-nc 非商用** |
 | 音乐生成（带 LLM 增强） | MiniMax Music 3 | int8 2.50 GB | 458.2 s（60 s 歌曲） | 质量高但慢一个量级 |
 | **图生 3D** | Hunyuan3D 2.1 | all-in-one 7.37 GB | 54.7 s | 一个文件出 GLB（52 万面） |
 
@@ -478,6 +478,38 @@ det = 0.0000   |   cross = 0.0858   |   seedB = 0.1085   |   seed = 0.1256
 顺带一提，Lightning LoRA 的收益值得单独记一笔：**同一个模型，206.7 s → 12.2 s，快 16.9 倍**，
 而且细节反而更足。这又一次印证了 §2 那条原则 —— **提速靠「少走步数」，不靠「压权重」**。
 
+
+#### Qwen-Image 2.1 —— 图像首选的**继任者**（2026-10-05 实测）
+
+ComfyUI 0.38.0 新增 `TextEncodeQwenImage21` 节点后，Qwen-Image 2.1 变得可跑。
+`Comfy-Org/Qwen-Image-2.1` 提供**单文件 int8 版**，**17.3 GB 装得下**：
+
+| 文件 | 大小 |
+|---|---|
+| `qwen_image_2.1_int8_convrot.safetensors` | 7.26 GB |
+| `qwen3vl_8b_int8_convrot.safetensors` | 9.35 GB |
+| `qwen_image_2.1_vae_bf16.safetensors` | 0.68 GB |
+
+**同提示词、同分辨率（1328×1328）对照**：
+
+| 模型 | 量化 | 步数 | 耗时 | 中文字 30 字 |
+|---|---|---|---|---|
+| Qwen-Image 2512 | fp8 | 50 | 206.7 s | ✅ **30/30 逐字全对** |
+| Qwen-Image 2512 + Lightning | fp8 | 4 | **12.2 s** | ✅ 30/30 |
+| **Qwen-Image 2.1** | **int8 convrot** | **25** | **72.7 s** | ✅ **30/30 逐字全对** |
+
+**三条结论**：
+1. **中文渲染打平**：主标题「春风得意马蹄疾」「一日看尽长安花」各 7 字、四个副标题词组各 4 字，
+   **2.1 同样 30/30 逐字全对**，与 2512 同级。
+2. **同质量档快 2.8×**：2.1 用 25 步只要 72.7 s，2512 用 50 步要 206.7 s。
+3. **体积更小**：17.3 GB vs 2512 的约 30 GB。
+
+> **但 2.1 目前没有 Lightning / lightx2v LoRA**，所以**最快档仍是 2512 + Lightning 的 12.2 s**。
+> 选型：**要绝对速度 → 2512 + Lightning（12.2 s）；要满质量 + 中等速度 + 更小体积 → 2.1（72.7 s）。**
+
+风格上两者可互补：2512 笔画粗犷、对比强烈；2.1 更雅致、留白更多、水墨层次更细腻。
+
+
 ### 6.2 图像编辑 —— FLUX.2 Klein 4B
 
 | 项 | 值 |
@@ -685,8 +717,8 @@ ComfyUI 无法加载分片目录。
 | 模型 | 授权 | 权重 | 参数 | 实测 | 特点 |
 |---|---|---|---|---|---|
 | **ACE-Step 1.5 turbo** | **Apache 2.0** | DiT 4.79 GB + 编码器 1.19/1.19 GB + VAE 0.34 GB | `TextEncodeAceStepAudio1.5`（tags/lyrics/语言/BPM/时长）→ `EmptyAceStep1.5LatentAudio` → KSampler **8 步 CFG=1** | 22.9 s / 60 s 歌 | 最快、**可商用** |
-| **ACE-Step 1.5 XL turbo** | **Apache 2.0** | DiT 9.97 GB + 编码器 1.19/**8.38** GB + VAE 0.34 GB | 同上（XL 版编码器换成 qwen_4b） | **28.6 s** / 60 s 歌 | 质量更高，仍可商用 |
-| **YuE2-3B** | ⚠️ **cc-by-nc（非商用）** | `yue2_3b_int8_convrot` 3.96 GB（all-in-one） | 两阶段：`YuE2GenerateABC`（32 步 AR 规划谱）→ `YuE2GenerateMusic` → KSampler `dpm_2`/`sgm_uniform` 32 步 | 93.7 s / 60 s 歌 | 整首歌含人声，中英歌词；**SongBench 分数最高** |
+| **ACE-Step 1.5 XL turbo** | **Apache 2.0** | DiT 9.97 GB + 编码器 1.19/**8.38** GB + VAE 0.34 GB | 同上（XL 版编码器换成 qwen_4b） | **20.8 s** / 60 s 歌 | 质量更高，仍可商用 |
+| **YuE2-3B** | ⚠️ **cc-by-nc（非商用）** | `yue2_3b_int8_convrot` 3.96 GB（all-in-one） | 两阶段：`YuE2GenerateABC`（32 步 AR 规划谱）→ `YuE2GenerateMusic` → KSampler `dpm_2`/`sgm_uniform` 32 步 | **87.5 s** / 60 s 歌 | 整首歌含人声，中英歌词；**SongBench 分数最高** |
 | **MiniMax Music 3** | 见仓库 | DiT 2.50 GB + 编码器 9.20 GB + VAE 0.22 GB | `MiniMaxMusic3TextEncode`（caption/lyrics）→ KSampler **30 步 CFG=1.7** | **458.2 s** / 60 s 歌 | 质量取向，慢一个量级 |
 
 **产物复核**（全部用 `ffprobe` 验过）：
@@ -747,7 +779,7 @@ materials = 1   nodes = 1
 | **Z-Image-Turbo nvfp4** | 1024² / 8 步 | **13.8 s** |
 | **SDXL base 1.0** | 1024² / 20 步 | 14.1 s |
 | Z-Image-Turbo int8 | 1024² / 8 步 | 17.7 s |
-| FLUX.1-dev fp8 | 1024² / 20 步 | 32.1 s |
+| FLUX.1-dev fp8 | 1024² / 20 步 | **30.1 s** ← 0.38.0 复核 |
 | FLUX.2 Klein 4B fp8 | 1024² 编辑 | 42.3 s |
 | Qwen-Image 2512（无 LoRA） | 1328² / 50 步 | 206.7 s |
 
@@ -769,9 +801,9 @@ materials = 1   nodes = 1
 | 模型 | 配置 | 服务端耗时 |
 |---|---|---|
 | ACE-Step 1.5 turbo | 60 s 歌曲 / 8 步 | 22.9 s |
-| ACE-Step 1.5 XL turbo | 60 s 歌曲 / 8 步 | 28.6 s |
+| ACE-Step 1.5 XL turbo | 60 s 歌曲 / 8 步 | **20.8 s** ← 0.38.0 复核（快 27%） |
 | **Hunyuan3D 2.1** | 30 步，4096 latent，octree 256 | **54.7 s** |
-| YuE2-3B | 60 s 歌曲 / 32 步 | 93.7 s |
+| YuE2-3B | 60 s 歌曲 / 32 步 | **87.5 s** |
 | MiniMax Music 3 | 60 s 歌曲 / 30 步 | 458.2 s |
 
 **一个诚实的说明**：Z-Image 的耗时我们测了两轮，得到 `20.9 / 15.8 s` 和 `17.7 / 13.8 s`。
@@ -1029,7 +1061,7 @@ Error: spawnSync C:\Program Files\Git\cmd\git.exe EBUSY
 | **视频（质量优先）** | **Wan 2.2 14B MoE + 4步 LoRA** | **93.8 s** @832×480/81帧 | 旗舰 MoE 画质；4 步比 20 步**快 7.9×**。**同提示词对比中提示词遵循完全正确**（见 §6.4） |
 | 视频（速度优先） | ~~LTX-Video 2B 蒸馏~~ → **Wan 2.2 14B MoE + 4步 LoRA** | 93.8 s | **LTX 被降级**：同提示词对比中它完全不跟随提示词（见 §6.4），快 18× 但内容不可控 |
 | **视频 + 音频** | **MiniMax H3 + 4步 LoRA** | **286.2 s** | 4 步比 8 步**快 1.81×**；唯一原生出音轨。**同提示词对比中构图与细节甚至优于 Wan**（见 §6.4）。⚠️ 授权排除欧美四地 |
-| **音乐** | **ACE-Step 1.5 XL turbo** | **28.6 s** / 60 s 歌 | **Apache 2.0 可商用**。Stable Audio 3 更快（13.8 s）但定位是音效/短片段 |
+| **音乐** | **ACE-Step 1.5 XL turbo** | **20.8 s** / 60 s 歌 | **Apache 2.0 可商用**。Stable Audio 3 更快（13.8 s）但定位是音效/短片段 |
 | **图生 3D** | Hunyuan3D 2.1 | **54.7 s** | 一个文件出 52 万面 GLB |
 
 ### 11.2 如果只保留一条 —— 答案是「图像：Qwen-Image 2512 + Lightning」
@@ -1239,7 +1271,7 @@ Error: spawnSync C:\Program Files\Git\cmd\git.exe EBUSY
 | `qwen_2.5_vl_7b_fp8_scaled.safetensors` | 9.38 GB | ✅ 跑过 |
 | `qwen_image_vae.safetensors` | 0.25 GB | ✅ 跑过 |
 | `Qwen-Image-2512-Lightning-4steps-V1.0-fp32.safetensors` | 1.70 GB | ✅ 跑过 |
-| `flux1-dev-fp8.safetensors` | 17.25 GB | ✅ 跑过（32.1 s @1024²/20步） |
+| `flux1-dev-fp8.safetensors` | 17.25 GB | ✅ 跑过（**30.1 s** @1024²/20步，0.38.0 复核） |
 | `sd_xl_base_1.0.safetensors` | 6.94 GB | ✅ 跑过（14.1 s @1024²/20步） |
 | `Qwen-Image-2512`（bf16 diffusers 分片，53.74 GB） | 53.74 GB | ⬜ 被 fp8 单文件取代，未跑 |
 
@@ -1280,6 +1312,7 @@ Error: spawnSync C:\Program Files\Git\cmd\git.exe EBUSY
 - [`data/coverage-round2.md`](data/coverage-round2.md) —— **第二轮覆盖度扩展的原始数据**（音乐 4 条线 + Wan 2.2 14B + LTX + Hunyuan3D 的耗时与产物规格、VAE 踩坑记录、cu130 内核禁用证据）
 - [`data/coverage-round3.md`](data/coverage-round3.md) —— **第三轮的原始数据**（Wan 2.2 14B 4步 vs 20步、MiniMax H3 4步、FLUX.2 Klein 9B 解封、Lens、ERNIE、Stable Audio 3，以及全部 21 组基准）
 - [`data/licences-and-video-comparison.md`](data/licences-and-video-comparison.md) —— **授权核实结果 + 同提示词视频对比**（三个模型同一句提示词的三方对比、LTX 提示词遵循的三步诊断）
+- [`data/coverage-round4.md`](data/coverage-round4.md) —— **第四轮**（ComfyUI 0.38.0 复核：ACE-Step 快 27%、Qwen-Image 2.1 实测 72.7 s/中文 30-30、下载器两个会静默损坏权重的 bug）
 
 ## 附录 C：术语表
 

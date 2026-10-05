@@ -1,0 +1,114 @@
+{
+ "13": {
+  "class_type": "ResolutionSelector",
+  "inputs": {
+   "aspect_ratio": "1:1 (Square)",
+   "megapixels": 1.76,
+   "multiple": 8
+  }
+ },
+ "1468": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "1469": {
+  "class_type": "TextEncodeQwenImage21",
+  "inputs": {
+   "prompt": "一张中式茶馆海报，宣纸质感米白底色，画面正中是竖排毛笔书法主标题，共两行、每行七个字，必须逐字准确：第一行「春风得意马蹄疾」，第二行「一日看尽长安花」。主标题下方是横排小号行楷副标题，四个词组，必须逐字准确：「茶香四溢」「静心品茗」「八方来客」「岁月悠长」。背景是淡淡的远山与松枝水墨，右下角一枚朱红印章。整体构图居中、留白充足、字体清晰可辨、笔画完整，印刷级排版。",
+   "negative_prompt": "",
+   "resolution": 1328,
+   "clip": [
+    "1470",
+    0
+   ]
+  }
+ },
+ "1470": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+   "type": "qwen_image",
+   "device": "default"
+  }
+ },
+ "1471": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+  }
+ },
+ "1472": {
+  "class_type": "EmptyLatentImage",
+  "inputs": {
+   "width": 1328,
+   "height": 1328,
+   "batch_size": 1
+  }
+ },
+ "1473": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "1474",
+    0
+   ],
+   "vae": [
+    "1471",
+    0
+   ]
+  }
+ },
+ "1474": {
+  "class_type": "KSampler",
+  "inputs": {
+   "seed": 20260922,
+   "steps": 25,
+   "cfg": 1,
+   "sampler_name": "euler",
+   "scheduler": "simple",
+   "denoise": 1,
+   "model": [
+    "1468",
+    0
+   ],
+   "positive": [
+    "1469",
+    0
+   ],
+   "negative": [
+    "1469",
+    1
+   ],
+   "latent_image": [
+    "1472",
+    0
+   ]
+  }
+ },
+ "461": {
+  "class_type": "SaveImageAdvanced",
+  "inputs": {
+   "filename_prefix": "qwen21/chinese_poster_25step",
+   "format": "png",
+   "format.bit_depth": "8-bit",
+   "format.input_color_space": "sRGB",
+   "images": [
+    "1473",
+    0
+   ]
+  }
+ },
+ "_meta": {
+  "title": "Qwen-Image 2.1 int8 · 中文字渲染验收",
+  "based_on": "官方模板 image_qwen_image_2_1_t2i.json 拓扑",
+  "notes": [
+   "★ 必须用 TextEncodeQwenImage21（0.38.0 新增节点），CLIPLoader type=qwen_image",
+   "★ 与 2512 验收用同一句提示词、同一 1328×1328 分辨率，便于逐字对比",
+   "2.1 暂无 Lightning/lightx2v LoRA，按模板 25 步跑",
+   "对照：qwen_image_2512_lightning_4steps.json（同提示词，50步无LoRA=206.7s / 4步LoRA=12.2s）"
+  ]
+ }
+}

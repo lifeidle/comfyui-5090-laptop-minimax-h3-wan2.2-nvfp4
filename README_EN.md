@@ -117,8 +117,8 @@ encoder at 15.7 GB — **each individually exceeds 24 GB**. Which means:
 | **Video (flagship tier)** | Wan 2.2 14B MoE | fp8 dual-expert 28.6 GB | **93.8 s** (832×480/81 frames/**4 steps**) | Flagship MoE + LightX2V 4-step LoRA actually runs |
 | Video (cinematic + 1080p SR) | HunyuanVideo 1.5 720p→1080p | fp16 + SR models | ⚠️ **70 min without finishing — infeasible on 24 GB** | See §6.4, "a negative result" |
 | **Video + audio** | MiniMax H3 | int8 + ConvRot | 519.1 s (1344×768/124 frames) | The **only line with a native audio track** |
-| **Music generation** | ACE-Step 1.5 XL turbo | bf16 9.97 GB | **28.6 s** (60 s song) | **Apache 2.0, commercially usable**, fastest output |
-| Music generation (full song with vocals) | YuE2-3B | int8 3.96 GB | 93.7 s (60 s song) | Highest SongBench score; **but cc-by-nc, non-commercial** |
+| **Music generation** | ACE-Step 1.5 XL turbo | bf16 9.97 GB | **20.8 s** (60 s song, re-verified on 0.38.0) | **Apache 2.0, commercially usable**, fastest output |
+| Music generation (full song with vocals) | YuE2-3B | int8 3.96 GB | **87.5 s** (60 s song, re-verified on 0.38.0) | Highest SongBench score; **but cc-by-nc, non-commercial** |
 | Music generation (LLM-enhanced) | MiniMax Music 3 | int8 2.50 GB | 458.2 s (60 s song) | High quality, an order of magnitude slower |
 | **Image → 3D** | Hunyuan3D 2.1 | all-in-one 7.37 GB | 54.7 s | One file produces a GLB (520k triangles) |
 
@@ -522,6 +522,40 @@ Worth recording separately: the Lightning LoRA took the same model from **206.7 
 faster** — with detail, if anything, more present. This again confirms the §2 rule:
 **speed comes from fewer steps, not from smaller weights.**
 
+
+#### Qwen-Image 2.1 — the **successor** to our image pick (measured 2026-10-05)
+
+Once ComfyUI 0.38.0 added the `TextEncodeQwenImage21` node, Qwen-Image 2.1 became runnable.
+`Comfy-Org/Qwen-Image-2.1` ships a **single-file int8 build** that **fits in 17.3 GB**:
+
+| File | Size |
+|---|---|
+| `qwen_image_2.1_int8_convrot.safetensors` | 7.26 GB |
+| `qwen3vl_8b_int8_convrot.safetensors` | 9.35 GB |
+| `qwen_image_2.1_vae_bf16.safetensors` | 0.68 GB |
+
+**Same prompt, same resolution (1328×1328)**:
+
+| Model | Quant | Steps | Exec | 30 Chinese chars |
+|---|---|---|---|---|
+| Qwen-Image 2512 | fp8 | 50 | 206.7 s | ✅ **30/30 character-exact** |
+| Qwen-Image 2512 + Lightning | fp8 | 4 | **12.2 s** | ✅ 30/30 |
+| **Qwen-Image 2.1** | **int8 convrot** | **25** | **72.7 s** | ✅ **30/30 character-exact** |
+
+**Three conclusions**:
+1. **Chinese rendering ties**: both title lines (7 chars each) and all four subtitle phrases are
+   **30/30 exact for 2.1 as well** — the same level as 2512.
+2. **2.8× faster at comparable quality**: 2.1 needs 25 steps / 72.7 s where 2512 needs 50 steps / 206.7 s.
+3. **Smaller footprint**: 17.3 GB vs roughly 30 GB for 2512.
+
+> **But 2.1 has no Lightning / lightx2v LoRA yet**, so **the fastest configuration remains
+> 2512 + Lightning at 12.2 s**. Picking: **absolute speed → 2512 + Lightning (12.2 s); full quality at
+> moderate speed and a smaller footprint → 2.1 (72.7 s)**.
+
+The two are stylistically complementary: 2512 gives bolder brushwork and stronger contrast;
+2.1 is more refined with more whitespace and subtler ink-wash gradation.
+
+
 ### 6.2 Image editing — FLUX.2 Klein 4B
 
 | Item | Value |
@@ -748,8 +782,8 @@ We ran all five music lines that ComfyUI **supports natively** (re-verified on 0
 | Model | License | Weights | Parameters | Measured | Notes |
 |---|---|---|---|---|---|
 | **ACE-Step 1.5 turbo** | **Apache 2.0** | DiT 4.79 GB + encoders 1.19/1.19 GB + VAE 0.34 GB | `TextEncodeAceStepAudio1.5` (tags/lyrics/language/BPM/duration) → `EmptyAceStep1.5LatentAudio` → KSampler **8 steps CFG=1** | 22.9 s / 60 s song | Fastest, **commercially usable** |
-| **ACE-Step 1.5 XL turbo** | **Apache 2.0** | DiT 9.97 GB + encoders 1.19/**8.38** GB + VAE 0.34 GB | same (XL swaps the encoder to qwen_4b) | **28.6 s** / 60 s song | Higher quality, still commercially usable |
-| **YuE2-3B** | ⚠️ **cc-by-nc (non-commercial)** | `yue2_3b_int8_convrot` 3.96 GB (all-in-one) | two stages: `YuE2GenerateABC` (32-step AR score planning) → `YuE2GenerateMusic` → KSampler `dpm_2`/`sgm_uniform` 32 steps | 93.7 s / 60 s song | Full song with vocals, zh+en lyrics; **highest SongBench score** |
+| **ACE-Step 1.5 XL turbo** | **Apache 2.0** | DiT 9.97 GB + encoders 1.19/**8.38** GB + VAE 0.34 GB | same (XL swaps the encoder to qwen_4b) | **20.8 s** / 60 s song | Higher quality, still commercially usable |
+| **YuE2-3B** | ⚠️ **cc-by-nc (non-commercial)** | `yue2_3b_int8_convrot` 3.96 GB (all-in-one) | two stages: `YuE2GenerateABC` (32-step AR score planning) → `YuE2GenerateMusic` → KSampler `dpm_2`/`sgm_uniform` 32 steps | **87.5 s** / 60 s song | Full song with vocals, zh+en lyrics; **highest SongBench score** |
 | **MiniMax Music 3** | see repo | DiT 2.50 GB + encoder 9.20 GB + VAE 0.22 GB | `MiniMaxMusic3TextEncode` (caption/lyrics) → KSampler **30 steps CFG=1.7** | **458.2 s** / 60 s song | Quality-oriented, an order of magnitude slower |
 
 **Output verification** (all checked with `ffprobe`):
@@ -815,7 +849,7 @@ with a material, ready for Blender or a game engine.
 | **Z-Image-Turbo nvfp4** | 1024² / 8 steps | **13.8 s** |
 | **SDXL base 1.0** | 1024² / 20 steps | 14.1 s |
 | Z-Image-Turbo int8 | 1024² / 8 steps | 17.7 s |
-| FLUX.1-dev fp8 | 1024² / 20 steps | 32.1 s |
+| FLUX.1-dev fp8 | 1024² / 20 steps | **30.1 s** ← re-verified on 0.38.0 |
 | FLUX.2 Klein 4B fp8 | 1024² edit | 42.3 s |
 | Qwen-Image 2512 (no LoRA) | 1328² / 50 steps | 206.7 s |
 
@@ -837,9 +871,9 @@ with a material, ready for Blender or a game engine.
 | Model | Configuration | Server-side time |
 |---|---|---|
 | ACE-Step 1.5 turbo | 60 s song / 8 steps | 22.9 s |
-| ACE-Step 1.5 XL turbo | 60 s song / 8 steps | 28.6 s |
+| ACE-Step 1.5 XL turbo | 60 s song / 8 steps | **20.8 s** ← re-verified on 0.38.0 (27% faster) |
 | **Hunyuan3D 2.1** | 30 steps, 4096 latent, octree 256 | **54.7 s** |
-| YuE2-3B | 60 s song / 32 steps | 93.7 s |
+| YuE2-3B | 60 s song / 32 steps | **87.5 s** |
 | MiniMax Music 3 | 60 s song / 30 steps | 458.2 s |
 
 **An honest note**: we timed Z-Image twice and got `20.9 / 15.8 s` and `17.7 / 13.8 s`.
@@ -1105,7 +1139,7 @@ to Python (`scripts/push_site.py`), matching the original line by line:
 | **Video (quality first)** | **Wan 2.2 14B MoE + 4-step LoRA** | **93.8 s** @832×480/81 frames | Flagship MoE quality; 4 steps is **7.9× faster than 20**. **Followed the prompt exactly** in the same-prompt test (§6.4) |
 | Video (speed first) | ~~LTX-Video 2B distilled~~ → **Wan 2.2 14B MoE + 4-step LoRA** | 93.8 s | **LTX demoted**: in the same-prompt test it did not follow the prompt at all (§6.4) — 18× faster but the content is uncontrollable |
 | **Video + audio** | **MiniMax H3 + 4-step LoRA** | **286.2 s** | 4 steps is **1.81× faster than 8**; the only line with a native audio track. **In the same-prompt test its composition and detail beat Wan** (§6.4). ⚠️ licence excludes four Western territories |
-| **Music** | **ACE-Step 1.5 XL turbo** | **28.6 s** / 60 s song | **Apache 2.0, commercially usable.** Stable Audio 3 is faster (13.8 s) but is an SFX / short-clip model |
+| **Music** | **ACE-Step 1.5 XL turbo** | **20.8 s** / 60 s song | **Apache 2.0, commercially usable.** Stable Audio 3 is faster (13.8 s) but is an SFX / short-clip model |
 | **Image → 3D** | Hunyuan3D 2.1 | **54.7 s** | One file produces a 520k-triangle GLB |
 
 ### 11.2 If only one line survives — the answer is "image: Qwen-Image 2512 + Lightning"
@@ -1334,7 +1368,7 @@ photo you feed it for 3D reconstruction is not yours to use, the output is still
 | `qwen_2.5_vl_7b_fp8_scaled.safetensors` | 9.38 GB | ✅ run |
 | `qwen_image_vae.safetensors` | 0.25 GB | ✅ run |
 | `Qwen-Image-2512-Lightning-4steps-V1.0-fp32.safetensors` | 1.70 GB | ✅ run |
-| `flux1-dev-fp8.safetensors` | 17.25 GB | ✅ run (32.1 s @1024²/20 steps) |
+| `flux1-dev-fp8.safetensors` | 17.25 GB | ✅ run (**30.1 s** @1024²/20 steps, re-verified on 0.38.0) |
 | `sd_xl_base_1.0.safetensors` | 6.94 GB | ✅ run (14.1 s @1024²/20 steps) |
 | `Qwen-Image-2512` (bf16 diffusers shards, 53.74 GB) | 53.74 GB | ⬜ superseded by the fp8 single file |
 
@@ -1375,6 +1409,7 @@ See the [`data/`](data/) directory:
 - [`data/coverage-round2.md`](data/coverage-round2.md)
 - [`data/coverage-round3.md`](data/coverage-round3.md) — **round 3**: Wan 2.2 14B (4- vs 20-step), MiniMax H3 4-step, FLUX.2 Klein 9B unblocked, Lens, ERNIE, Stable Audio 3, plus the full 21-row benchmark — **raw data for the round-2 coverage expansion** (timings and output specs for the four music lines + Wan 2.2 14B + LTX + Hunyuan3D, the VAE trap, and the cu130 kernel evidence)
 - [`data/licences-and-video-comparison.md`](data/licences-and-video-comparison.md) — **licence verification + same-prompt video comparison** (three models on one prompt, and the three-step LTX diagnosis)
+- [`data/coverage-round4.md`](data/coverage-round4.md) — **round 4** (re-verification on ComfyUI 0.38.0 — ACE-Step 27% faster; Qwen-Image 2.1 measured at 72.7 s with 30/30 Chinese characters; two downloader bugs that silently corrupt weights)
 
 ## Appendix C: Glossary
 

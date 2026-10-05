@@ -373,14 +373,14 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:22px 0 0;color:v
 <td><strong>音乐生成</strong></td>
 <td>ACE-Step 1.5 XL turbo</td>
 <td>bf16 9.97 GB</td>
-<td><strong>28.6 s</strong>（60 s 歌曲）</td>
+<td><strong>20.8 s</strong>（60 s 歌曲，0.38.0 复核）</td>
 <td><strong>Apache 2.0 可商用</strong>，出片最快</td>
 </tr>
 <tr>
 <td>音乐生成（整首含人声）</td>
 <td>YuE2-3B</td>
 <td>int8 3.96 GB</td>
-<td>93.7 s（60 s 歌曲）</td>
+<td><strong>87.5 s</strong>（60 s 歌曲，0.38.0 复核）</td>
 <td>SongBench 最高；<strong>但 cc-by-nc 非商用</strong></td>
 </tr>
 <tr>
@@ -867,6 +867,78 @@ int8 版配的是 <code>qwen_3_4b.safetensors</code>（bf16），nvfp4 版配的
 </ul>
 <p>顺带一提，Lightning LoRA 的收益值得单独记一笔：<strong>同一个模型，206.7 s → 12.2 s，快 16.9 倍</strong>，
 而且细节反而更足。这又一次印证了 §2 那条原则 —— <strong>提速靠「少走步数」，不靠「压权重」</strong>。</p>
+<h4 id="qwen-image-21--图像首选的继任者2026-10-05-实测">Qwen-Image 2.1 —— 图像首选的<strong>继任者</strong>（2026-10-05 实测）</h4>
+<p>ComfyUI 0.38.0 新增 <code>TextEncodeQwenImage21</code> 节点后，Qwen-Image 2.1 变得可跑。
+<code>Comfy-Org/Qwen-Image-2.1</code> 提供<strong>单文件 int8 版</strong>，<strong>17.3 GB 装得下</strong>：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>文件</th>
+<th>大小</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>qwen_image_2.1_int8_convrot.safetensors</code></td>
+<td>7.26 GB</td>
+</tr>
+<tr>
+<td><code>qwen3vl_8b_int8_convrot.safetensors</code></td>
+<td>9.35 GB</td>
+</tr>
+<tr>
+<td><code>qwen_image_2.1_vae_bf16.safetensors</code></td>
+<td>0.68 GB</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>同提示词、同分辨率（1328×1328）对照</strong>：</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>模型</th>
+<th>量化</th>
+<th>步数</th>
+<th>耗时</th>
+<th>中文字 30 字</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Qwen-Image 2512</td>
+<td>fp8</td>
+<td>50</td>
+<td>206.7 s</td>
+<td>✅ <strong>30/30 逐字全对</strong></td>
+</tr>
+<tr>
+<td>Qwen-Image 2512 + Lightning</td>
+<td>fp8</td>
+<td>4</td>
+<td><strong>12.2 s</strong></td>
+<td>✅ 30/30</td>
+</tr>
+<tr>
+<td><strong>Qwen-Image 2.1</strong></td>
+<td><strong>int8 convrot</strong></td>
+<td><strong>25</strong></td>
+<td><strong>72.7 s</strong></td>
+<td>✅ <strong>30/30 逐字全对</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>三条结论</strong>：</p>
+<ol>
+<li><strong>中文渲染打平</strong>：主标题「春风得意马蹄疾」「一日看尽长安花」各 7 字、四个副标题词组各 4 字，
+<strong>2.1 同样 30/30 逐字全对</strong>，与 2512 同级。</li>
+<li><strong>同质量档快 2.8×</strong>：2.1 用 25 步只要 72.7 s，2512 用 50 步要 206.7 s。</li>
+<li><strong>体积更小</strong>：17.3 GB vs 2512 的约 30 GB。</li>
+</ol>
+<blockquote>
+<p><strong>但 2.1 目前没有 Lightning / lightx2v LoRA</strong>，所以<strong>最快档仍是 2512 + Lightning 的 12.2 s</strong>。
+选型：<strong>要绝对速度 → 2512 + Lightning（12.2 s）；要满质量 + 中等速度 + 更小体积 → 2.1（72.7 s）。</strong></p>
+</blockquote>
+<p>风格上两者可互补：2512 笔画粗犷、对比强烈；2.1 更雅致、留白更多、水墨层次更细腻。</p>
 <h3 id="62-图像编辑--flux2-klein-4b">6.2 图像编辑 —— FLUX.2 Klein 4B</h3>
 <div class="tw"><table>
 <thead>
@@ -1248,7 +1320,7 @@ ComfyUI 无法加载分片目录。</p>
 <td><strong>Apache 2.0</strong></td>
 <td>DiT 9.97 GB + 编码器 1.19/<strong>8.38</strong> GB + VAE 0.34 GB</td>
 <td>同上（XL 版编码器换成 qwen_4b）</td>
-<td><strong>28.6 s</strong> / 60 s 歌</td>
+<td><strong>20.8 s</strong> / 60 s 歌</td>
 <td>质量更高，仍可商用</td>
 </tr>
 <tr>
@@ -1256,7 +1328,7 @@ ComfyUI 无法加载分片目录。</p>
 <td>⚠️ <strong>cc-by-nc（非商用）</strong></td>
 <td><code>yue2_3b_int8_convrot</code> 3.96 GB（all-in-one）</td>
 <td>两阶段：<code>YuE2GenerateABC</code>（32 步 AR 规划谱）→ <code>YuE2GenerateMusic</code> → KSampler <code>dpm_2</code>/<code>sgm_uniform</code> 32 步</td>
-<td>93.7 s / 60 s 歌</td>
+<td><strong>87.5 s</strong> / 60 s 歌</td>
 <td>整首歌含人声，中英歌词；<strong>SongBench 分数最高</strong></td>
 </tr>
 <tr>
@@ -1359,7 +1431,7 @@ materials = 1   nodes = 1
 <tr>
 <td>FLUX.1-dev fp8</td>
 <td>1024² / 20 步</td>
-<td>32.1 s</td>
+<td><strong>30.1 s</strong> ← 0.38.0 复核</td>
 </tr>
 <tr>
 <td>FLUX.2 Klein 4B fp8</td>
@@ -1443,7 +1515,7 @@ materials = 1   nodes = 1
 <tr>
 <td>ACE-Step 1.5 XL turbo</td>
 <td>60 s 歌曲 / 8 步</td>
-<td>28.6 s</td>
+<td><strong>20.8 s</strong> ← 0.38.0 复核（快 27%）</td>
 </tr>
 <tr>
 <td><strong>Hunyuan3D 2.1</strong></td>
@@ -1453,7 +1525,7 @@ materials = 1   nodes = 1
 <tr>
 <td>YuE2-3B</td>
 <td>60 s 歌曲 / 32 步</td>
-<td>93.7 s</td>
+<td><strong>87.5 s</strong></td>
 </tr>
 <tr>
 <td>MiniMax Music 3</td>
@@ -2009,7 +2081,7 @@ python tools/ab_metrics.py
 <tr>
 <td><strong>音乐</strong></td>
 <td><strong>ACE-Step 1.5 XL turbo</strong></td>
-<td><strong>28.6 s</strong> / 60 s 歌</td>
+<td><strong>20.8 s</strong> / 60 s 歌</td>
 <td><strong>Apache 2.0 可商用</strong>。Stable Audio 3 更快（13.8 s）但定位是音效/短片段</td>
 </tr>
 <tr>
@@ -2558,7 +2630,7 @@ $2000 万美元的营收门槛对个人和小团队不构成实际限制。
 <tr>
 <td><code>flux1-dev-fp8.safetensors</code></td>
 <td>17.25 GB</td>
-<td>✅ 跑过（32.1 s @1024²/20步）</td>
+<td>✅ 跑过（<strong>30.1 s</strong> @1024²/20步，0.38.0 复核）</td>
 </tr>
 <tr>
 <td><code>sd_xl_base_1.0.safetensors</code></td>
@@ -2651,6 +2723,7 @@ $2000 万美元的营收门槛对个人和小团队不构成实际限制。
 <li><a href="https://github.com/lifeidle/comfyui-5090-laptop-minimax-h3-wan2.2-nvfp4/blob/main/data/coverage-round2.md"><code>data/coverage-round2.md</code></a> —— <strong>第二轮覆盖度扩展的原始数据</strong>（音乐 4 条线 + Wan 2.2 14B + LTX + Hunyuan3D 的耗时与产物规格、VAE 踩坑记录、cu130 内核禁用证据）</li>
 <li><a href="https://github.com/lifeidle/comfyui-5090-laptop-minimax-h3-wan2.2-nvfp4/blob/main/data/coverage-round3.md"><code>data/coverage-round3.md</code></a> —— <strong>第三轮的原始数据</strong>（Wan 2.2 14B 4步 vs 20步、MiniMax H3 4步、FLUX.2 Klein 9B 解封、Lens、ERNIE、Stable Audio 3，以及全部 21 组基准）</li>
 <li><a href="https://github.com/lifeidle/comfyui-5090-laptop-minimax-h3-wan2.2-nvfp4/blob/main/data/licences-and-video-comparison.md"><code>data/licences-and-video-comparison.md</code></a> —— <strong>授权核实结果 + 同提示词视频对比</strong>（三个模型同一句提示词的三方对比、LTX 提示词遵循的三步诊断）</li>
+<li><a href="https://github.com/lifeidle/comfyui-5090-laptop-minimax-h3-wan2.2-nvfp4/blob/main/data/coverage-round4.md"><code>data/coverage-round4.md</code></a> —— <strong>第四轮</strong>（ComfyUI 0.38.0 复核：ACE-Step 快 27%、Qwen-Image 2.1 实测 72.7 s/中文 30-30、下载器两个会静默损坏权重的 bug）</li>
 </ul>
 <h2 id="附录-c术语表">附录 C：术语表</h2>
 <div class="tw"><table>
@@ -3181,14 +3254,14 @@ optimization. It is the difference between running and not running.</p>
 <td><strong>Music generation</strong></td>
 <td>ACE-Step 1.5 XL turbo</td>
 <td>bf16 9.97 GB</td>
-<td><strong>28.6 s</strong> (60 s song)</td>
+<td><strong>20.8 s</strong> (60 s song, re-verified on 0.38.0)</td>
 <td><strong>Apache 2.0, commercially usable</strong>, fastest output</td>
 </tr>
 <tr>
 <td>Music generation (full song with vocals)</td>
 <td>YuE2-3B</td>
 <td>int8 3.96 GB</td>
-<td>93.7 s (60 s song)</td>
+<td><strong>87.5 s</strong> (60 s song, re-verified on 0.38.0)</td>
 <td>Highest SongBench score; <strong>but cc-by-nc, non-commercial</strong></td>
 </tr>
 <tr>
@@ -3713,6 +3786,80 @@ Qwen-Image at all</strong> — an omission, now fixed here.</p>
 <p>Worth recording separately: the Lightning LoRA took the same model from <strong>206.7 s to 12.2 s — 16.9×
 faster</strong> — with detail, if anything, more present. This again confirms the §2 rule:
 <strong>speed comes from fewer steps, not from smaller weights.</strong></p>
+<h4 id="qwen-image-21--the-successor-to-our-image-pick-measured-2026-10-05">Qwen-Image 2.1 — the <strong>successor</strong> to our image pick (measured 2026-10-05)</h4>
+<p>Once ComfyUI 0.38.0 added the <code>TextEncodeQwenImage21</code> node, Qwen-Image 2.1 became runnable.
+<code>Comfy-Org/Qwen-Image-2.1</code> ships a <strong>single-file int8 build</strong> that <strong>fits in 17.3 GB</strong>:</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>qwen_image_2.1_int8_convrot.safetensors</code></td>
+<td>7.26 GB</td>
+</tr>
+<tr>
+<td><code>qwen3vl_8b_int8_convrot.safetensors</code></td>
+<td>9.35 GB</td>
+</tr>
+<tr>
+<td><code>qwen_image_2.1_vae_bf16.safetensors</code></td>
+<td>0.68 GB</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Same prompt, same resolution (1328×1328)</strong>:</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Quant</th>
+<th>Steps</th>
+<th>Exec</th>
+<th>30 Chinese chars</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Qwen-Image 2512</td>
+<td>fp8</td>
+<td>50</td>
+<td>206.7 s</td>
+<td>✅ <strong>30/30 character-exact</strong></td>
+</tr>
+<tr>
+<td>Qwen-Image 2512 + Lightning</td>
+<td>fp8</td>
+<td>4</td>
+<td><strong>12.2 s</strong></td>
+<td>✅ 30/30</td>
+</tr>
+<tr>
+<td><strong>Qwen-Image 2.1</strong></td>
+<td><strong>int8 convrot</strong></td>
+<td><strong>25</strong></td>
+<td><strong>72.7 s</strong></td>
+<td>✅ <strong>30/30 character-exact</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Three conclusions</strong>:</p>
+<ol>
+<li><strong>Chinese rendering ties</strong>: both title lines (7 chars each) and all four subtitle phrases are
+<strong>30/30 exact for 2.1 as well</strong> — the same level as 2512.</li>
+<li><strong>2.8× faster at comparable quality</strong>: 2.1 needs 25 steps / 72.7 s where 2512 needs 50 steps / 206.7 s.</li>
+<li><strong>Smaller footprint</strong>: 17.3 GB vs roughly 30 GB for 2512.</li>
+</ol>
+<blockquote>
+<p><strong>But 2.1 has no Lightning / lightx2v LoRA yet</strong>, so <strong>the fastest configuration remains
+2512 + Lightning at 12.2 s</strong>. Picking: <strong>absolute speed → 2512 + Lightning (12.2 s); full quality at
+moderate speed and a smaller footprint → 2.1 (72.7 s)</strong>.</p>
+</blockquote>
+<p>The two are stylistically complementary: 2512 gives bolder brushwork and stronger contrast;
+2.1 is more refined with more whitespace and subtler ink-wash gradation.</p>
 <h3 id="62-image-editing--flux2-klein-4b">6.2 Image editing — FLUX.2 Klein 4B</h3>
 <div class="tw"><table>
 <thead>
@@ -4122,7 +4269,7 @@ sound effects and ambience</strong>; it is not &quot;generate a song from lyrics
 <td><strong>Apache 2.0</strong></td>
 <td>DiT 9.97 GB + encoders 1.19/<strong>8.38</strong> GB + VAE 0.34 GB</td>
 <td>same (XL swaps the encoder to qwen_4b)</td>
-<td><strong>28.6 s</strong> / 60 s song</td>
+<td><strong>20.8 s</strong> / 60 s song</td>
 <td>Higher quality, still commercially usable</td>
 </tr>
 <tr>
@@ -4130,7 +4277,7 @@ sound effects and ambience</strong>; it is not &quot;generate a song from lyrics
 <td>⚠️ <strong>cc-by-nc (non-commercial)</strong></td>
 <td><code>yue2_3b_int8_convrot</code> 3.96 GB (all-in-one)</td>
 <td>two stages: <code>YuE2GenerateABC</code> (32-step AR score planning) → <code>YuE2GenerateMusic</code> → KSampler <code>dpm_2</code>/<code>sgm_uniform</code> 32 steps</td>
-<td>93.7 s / 60 s song</td>
+<td><strong>87.5 s</strong> / 60 s song</td>
 <td>Full song with vocals, zh+en lyrics; <strong>highest SongBench score</strong></td>
 </tr>
 <tr>
@@ -4238,7 +4385,7 @@ the number and inflate it.</p>
 <tr>
 <td>FLUX.1-dev fp8</td>
 <td>1024² / 20 steps</td>
-<td>32.1 s</td>
+<td><strong>30.1 s</strong> ← re-verified on 0.38.0</td>
 </tr>
 <tr>
 <td>FLUX.2 Klein 4B fp8</td>
@@ -4322,7 +4469,7 @@ the number and inflate it.</p>
 <tr>
 <td>ACE-Step 1.5 XL turbo</td>
 <td>60 s song / 8 steps</td>
-<td>28.6 s</td>
+<td><strong>20.8 s</strong> ← re-verified on 0.38.0 (27% faster)</td>
 </tr>
 <tr>
 <td><strong>Hunyuan3D 2.1</strong></td>
@@ -4332,7 +4479,7 @@ the number and inflate it.</p>
 <tr>
 <td>YuE2-3B</td>
 <td>60 s song / 32 steps</td>
-<td>93.7 s</td>
+<td><strong>87.5 s</strong></td>
 </tr>
 <tr>
 <td>MiniMax Music 3</td>
@@ -4898,7 +5045,7 @@ single line: <strong>if this 24 GB 5090 laptop could keep only one configuration
 <tr>
 <td><strong>Music</strong></td>
 <td><strong>ACE-Step 1.5 XL turbo</strong></td>
-<td><strong>28.6 s</strong> / 60 s song</td>
+<td><strong>20.8 s</strong> / 60 s song</td>
 <td><strong>Apache 2.0, commercially usable.</strong> Stable Audio 3 is faster (13.8 s) but is an SFX / short-clip model</td>
 </tr>
 <tr>
@@ -5467,7 +5614,7 @@ merely downloaded</strong>.</p>
 <tr>
 <td><code>flux1-dev-fp8.safetensors</code></td>
 <td>17.25 GB</td>
-<td>✅ run (32.1 s @1024²/20 steps)</td>
+<td>✅ run (<strong>30.1 s</strong> @1024²/20 steps, re-verified on 0.38.0)</td>
 </tr>
 <tr>
 <td><code>sd_xl_base_1.0.safetensors</code></td>
@@ -5560,6 +5707,7 @@ byte size as well. <strong>Total: 73 files / 348.2 GB (after the 2026-10-05 clea
 <li><a href="https://github.com/lifeidle/comfyui-5090-laptop-minimax-h3-wan2.2-nvfp4/blob/main/data/coverage-round2.md"><code>data/coverage-round2.md</code></a></li>
 <li><a href="https://github.com/lifeidle/comfyui-5090-laptop-minimax-h3-wan2.2-nvfp4/blob/main/data/coverage-round3.md"><code>data/coverage-round3.md</code></a> — <strong>round 3</strong>: Wan 2.2 14B (4- vs 20-step), MiniMax H3 4-step, FLUX.2 Klein 9B unblocked, Lens, ERNIE, Stable Audio 3, plus the full 21-row benchmark — <strong>raw data for the round-2 coverage expansion</strong> (timings and output specs for the four music lines + Wan 2.2 14B + LTX + Hunyuan3D, the VAE trap, and the cu130 kernel evidence)</li>
 <li><a href="https://github.com/lifeidle/comfyui-5090-laptop-minimax-h3-wan2.2-nvfp4/blob/main/data/licences-and-video-comparison.md"><code>data/licences-and-video-comparison.md</code></a> — <strong>licence verification + same-prompt video comparison</strong> (three models on one prompt, and the three-step LTX diagnosis)</li>
+<li><a href="https://github.com/lifeidle/comfyui-5090-laptop-minimax-h3-wan2.2-nvfp4/blob/main/data/coverage-round4.md"><code>data/coverage-round4.md</code></a> — <strong>round 4</strong> (re-verification on ComfyUI 0.38.0 — ACE-Step 27% faster; Qwen-Image 2.1 measured at 72.7 s with 30/30 Chinese characters; two downloader bugs that silently corrupt weights)</li>
 </ul>
 <h2 id="appendix-c-glossary">Appendix C: Glossary</h2>
 <div class="tw"><table>
