@@ -356,11 +356,11 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:22px 0 0;color:v
 <td>旗舰 MoE + LightX2V 4 步 LoRA，真的跑得动</td>
 </tr>
 <tr>
-<td>视频（电影感 + 1080p 超分）</td>
-<td>HunyuanVideo 1.5 720p→1080p</td>
-<td>fp16 + SR 模型</td>
-<td>⚠️ <strong>70 分钟未完成，24 GB 上不可行</strong></td>
-<td>见 §6.4「一个负面结果」</td>
+<td><strong>2K 级超分</strong></td>
+<td><strong>PixelDiT <code>pid_flux2</code></strong></td>
+<td>2.73 GB</td>
+<td><strong>5.4 s</strong>（1024²→2048²，4 步）</td>
+<td>✅ 替代了 HV1.5 那条跑不动的超分路径，见 §6.1</td>
 </tr>
 <tr>
 <td><strong>视频 + 音频</strong></td>
@@ -1434,9 +1434,9 @@ LTX 快 18 倍，但在 CFG=1/8 步下它<strong>不能可靠地按提示词出�
 <td>19 秒一张，但<strong>内容不可控</strong></td>
 </tr>
 <tr>
-<td><strong>要 1080p</strong></td>
-<td>⚠️ 目前没有可用方案</td>
-<td>HV1.5 的 720p+SR 在 24 GB 上跑满 70 分钟未完成</td>
+<td><strong>要 2K 级分辨率</strong></td>
+<td>✅ <strong>PixelDiT <code>pid_flux2</code></strong></td>
+<td>1024²→2048² 仅 <strong>5.4 秒</strong>（4 步），见 §6.1</td>
 </tr>
 <tr>
 <td><strong>要声音</strong></td>
