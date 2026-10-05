@@ -1,43 +1,61 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 454" width="920" height="454" role="img" aria-label="Option 2 · Efficiency first (best overall value)">
-<rect x="0.0" y="0.0" width="920.0" height="454.0" rx="12" fill="#ffffff"/>
-<text x="24" y="34" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="19" fill="#0f172a" font-weight="700">Option 2 · Efficiency first (best overall value)</text>
-<text x="24" y="56" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#64748b">The best time-per-quality pick per domain — all commercial, no territory limits (except MiniMax H3)</text>
-<rect x="24.0" y="92.0" width="872.0" height="56.0" rx="8" fill="#f8fafc"/>
-<text x="34" y="114" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">Image (resident VRAM)</text>
-<text x="34" y="132" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">Z-Image-Turbo nvfp4</text>
-<text x="34" y="144" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">1024² · 8 steps · 8.33 GB fully resident, zero</text>
-<text x="34" y="157" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">offload · bilingual text</text>
-<rect x="470.0" y="106.0" width="27.7" height="20.0" rx="4" fill="#2563eb"/>
-<text x="505.6902419873518" y="122" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">13.8 s</text>
-<text x="836" y="144" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="9.5" fill="#94a3b8">server time</text>
-<rect x="24.0" y="154.0" width="872.0" height="56.0" rx="8" fill="#f8fafc"/>
-<text x="34" y="176" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">Image edit</text>
-<text x="34" y="194" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">FLUX.2 Klein 4B fp8</text>
-<text x="34" y="206" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">1024² · two-pass · Apache 2.0 (9B is non-commercial)</text>
-<rect x="470.0" y="168.0" width="124.0" height="20.0" rx="4" fill="#2563eb"/>
-<text x="601.9893452643284" y="184" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">42.3 s</text>
-<text x="836" y="206" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="9.5" fill="#94a3b8">server time</text>
-<rect x="24.0" y="216.0" width="872.0" height="56.0" rx="8" fill="#f8fafc"/>
-<text x="34" y="238" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">Video (flagship quality)</text>
-<text x="34" y="256" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">Wan 2.2 14B MoE + 4-step LoRA</text>
-<text x="34" y="268" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">832×480 · 81 frames · 4 steps is 7.9× faster than 20</text>
-<rect x="470.0" y="230.0" width="192.5" height="20.0" rx="4" fill="#059669"/>
-<text x="670.4557312183631" y="246" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">93.8 s</text>
-<text x="836" y="268" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="9.5" fill="#94a3b8">server time</text>
-<rect x="24.0" y="278.0" width="872.0" height="56.0" rx="8" fill="#f8fafc"/>
-<text x="34" y="300" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">Music</text>
-<text x="34" y="318" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">ACE-Step 1.5 turbo</text>
-<text x="34" y="330" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">60 s song · 8 steps · Apache 2.0, no strings</text>
-<rect x="470.0" y="292.0" width="71.2" height="20.0" rx="4" fill="#d97706"/>
-<text x="549.2324611060576" y="308" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">22.9 s</text>
-<text x="836" y="330" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="9.5" fill="#94a3b8">server time</text>
-<rect x="24.0" y="340.0" width="872.0" height="56.0" rx="8" fill="#f8fafc"/>
-<text x="34" y="362" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">Image → 3D</text>
-<text x="34" y="380" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">Hunyuan3D 2.1</text>
-<text x="34" y="392" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">GLB 520k triangles · one file does it all</text>
-<rect x="470.0" y="354.0" width="146.1" height="20.0" rx="4" fill="#059669"/>
-<text x="624.090800101128" y="370" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">54.7 s</text>
-<text x="836" y="392" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="9.5" fill="#94a3b8">server time</text>
-<line x1="24.0" y1="432.0" x2="896.0" y2="432.0" stroke="#e2e8f0" stroke-width="1"/>
-<text x="24" y="448" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#94a3b8">All timings are ComfyUI server-side execution_start→execution_success</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 670" width="920" height="670" role="img" aria-label="Option 2 · Efficiency first">
+<rect x="0.0" y="0.0" width="920.0" height="670.0" rx="12" fill="#ffffff"/>
+<text x="24.0" y="34.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="19" fill="#0f172a" font-weight="700">Option 2 · Efficiency first</text>
+<text x="24.0" y="56.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#64748b">Best time-per-quality; all commercial or clearly flagged</text>
+<rect x="24.0" y="92.0" width="872.0" height="52.0" rx="8" fill="#f8fafc"/>
+<text x="34.0" y="114.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">Image (fastest 1024²)</text>
+<text x="34.0" y="132.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">PixelDiT 1.3B</text>
+<text x="34.0" y="144.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">1024², 30 steps cfg4 · fastest in the table</text>
+<rect x="470.0" y="106.0" width="37.3" height="20.0" rx="4" fill="#2563eb"/>
+<text x="515.3" y="122.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">10.1 s</text>
+<rect x="24.0" y="150.0" width="872.0" height="52.0" rx="8" fill="#f8fafc"/>
+<text x="34.0" y="172.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">Image (Chinese poster)</text>
+<text x="34.0" y="190.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">Qwen-Image 2512 + Lightning</text>
+<text x="34.0" y="202.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">1328², 4 steps · Chinese 30/30</text>
+<rect x="470.0" y="164.0" width="41.0" height="20.0" rx="4" fill="#2563eb"/>
+<text x="519.0" y="180.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">12.2 s</text>
+<rect x="24.0" y="208.0" width="872.0" height="52.0" rx="8" fill="#f8fafc"/>
+<text x="34.0" y="230.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">Image (resident VRAM)</text>
+<text x="34.0" y="248.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">Z-Image-Turbo nvfp4</text>
+<text x="34.0" y="260.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">1024², 8 steps · 8.33 GB resident</text>
+<rect x="470.0" y="222.0" width="43.6" height="20.0" rx="4" fill="#2563eb"/>
+<text x="521.6" y="238.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">13.8 s</text>
+<rect x="24.0" y="266.0" width="872.0" height="52.0" rx="8" fill="#f8fafc"/>
+<text x="34.0" y="288.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">2K-class upscale</text>
+<text x="34.0" y="306.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">PixelDiT pid_flux2</text>
+<text x="34.0" y="318.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">1024²→2048², 4 steps</text>
+<rect x="470.0" y="280.0" width="27.3" height="20.0" rx="4" fill="#2563eb"/>
+<text x="505.3" y="296.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">5.4 s</text>
+<rect x="24.0" y="324.0" width="872.0" height="52.0" rx="8" fill="#f8fafc"/>
+<text x="34.0" y="346.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">Image edit (commercial licence)</text>
+<text x="34.0" y="364.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">FLUX.2 Klein 4B fp8</text>
+<text x="34.0" y="376.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">1024² · Apache 2.0</text>
+<rect x="470.0" y="338.0" width="76.3" height="20.0" rx="4" fill="#2563eb"/>
+<text x="554.3" y="354.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">42.3 s</text>
+<rect x="24.0" y="382.0" width="872.0" height="52.0" rx="8" fill="#f8fafc"/>
+<text x="34.0" y="404.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">Video (flagship quality)</text>
+<text x="34.0" y="422.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">Wan 2.2 14B MoE + 4-step LoRA</text>
+<text x="34.0" y="434.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">832×480, 81 frames</text>
+<rect x="470.0" y="396.0" width="113.6" height="20.0" rx="4" fill="#7c3aed"/>
+<text x="591.6" y="412.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">93.8 s</text>
+<rect x="24.0" y="440.0" width="872.0" height="52.0" rx="8" fill="#f8fafc"/>
+<text x="34.0" y="462.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">Video (lightest, 4.57 GB)</text>
+<text x="34.0" y="480.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">Kandinsky 5 T2V Lite</text>
+<text x="34.0" y="492.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">768×512, 121 frames · lightest but slow</text>
+<rect x="470.0" y="454.0" width="349.0" height="20.0" rx="4" fill="#7c3aed"/>
+<text x="827.0" y="470.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">884.5 s</text>
+<rect x="24.0" y="498.0" width="872.0" height="52.0" rx="8" fill="#f8fafc"/>
+<text x="34.0" y="520.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">Music (fastest and commercial)</text>
+<text x="34.0" y="538.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">ACE-Step 1.5 XL turbo</text>
+<text x="34.0" y="550.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">60 s song, 8 steps</text>
+<rect x="470.0" y="512.0" width="53.5" height="20.0" rx="4" fill="#d97706"/>
+<text x="531.5" y="528.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">20.8 s</text>
+<rect x="24.0" y="556.0" width="872.0" height="52.0" rx="8" fill="#f8fafc"/>
+<text x="34.0" y="578.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">Music (fastest, instrumental only)</text>
+<text x="34.0" y="596.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">Stable Audio 3 Medium</text>
+<text x="34.0" y="608.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">60 s song, 8 steps</text>
+<rect x="470.0" y="570.0" width="43.6" height="20.0" rx="4" fill="#d97706"/>
+<text x="521.6" y="586.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">13.8 s</text>
+<line x1="24.0" y1="648.0" x2="896.0" y2="648.0" stroke="#e2e8f0" stroke-width="1"/>
+<text x="24.0" y="664.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#94a3b8">All timings are ComfyUI server-side execution_start→execution_success</text>
 </svg>

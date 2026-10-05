@@ -1247,13 +1247,17 @@ to Python (`scripts/push_site.py`), matching the original line by line:
 
 | Domain | Final pick | Measured | Why it beats the runner-up |
 |---|---|---|---|
-| **Image** | **Qwen-Image 2512 + Lightning** | **12.2 s** @1328²/4 steps | **68% more pixels than Lens turbo (13.6 s @1024²) and faster**; the only model with **character-exact verified Chinese rendering**. Sole cost is 30.06 GB needing offload — and 12.2 s already includes that |
-| Image (resident-VRAM tier) | Z-Image-Turbo nvfp4 | 13.8 s @1024²/8 steps | 8.33 GB fully resident, zero offload — least fussy for heavy use |
+| **Image (fastest)** | **PixelDiT 1.3B** | **10.1 s** @1024²/30 steps | **The fastest 1024² configuration in the table** (latent-space DiT) |
+| **Image (fastest + Chinese)** | **Qwen-Image 2512 + Lightning** | **12.2 s** @1328²/4 steps | 68% more pixels than 1024², Chinese **30/30 character-exact** |
+| **Image (full quality + Chinese)** | **Qwen-Image 2.1 int8** | **72.7 s** @1328²/25 steps | Chinese also **30/30**; **2.8× faster** than 2512 at comparable quality, 17.3 GB vs ~30 GB |
+| Image (resident-VRAM tier) | Z-Image-Turbo nvfp4 | 13.8 s @1024²/8 steps | 8.33 GB fully resident, zero offload |
+| **2K-class upscale ★** | **PixelDiT `pid_flux2`** | **5.4 s** 1024²→2048² | 4-step latent refinement that **replaces the 70-minute HV1.5 upscale that never finished** |
+| Any image, 4× upscale + restore | SeedVR2 3B int8 | 23.6 s 768²→3072² | One-step diffusion upscaler: cleaner edges, no banding, no hallucination |
 | **Image editing** | **FLUX.2 Klein 9B fp8** (⚠️ non-commercial licence — use the 4B commercially, see Appendix F.3) | **18.9 s** | Two-pass 9B fits in 18.3 GB; 4B (42.3 s) is both lower quality and slower |
 | **Video (quality first)** | **Wan 2.2 14B MoE + 4-step LoRA** | **93.8 s** @832×480/81 frames | Flagship MoE quality; 4 steps is **7.9× faster than 20**. **Followed the prompt exactly** in the same-prompt test (§6.4) |
 | Video (speed first) | ~~LTX-Video 2B distilled~~ → **Wan 2.2 14B MoE + 4-step LoRA** | 93.8 s | **LTX demoted**: in the same-prompt test it did not follow the prompt at all (§6.4) — 18× faster but the content is uncontrollable |
 | **Video + audio** | **MiniMax H3 + 4-step LoRA** | **286.2 s** | 4 steps is **1.81× faster than 8**; the only line with a native audio track. **In the same-prompt test its composition and detail beat Wan** (§6.4). ⚠️ licence excludes four Western territories |
-| **Music** | **ACE-Step 1.5 XL turbo** | **20.8 s** / 60 s song | **Apache 2.0, commercially usable.** Stable Audio 3 is faster (13.8 s) but is an SFX / short-clip model |
+| **Music** | **ACE-Step 1.5 XL turbo** | **20.8 s** / 60 s song | **Apache 2.0, commercially usable** (re-verified on 0.38.0, 27% faster than on 0.37.0). Stable Audio 3 is faster (13.8 s) but instrumental only |
 | **Image → 3D** | Hunyuan3D 2.1 | **54.7 s** | One file produces a 520k-triangle GLB |
 
 ### 11.2 If only one line survives — the answer is "image: Qwen-Image 2512 + Lightning"

@@ -2215,16 +2215,40 @@ python tools/ab_metrics.py
 </thead>
 <tbody>
 <tr>
-<td><strong>图像</strong></td>
+<td><strong>图像（最快）</strong></td>
+<td><strong>PixelDiT 1.3B</strong></td>
+<td><strong>10.1 s</strong> @1024²/30步</td>
+<td><strong>全表最快的 1024² 配置</strong>（潜空间 DiT 架构）</td>
+</tr>
+<tr>
+<td><strong>图像（最快 + 中文）</strong></td>
 <td><strong>Qwen-Image 2512 + Lightning</strong></td>
 <td><strong>12.2 s</strong> @1328²/4步</td>
-<td>比 Lens turbo（13.6 s @1024²）<strong>像素多 68% 且更快</strong>；是唯一<strong>逐字核验过中文渲染</strong>的模型。唯一代价是 30.06 GB 需 offload，而 12.2 s 已是含 offload 的实测值</td>
+<td>像素比 1024² 多 68%，中文 <strong>30/30 逐字全对</strong></td>
+</tr>
+<tr>
+<td><strong>图像（满质量 + 中文）</strong></td>
+<td><strong>Qwen-Image 2.1 int8</strong></td>
+<td><strong>72.7 s</strong> @1328²/25步</td>
+<td>中文同样 <strong>30/30</strong>；同质量档比 2512 快 <strong>2.8×</strong>，体积 17.3 GB vs ~30 GB</td>
 </tr>
 <tr>
 <td>图像（常驻显存档）</td>
 <td>Z-Image-Turbo nvfp4</td>
 <td>13.8 s @1024²/8步</td>
-<td>8.33 GB 全常驻、零 offload —— 高频使用最省心</td>
+<td>8.33 GB 全常驻、零 offload</td>
+</tr>
+<tr>
+<td><strong>2K 级超分 ★</strong></td>
+<td><strong>PixelDiT <code>pid_flux2</code></strong></td>
+<td><strong>5.4 s</strong> 1024²→2048²</td>
+<td>4 步潜空间精修，<strong>替代了 HV1.5 那条跑满 70 分钟未完成的超分路径</strong></td>
+</tr>
+<tr>
+<td>任意图 4× 放大修复</td>
+<td>SeedVR2 3B int8</td>
+<td>23.6 s 768²→3072²</td>
+<td>1 步扩散放大器，边缘更干净、色带消失、内容无臆造</td>
 </tr>
 <tr>
 <td><strong>图像编辑</strong></td>
@@ -2254,7 +2278,7 @@ python tools/ab_metrics.py
 <td><strong>音乐</strong></td>
 <td><strong>ACE-Step 1.5 XL turbo</strong></td>
 <td><strong>20.8 s</strong> / 60 s 歌</td>
-<td><strong>Apache 2.0 可商用</strong>。Stable Audio 3 更快（13.8 s）但定位是音效/短片段</td>
+<td><strong>Apache 2.0 可商用</strong>（0.38.0 复核，比 0.37.0 快 27%）。Stable Audio 3 更快（13.8 s）但只生成器乐</td>
 </tr>
 <tr>
 <td><strong>图生 3D</strong></td>
@@ -5365,16 +5389,40 @@ single line: <strong>if this 24 GB 5090 laptop could keep only one configuration
 </thead>
 <tbody>
 <tr>
-<td><strong>Image</strong></td>
+<td><strong>Image (fastest)</strong></td>
+<td><strong>PixelDiT 1.3B</strong></td>
+<td><strong>10.1 s</strong> @1024²/30 steps</td>
+<td><strong>The fastest 1024² configuration in the table</strong> (latent-space DiT)</td>
+</tr>
+<tr>
+<td><strong>Image (fastest + Chinese)</strong></td>
 <td><strong>Qwen-Image 2512 + Lightning</strong></td>
 <td><strong>12.2 s</strong> @1328²/4 steps</td>
-<td><strong>68% more pixels than Lens turbo (13.6 s @1024²) and faster</strong>; the only model with <strong>character-exact verified Chinese rendering</strong>. Sole cost is 30.06 GB needing offload — and 12.2 s already includes that</td>
+<td>68% more pixels than 1024², Chinese <strong>30/30 character-exact</strong></td>
+</tr>
+<tr>
+<td><strong>Image (full quality + Chinese)</strong></td>
+<td><strong>Qwen-Image 2.1 int8</strong></td>
+<td><strong>72.7 s</strong> @1328²/25 steps</td>
+<td>Chinese also <strong>30/30</strong>; <strong>2.8× faster</strong> than 2512 at comparable quality, 17.3 GB vs ~30 GB</td>
 </tr>
 <tr>
 <td>Image (resident-VRAM tier)</td>
 <td>Z-Image-Turbo nvfp4</td>
 <td>13.8 s @1024²/8 steps</td>
-<td>8.33 GB fully resident, zero offload — least fussy for heavy use</td>
+<td>8.33 GB fully resident, zero offload</td>
+</tr>
+<tr>
+<td><strong>2K-class upscale ★</strong></td>
+<td><strong>PixelDiT <code>pid_flux2</code></strong></td>
+<td><strong>5.4 s</strong> 1024²→2048²</td>
+<td>4-step latent refinement that <strong>replaces the 70-minute HV1.5 upscale that never finished</strong></td>
+</tr>
+<tr>
+<td>Any image, 4× upscale + restore</td>
+<td>SeedVR2 3B int8</td>
+<td>23.6 s 768²→3072²</td>
+<td>One-step diffusion upscaler: cleaner edges, no banding, no hallucination</td>
 </tr>
 <tr>
 <td><strong>Image editing</strong></td>
@@ -5404,7 +5452,7 @@ single line: <strong>if this 24 GB 5090 laptop could keep only one configuration
 <td><strong>Music</strong></td>
 <td><strong>ACE-Step 1.5 XL turbo</strong></td>
 <td><strong>20.8 s</strong> / 60 s song</td>
-<td><strong>Apache 2.0, commercially usable.</strong> Stable Audio 3 is faster (13.8 s) but is an SFX / short-clip model</td>
+<td><strong>Apache 2.0, commercially usable</strong> (re-verified on 0.38.0, 27% faster than on 0.37.0). Stable Audio 3 is faster (13.8 s) but instrumental only</td>
 </tr>
 <tr>
 <td><strong>Image → 3D</strong></td>

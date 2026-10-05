@@ -1,49 +1,67 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 516" width="920" height="516" role="img" aria-label="方案一 · 画质 / 音质优先（仅含可商用模型）">
-<rect x="0.0" y="0.0" width="920.0" height="516.0" rx="12" fill="#ffffff"/>
-<text x="24" y="34" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="19" fill="#0f172a" font-weight="700">方案一 · 画质 / 音质优先（仅含可商用模型）</text>
-<text x="24" y="56" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#64748b">每个领域选「产出最好」的那一个。YuE2（禁商用）、MiniMax Music 3（授权存疑）已排除</text>
-<rect x="24.0" y="92.0" width="872.0" height="56.0" rx="8" fill="#f8fafc"/>
-<text x="34" y="114" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">图像</text>
-<text x="34" y="132" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">Qwen-Image 2512 + Lightning</text>
-<text x="34" y="144" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">1328² · 4 步 · 像素比 1024² 多 68% · 中文 30/30 逐字全对</text>
-<rect x="470.0" y="106.0" width="17.1" height="20.0" rx="4" fill="#2563eb"/>
-<text x="495.09565504675305" y="122" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">12.2 s</text>
-<text x="836" y="144" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="9.5" fill="#94a3b8">server time</text>
-<rect x="24.0" y="154.0" width="872.0" height="56.0" rx="8" fill="#f8fafc"/>
-<text x="34" y="176" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">图像编辑</text>
-<text x="34" y="194" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">FLUX.2 Klein 4B fp8（9B 禁商用，已排除）</text>
-<text x="34" y="206" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">1024² · 4 步 · 双 pass</text>
-<rect x="470.0" y="168.0" width="124.0" height="20.0" rx="4" fill="#2563eb"/>
-<text x="601.9893452643284" y="184" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">42.3 s</text>
-<text x="836" y="206" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="9.5" fill="#94a3b8">server time</text>
-<rect x="24.0" y="216.0" width="872.0" height="56.0" rx="8" fill="#f8fafc"/>
-<text x="34" y="238" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">视频 + 音频</text>
-<text x="34" y="256" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">MiniMax H3 8 步（⚠ 排除欧美四地）</text>
-<text x="34" y="268" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">1344×768 · 124 帧 · 原生立体声音轨</text>
-<rect x="470.0" y="230.0" width="342.9" height="20.0" rx="4" fill="#7c3aed"/>
-<text x="820.86227896706" y="246" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">539.5 s</text>
-<text x="836" y="268" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="9.5" fill="#94a3b8">server time</text>
-<rect x="24.0" y="278.0" width="872.0" height="56.0" rx="8" fill="#f8fafc"/>
-<text x="34" y="300" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">视频（全球商用替代）</text>
-<text x="34" y="318" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">Wan 2.2 5B TI2V</text>
-<text x="34" y="330" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">1280×704 · 121 帧 · Apache 2.0 无地域限制</text>
-<rect x="470.0" y="292.0" width="306.9" height="20.0" rx="4" fill="#059669"/>
-<text x="784.9049590311436" y="308" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">355.1 s</text>
-<text x="836" y="330" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="9.5" fill="#94a3b8">server time</text>
-<rect x="24.0" y="340.0" width="872.0" height="56.0" rx="8" fill="#f8fafc"/>
-<text x="34" y="362" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">音乐（含人声+编曲）</text>
-<text x="34" y="380" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">ACE-Step 1.5 XL turbo</text>
-<text x="34" y="392" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">60 s 歌曲 · 8 步 · Apache 2.0</text>
-<rect x="470.0" y="354.0" width="90.3" height="20.0" rx="4" fill="#d97706"/>
-<text x="568.3414957680143" y="370" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">28.6 s</text>
-<text x="836" y="392" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="9.5" fill="#94a3b8">server time</text>
-<rect x="24.0" y="402.0" width="872.0" height="56.0" rx="8" fill="#f8fafc"/>
-<text x="34" y="424" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">图生 3D</text>
-<text x="34" y="442" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">Hunyuan3D 2.1</text>
-<text x="34" y="454" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">GLB · 202,768 顶点 / 522,140 三角面 · ⚠ 排除 EU/UK/KR</text>
-<rect x="470.0" y="416.0" width="146.1" height="20.0" rx="4" fill="#059669"/>
-<text x="624.090800101128" y="432" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">54.7 s</text>
-<text x="836" y="454" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="9.5" fill="#94a3b8">server time</text>
-<line x1="24.0" y1="494.0" x2="896.0" y2="494.0" stroke="#e2e8f0" stroke-width="1"/>
-<text x="24" y="510" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#94a3b8">所有耗时均为 ComfyUI 服务端 execution_start→execution_success 权威计时</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 728" width="920" height="728" role="img" aria-label="方案一 · 画质 / 音质优先">
+<rect x="0.0" y="0.0" width="920.0" height="728.0" rx="12" fill="#ffffff"/>
+<text x="24.0" y="34.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="19" fill="#0f172a" font-weight="700">方案一 · 画质 / 音质优先</text>
+<text x="24.0" y="56.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#64748b">每个领域选「产出最好」的那一个；⚠ 标记的是有授权或地域限制的</text>
+<rect x="24.0" y="92.0" width="872.0" height="52.0" rx="8" fill="#f8fafc"/>
+<text x="34.0" y="114.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">图像（满质量 · 中文 30/30）</text>
+<text x="34.0" y="132.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">Qwen-Image 2.1 int8</text>
+<text x="34.0" y="144.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">1328²，25 步 · 同提示词比 2512 快 2.8×</text>
+<rect x="470.0" y="106.0" width="100.0" height="20.0" rx="4" fill="#2563eb"/>
+<text x="578.0" y="122.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">72.7 s</text>
+<rect x="24.0" y="150.0" width="872.0" height="52.0" rx="8" fill="#f8fafc"/>
+<text x="34.0" y="172.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">图像（最快 · 中文 30/30）</text>
+<text x="34.0" y="190.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">Qwen-Image 2512 + Lightning</text>
+<text x="34.0" y="202.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">1328²，4 步</text>
+<rect x="470.0" y="164.0" width="41.0" height="20.0" rx="4" fill="#2563eb"/>
+<text x="519.0" y="180.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">12.2 s</text>
+<rect x="24.0" y="208.0" width="872.0" height="52.0" rx="8" fill="#f8fafc"/>
+<text x="34.0" y="230.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">图像（常驻显存）</text>
+<text x="34.0" y="248.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">Z-Image-Turbo nvfp4</text>
+<text x="34.0" y="260.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">1024²，8 步 · 8.33 GB 全常驻零 offload</text>
+<rect x="470.0" y="222.0" width="43.6" height="20.0" rx="4" fill="#2563eb"/>
+<text x="521.6" y="238.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">13.8 s</text>
+<rect x="24.0" y="266.0" width="872.0" height="52.0" rx="8" fill="#f8fafc"/>
+<text x="34.0" y="288.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">图像编辑（⚠ 非商用授权）</text>
+<text x="34.0" y="306.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">FLUX.2 Klein 9B fp8</text>
+<text x="34.0" y="318.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">1024²，双 pass，4 步</text>
+<rect x="470.0" y="280.0" width="51.0" height="20.0" rx="4" fill="#2563eb"/>
+<text x="529.0" y="296.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">18.9 s</text>
+<rect x="24.0" y="324.0" width="872.0" height="52.0" rx="8" fill="#f8fafc"/>
+<text x="34.0" y="346.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">2K 级超分 ★</text>
+<text x="34.0" y="364.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">PixelDiT pid_flux2</text>
+<text x="34.0" y="376.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">1024²→2048²，4 步 · 替代跑不动的 1080p 路径</text>
+<rect x="470.0" y="338.0" width="27.3" height="20.0" rx="4" fill="#2563eb"/>
+<text x="505.3" y="354.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">5.4 s</text>
+<rect x="24.0" y="382.0" width="872.0" height="52.0" rx="8" fill="#f8fafc"/>
+<text x="34.0" y="404.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">视频（质量 · 全球可商用）</text>
+<text x="34.0" y="422.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">Wan 2.2 14B MoE + 4步 LoRA</text>
+<text x="34.0" y="434.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">832×480，81 帧</text>
+<rect x="470.0" y="396.0" width="113.6" height="20.0" rx="4" fill="#7c3aed"/>
+<text x="591.6" y="412.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">93.8 s</text>
+<rect x="24.0" y="440.0" width="872.0" height="52.0" rx="8" fill="#f8fafc"/>
+<text x="34.0" y="462.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">视频（速度）</text>
+<text x="34.0" y="480.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">LTX-Video 2B 蒸馏</text>
+<text x="34.0" y="492.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">1216×704，121 帧 · ⚠ 提示词遵循弱</text>
+<rect x="470.0" y="454.0" width="51.4" height="20.0" rx="4" fill="#7c3aed"/>
+<text x="529.4" y="470.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">19.2 s</text>
+<rect x="24.0" y="498.0" width="872.0" height="52.0" rx="8" fill="#f8fafc"/>
+<text x="34.0" y="520.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">视频 + 音频（⚠ 排除欧美四地）</text>
+<text x="34.0" y="538.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">MiniMax H3 + 4步 LoRA</text>
+<text x="34.0" y="550.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">1344×768，124 帧 · 原生立体声</text>
+<rect x="470.0" y="512.0" width="198.5" height="20.0" rx="4" fill="#7c3aed"/>
+<text x="676.5" y="528.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">286.2 s</text>
+<rect x="24.0" y="556.0" width="872.0" height="52.0" rx="8" fill="#f8fafc"/>
+<text x="34.0" y="578.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">音乐（人声+编曲 · 可商用）</text>
+<text x="34.0" y="596.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">ACE-Step 1.5 XL turbo</text>
+<text x="34.0" y="608.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">60 s 歌曲，8 步</text>
+<rect x="470.0" y="570.0" width="53.5" height="20.0" rx="4" fill="#d97706"/>
+<text x="531.5" y="586.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">20.8 s</text>
+<rect x="24.0" y="614.0" width="872.0" height="52.0" rx="8" fill="#f8fafc"/>
+<text x="34.0" y="636.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" fill="#0f172a" font-weight="700">图生 3D（⚠ 排除 EU/UK/KR）</text>
+<text x="34.0" y="654.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" fill="#0f172a" font-weight="600">Hunyuan3D 2.1</text>
+<text x="34.0" y="666.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">GLB 52 万面 · 30 步</text>
+<rect x="470.0" y="628.0" width="86.8" height="20.0" rx="4" fill="#059669"/>
+<text x="564.8" y="644.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" fill="#0f172a" font-weight="700">54.7 s</text>
+<line x1="24.0" y1="706.0" x2="896.0" y2="706.0" stroke="#e2e8f0" stroke-width="1"/>
+<text x="24.0" y="722.0" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#94a3b8">所有耗时均为 ComfyUI 服务端 execution_start→execution_success 权威计时</text>
 </svg>
