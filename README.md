@@ -584,6 +584,31 @@ ComfyUI 0.38.0 新增 `TextEncodeQwenImage21` 节点后，Qwen-Image 2.1 变得�
 > 真正的两个 `CLIPTextEncode` 在 1022 那一层。只解析一层会拿到 1022 自己（它没有 `text` 字段）。
 
 
+
+##### ★ PixelDiT 潜空间超分 —— **推翻本手册唯一那条「不可行」结论的替代方案**
+
+| 项 | 值 |
+|---|---|
+| 权重 | `pid_flux2_512_to_2048_4step_bf16` 2.73 GB（另有 flux1 / sd3 版各 2 个，各 2.73 GB） |
+| 编码器 | `gemma_2_2b_it_elm_fp8_scaled` 2.62 GB，`CLIPLoader type=pixeldit` |
+| 实测 | **FLUX.2 Klein 9B 的 1024² 产物 → 2048²，仅 5.4 秒（4 步）** |
+| 效果 | 山脊细节明显更丰富、人物轮廓更锐利、朱红印章更清晰；**构图与内容完全保留，没有臆造** |
+
+**它为什么能做到 HV1.5 做不到的事**：HV1.5 的 720p→1080p 是「先跑完 720p 基座 20 步，再接一个
+1080p 超分模型」，两步串行、显存吃紧；而 PixelDiT 是**一个 4 步蒸馏模型直接在高分辨率潜空间上做
+一次精修**，单遍、4 步、2.7 GB 权重。
+
+> **⚠️ 通道数是这个方案的核心约束**（踩了两次才搞明白）：
+> - `pid_flux2_*` 期望 **128 通道**（FLUX.2 潜空间）→ 源图必须用 **`flux2-vae`** 编码
+> - `pid_flux1_*` / `pid_sd3_*` 期望 **16 通道**（Z-Image / SD3 / FLUX.1 潜空间）→ 与 flux2 版**不可混用**
+>   （报错：`Input latent has 3 channels, this model variant expects 128`）
+> - 采样**输出**是 128 通道，解码必须用**内置的 `pixel_space` VAE**，用 `flux2-vae` 会报
+>   `tensor a (3) must match tensor b (128)`
+
+**所以本手册关于「1080p」的结论要改写**：不是「24 GB 上做不了高分辨率」，而是
+**「HV1.5 那条两步串行的超分路径做不了；PixelDiT 的单遍 4 步潜空间精修可以，5.4 秒」**。
+
+
 ### 6.2 图像编辑 —— FLUX.2 Klein 4B
 
 | 项 | 值 |

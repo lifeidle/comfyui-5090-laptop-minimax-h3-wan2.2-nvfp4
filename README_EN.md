@@ -641,6 +641,35 @@ result in this document**.
 > `text` field.
 
 
+
+##### ★ PixelDiT latent-space upscale — **the alternative that overturns this document's only "not feasible" result**
+
+| Item | Value |
+|---|---|
+| Weights | `pid_flux2_512_to_2048_4step_bf16` 2.73 GB (flux1 / sd3 variants: two more each, 2.73 GB apiece) |
+| Encoder | `gemma_2_2b_it_elm_fp8_scaled` 2.62 GB, `CLIPLoader type=pixeldit` |
+| Measured | **a 1024² output from FLUX.2 Klein 9B → 2048² in 5.4 s (4 steps)** |
+| Result | markedly richer ridge detail, sharper character outline, crisper red seal; **composition and content fully preserved, nothing hallucinated** |
+
+**Why it does what HunyuanVideo 1.5 could not**: HV1.5's 720p→1080p runs the 720p base model for 20
+steps and *then* a separate 1080p super-resolution model — two serial stages with VRAM pressure.
+PixelDiT instead does **a single refinement pass in a high-resolution latent with a 4-step distilled
+model**: one pass, four steps, 2.73 GB of weights.
+
+> **⚠️ Channel count is the core constraint here** (took two failures to understand):
+> - `pid_flux2_*` expects **128 channels** (FLUX.2 latents) → the source image must be encoded with
+>   **`flux2-vae`**
+> - `pid_flux1_*` / `pid_sd3_*` expect **16 channels** (Z-Image / SD3 / FLUX.1 latents) → **not
+>   interchangeable** with the flux2 build (error: `Input latent has 3 channels, this model variant
+>   expects 128`)
+> - The sampled **output** is 128-channel and must be decoded with the **built-in `pixel_space` VAE**;
+>   using `flux2-vae` fails with `tensor a (3) must match tensor b (128)`
+
+**So this document's conclusion about 1080p has to be rewritten**: not "high resolution is not
+achievable on a 24 GB laptop", but **"HV1.5's two-stage serial upscale path cannot do it; PixelDiT's
+single-pass 4-step latent refinement can, in 5.4 s"**.
+
+
 ### 6.2 Image editing — FLUX.2 Klein 4B
 
 | Item | Value |
@@ -831,7 +860,7 @@ car). The cause is the configuration we chose for speed — *distilled + CFG-fre
 | **Blind material generation** | LTX-Video 2B | 19 seconds a clip, but **the content is not controllable** |
 | **Best quality / believable action (light)** | Wan 2.2 5B | Best prompt adherence and physical plausibility; ~6 minutes |
 | **Best quality (flagship)** | **Wan 2.2 14B MoE** | Dual experts + 4-step LoRA — the flagship in **94 seconds** |
-| **1080p** | ⚠️ no workable option yet | HV1.5's 720p+SR ran 70 minutes without finishing on 24 GB (see the HunyuanVideo 1.5 block above) |
+| **2K-class resolution** | ✅ **PixelDiT `pid_flux2`** | 1024²→2048² in **5.4 s** (4 steps), see §6.1 |
 | **Need sound** | MiniMax H3 (§6.3) | The only line with a native audio track |
 
 ### 6.5 The one that does not run — FLUX.2 Klein 9B

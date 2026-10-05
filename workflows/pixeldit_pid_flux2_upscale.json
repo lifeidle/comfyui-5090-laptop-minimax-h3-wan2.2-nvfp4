@@ -1,0 +1,174 @@
+{
+ "1": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "pid_src_flux2_1024.png"
+  }
+ },
+ "2": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "flux2-vae.safetensors"
+  }
+ },
+ "3": {
+  "class_type": "VAEEncode",
+  "inputs": {
+   "pixels": [
+    "1",
+    0
+   ],
+   "vae": [
+    "2",
+    0
+   ]
+  }
+ },
+ "4": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "gemma_2_2b_it_elm_fp8_scaled.safetensors",
+   "type": "pixeldit",
+   "device": "default"
+  }
+ },
+ "5": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "text": "Replace the background with a quiet coastal cliff at overcast sunset, highly detailed, sharp, clean",
+   "clip": [
+    "4",
+    0
+   ]
+  }
+ },
+ "6": {
+  "class_type": "ConditioningZeroOut",
+  "inputs": {
+   "conditioning": [
+    "5",
+    0
+   ]
+  }
+ },
+ "7": {
+  "class_type": "EmptyChromaRadianceLatentImage",
+  "inputs": {
+   "width": 2048,
+   "height": 2048,
+   "batch_size": 1
+  }
+ },
+ "8": {
+  "class_type": "PiDConditioning",
+  "inputs": {
+   "positive": [
+    "5",
+    0
+   ],
+   "latent": [
+    "3",
+    0
+   ],
+   "latent_format": "flux",
+   "degrade_sigma": 0
+  }
+ },
+ "9": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "pid_flux2_512_to_2048_4step_bf16.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "10": {
+  "class_type": "BasicScheduler",
+  "inputs": {
+   "scheduler": "simple",
+   "steps": 4,
+   "denoise": 1,
+   "model": [
+    "9",
+    0
+   ]
+  }
+ },
+ "11": {
+  "class_type": "KSamplerSelect",
+  "inputs": {
+   "sampler_name": "lcm"
+  }
+ },
+ "12": {
+  "class_type": "SamplerCustom",
+  "inputs": {
+   "add_noise": true,
+   "noise_seed": 20260922,
+   "cfg": 1,
+   "model": [
+    "9",
+    0
+   ],
+   "positive": [
+    "8",
+    0
+   ],
+   "negative": [
+    "6",
+    0
+   ],
+   "sampler": [
+    "11",
+    0
+   ],
+   "sigmas": [
+    "10",
+    0
+   ],
+   "latent_image": [
+    "7",
+    0
+   ]
+  }
+ },
+ "13": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "12",
+    0
+   ],
+   "vae": [
+    "15",
+    0
+   ]
+  }
+ },
+ "14": {
+  "class_type": "SaveImage",
+  "inputs": {
+   "filename_prefix": "pixeldit/pid_flux2_1024to2048",
+   "images": [
+    "13",
+    0
+   ]
+  }
+ },
+ "_meta": {
+  "title": "PixelDiT pid_flux2 · FLUX.2 潜空间 2× 超分（1024² → 2048²，4 步）",
+  "based_on": "官方模板 utility_pid_latent_upscale_dit.json 的 PiD 支路",
+  "notes": [
+   "★ **通道数是关键**：pid_flux2_* 期望 128 通道（FLUX.2 潜空间）→ 必须用 flux2-vae 编码 FLUX.2 产出的图；",
+   "  pid_flux1_*/pid_sd3_* 期望 16 通道（Z-Image/SD3/Flux1 潜空间）→ 与 flux2 版不可混用",
+   "★ PiDConditioning.latent = 低分源潜空间；SamplerCustom.latent_image = 目标尺寸空潜空间",
+   "★ 这是对「HV1.5 720p→1080p 超分跑满 70 分钟未完成」那条负面结果的正面替代方案",
+   "修正：128 通道的 PiD 输出潜空间必须用内置 pixel_space 解码；flux2-vae 只用于源图编码"
+  ]
+ },
+ "15": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "pixel_space"
+  }
+ }
+}

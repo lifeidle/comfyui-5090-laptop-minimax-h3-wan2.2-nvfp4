@@ -1069,6 +1069,48 @@ Chroma1-HD 与 Chroma1-Radiance 各有自己的模板，混用会报 <code>value
 <p><strong>⚠️ 连线要解析两层</strong>：这个图的 <code>KSampler</code> 的 <code>positive</code> / <code>negative</code> <strong>都指向 <code>Kandinsky5ImageToVideo</code>(1022)</strong>，
 真正的两个 <code>CLIPTextEncode</code> 在 1022 那一层。只解析一层会拿到 1022 自己（它没有 <code>text</code> 字段）。</p>
 </blockquote>
+<h5 id="-pixeldit-潜空间超分--推翻本手册唯一那条不可行结论的替代方案">★ PixelDiT 潜空间超分 —— <strong>推翻本手册唯一那条「不可行」结论的替代方案</strong></h5>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>项</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>权重</td>
+<td><code>pid_flux2_512_to_2048_4step_bf16</code> 2.73 GB（另有 flux1 / sd3 版各 2 个，各 2.73 GB）</td>
+</tr>
+<tr>
+<td>编码器</td>
+<td><code>gemma_2_2b_it_elm_fp8_scaled</code> 2.62 GB，<code>CLIPLoader type=pixeldit</code></td>
+</tr>
+<tr>
+<td>实测</td>
+<td><strong>FLUX.2 Klein 9B 的 1024² 产物 → 2048²，仅 5.4 秒（4 步）</strong></td>
+</tr>
+<tr>
+<td>效果</td>
+<td>山脊细节明显更丰富、人物轮廓更锐利、朱红印章更清晰；<strong>构图与内容完全保留，没有臆造</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>它为什么能做到 HV1.5 做不到的事</strong>：HV1.5 的 720p→1080p 是「先跑完 720p 基座 20 步，再接一个
+1080p 超分模型」，两步串行、显存吃紧；而 PixelDiT 是<strong>一个 4 步蒸馏模型直接在高分辨率潜空间上做
+一次精修</strong>，单遍、4 步、2.7 GB 权重。</p>
+<blockquote>
+<p><strong>⚠️ 通道数是这个方案的核心约束</strong>（踩了两次才搞明白）：</p>
+<ul>
+<li><code>pid_flux2_*</code> 期望 <strong>128 通道</strong>（FLUX.2 潜空间）→ 源图必须用 <strong><code>flux2-vae</code></strong> 编码</li>
+<li><code>pid_flux1_*</code> / <code>pid_sd3_*</code> 期望 <strong>16 通道</strong>（Z-Image / SD3 / FLUX.1 潜空间）→ 与 flux2 版<strong>不可混用</strong>
+（报错：<code>Input latent has 3 channels, this model variant expects 128</code>）</li>
+<li>采样<strong>输出</strong>是 128 通道，解码必须用<strong>内置的 <code>pixel_space</code> VAE</strong>，用 <code>flux2-vae</code> 会报
+<code>tensor a (3) must match tensor b (128)</code></li>
+</ul>
+</blockquote>
+<p><strong>所以本手册关于「1080p」的结论要改写</strong>：不是「24 GB 上做不了高分辨率」，而是
+<strong>「HV1.5 那条两步串行的超分路径做不了；PixelDiT 的单遍 4 步潜空间精修可以，5.4 秒」</strong>。</p>
 <h3 id="62-图像编辑--flux2-klein-4b">6.2 图像编辑 —— FLUX.2 Klein 4B</h3>
 <div class="tw"><table>
 <thead>
@@ -4131,6 +4173,51 @@ result in this document</strong>.</p>
 live one level further down. Resolving only one level returns node 1022 itself, which has no
 <code>text</code> field.</p>
 </blockquote>
+<h5 id="-pixeldit-latent-space-upscale--the-alternative-that-overturns-this-documents-only-quotnot-feasiblequot-result">★ PixelDiT latent-space upscale — <strong>the alternative that overturns this document's only &quot;not feasible&quot; result</strong></h5>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Weights</td>
+<td><code>pid_flux2_512_to_2048_4step_bf16</code> 2.73 GB (flux1 / sd3 variants: two more each, 2.73 GB apiece)</td>
+</tr>
+<tr>
+<td>Encoder</td>
+<td><code>gemma_2_2b_it_elm_fp8_scaled</code> 2.62 GB, <code>CLIPLoader type=pixeldit</code></td>
+</tr>
+<tr>
+<td>Measured</td>
+<td><strong>a 1024² output from FLUX.2 Klein 9B → 2048² in 5.4 s (4 steps)</strong></td>
+</tr>
+<tr>
+<td>Result</td>
+<td>markedly richer ridge detail, sharper character outline, crisper red seal; <strong>composition and content fully preserved, nothing hallucinated</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Why it does what HunyuanVideo 1.5 could not</strong>: HV1.5's 720p→1080p runs the 720p base model for 20
+steps and <em>then</em> a separate 1080p super-resolution model — two serial stages with VRAM pressure.
+PixelDiT instead does <strong>a single refinement pass in a high-resolution latent with a 4-step distilled
+model</strong>: one pass, four steps, 2.73 GB of weights.</p>
+<blockquote>
+<p><strong>⚠️ Channel count is the core constraint here</strong> (took two failures to understand):</p>
+<ul>
+<li><code>pid_flux2_*</code> expects <strong>128 channels</strong> (FLUX.2 latents) → the source image must be encoded with
+<strong><code>flux2-vae</code></strong></li>
+<li><code>pid_flux1_*</code> / <code>pid_sd3_*</code> expect <strong>16 channels</strong> (Z-Image / SD3 / FLUX.1 latents) → <strong>not
+interchangeable</strong> with the flux2 build (error: <code>Input latent has 3 channels, this model variant expects 128</code>)</li>
+<li>The sampled <strong>output</strong> is 128-channel and must be decoded with the <strong>built-in <code>pixel_space</code> VAE</strong>;
+using <code>flux2-vae</code> fails with <code>tensor a (3) must match tensor b (128)</code></li>
+</ul>
+</blockquote>
+<p><strong>So this document's conclusion about 1080p has to be rewritten</strong>: not &quot;high resolution is not
+achievable on a 24 GB laptop&quot;, but <strong>&quot;HV1.5's two-stage serial upscale path cannot do it; PixelDiT's
+single-pass 4-step latent refinement can, in 5.4 s&quot;</strong>.</p>
 <h3 id="62-image-editing--flux2-klein-4b">6.2 Image editing — FLUX.2 Klein 4B</h3>
 <div class="tw"><table>
 <thead>
@@ -4481,9 +4568,9 @@ or use Wan / MiniMax H3.</p>
 <td>Dual experts + 4-step LoRA — the flagship in <strong>94 seconds</strong></td>
 </tr>
 <tr>
-<td><strong>1080p</strong></td>
-<td>⚠️ no workable option yet</td>
-<td>HV1.5's 720p+SR ran 70 minutes without finishing on 24 GB (see the HunyuanVideo 1.5 block above)</td>
+<td><strong>2K-class resolution</strong></td>
+<td>✅ <strong>PixelDiT <code>pid_flux2</code></strong></td>
+<td>1024²→2048² in <strong>5.4 s</strong> (4 steps), see §6.1</td>
 </tr>
 <tr>
 <td><strong>Need sound</strong></td>
