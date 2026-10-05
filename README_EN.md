@@ -51,6 +51,66 @@ Check before commercial use. "The weights download" ≠ "the output is commercia
 
 ---
 
+
+### Pictures first — every image below is a real run on this machine
+
+#### Chinese text rendering: Qwen-Image 2512 vs 2.1, same prompt, same 1328×1328
+
+Both are **30/30 character-exact**; they differ in style: 2512 is bolder with stronger contrast,
+2.1 is more refined with more whitespace.
+
+![Qwen-Image 2512 vs 2.1](assets/shots/cmp_qwen2512_vs_21.jpg)
+
+| Left: Qwen-Image 2512 fp8 | Right: Qwen-Image 2.1 int8 |
+|---|---|
+| 50 steps · **206.7 s** | 25 steps · **72.7 s** |
+
+#### Image outputs at a glance (all from the same measurement batch)
+
+| Image line | Output | Exec |
+|---|---|---|
+| Qwen-Image 2512 + Lightning | ![](assets/shots/qwen2512_poster.jpg) | 12.2 s |
+| Qwen-Image 2.1 int8 | ![](assets/shots/qwen21_poster.jpg) | 72.7 s |
+| FLUX.2 Klein 9B fp8 (edit) | ![](assets/shots/flux2klein9b_edit.jpg) | 18.9 s |
+| Z-Image / Kandinsky 5 Lite | ![](assets/shots/kandinsky5_t2i.jpg) | 68.1 s |
+| Chroma1-HD fp8mixed | ![](assets/shots/chroma1hd.jpg) | 42.6 s |
+| Lens turbo | ![](assets/shots/lens_turbo.jpg) | 13.6 s |
+| ERNIE-Image Turbo | ![](assets/shots/ernie_turbo.jpg) | 37.3 s |
+| PixelDiT 1.3B (fastest 1024² in the table) | ![](assets/shots/pixeldit_tower.jpg) | **10.1 s** |
+
+#### PixelDiT latent upscale: 1024² → 2048² in 5.4 s
+
+Left: the 1024² original from FLUX.2 Klein 9B. Right: after PixelDiT `pid_flux2` refinement at
+2048² — richer ridge detail, sharper character outline, crisper red seal, with **composition and
+content fully preserved**.
+
+![PixelDiT 1024→2048](assets/shots/cmp_pid_1024_to_2048.jpg)
+
+#### SeedVR2 3B: 768² → 3072² (4×) in 23.6 s
+
+![SeedVR2 4× upscale](assets/shots/cmp_seedvr2_4x.jpg)
+
+#### Video: one hummingbird prompt, three lines side by side
+
+Row 1 Wan 2.2 5B (355.1 s, follows the prompt fully); row 2 MiniMax H3 (539.5 s, follows fully with
+better composition); row 3 LTX-Video 2B (23.2 s, **does not follow the prompt at all** — a
+Mediterranean coastline).
+
+![Three video lines, same prompt](assets/shots/cmp_video_3way.jpg)
+
+#### LTX fails the same way in English: identical output either way
+
+Top row: English prompt. Bottom row: Chinese prompt. **The output is the same** — which rules out
+"Chinese unsupported" and shows the prompt adherence itself failing (see §6.4).
+
+![LTX Chinese vs English prompt](assets/shots/cmp_ltx_lang.jpg)
+
+#### Kandinsky 5 T2V Lite: the lightest video line (4.57 GB)
+
+![Kandinsky 5 video frames](assets/shots/cmp_kandinsky5_t2v.jpg)
+
+---
+
 ## Contents
 
 | Section | Topic | What you get |

@@ -48,6 +48,63 @@
 
 ---
 
+
+### 看图说话 —— 这些图全部是本机实跑产物
+
+#### 中文文字渲染：Qwen-Image 2512 vs 2.1，同一句提示词、同一个 1328×1328
+
+两者都是 **30/30 逐字全对**，风格不同：2512 笔画粗犷、对比强烈；2.1 更雅致、留白更多。
+
+![Qwen-Image 2512 vs 2.1](assets/shots/cmp_qwen2512_vs_21.jpg)
+
+| 左：Qwen-Image 2512 fp8 | 右：Qwen-Image 2.1 int8 |
+|---|---|
+| 50 步 · **206.7 s** | 25 步 · **72.7 s** |
+
+#### 图像产物一览（同一批实测输出）
+
+| 图像线 | 产物 | 耗时 |
+|---|---|---|
+| Qwen-Image 2512 + Lightning | ![](assets/shots/qwen2512_poster.jpg) | 12.2 s |
+| Qwen-Image 2.1 int8 | ![](assets/shots/qwen21_poster.jpg) | 72.7 s |
+| FLUX.2 Klein 9B fp8（编辑） | ![](assets/shots/flux2klein9b_edit.jpg) | 18.9 s |
+| Z-Image / Kandinsky 5 Lite | ![](assets/shots/kandinsky5_t2i.jpg) | 68.1 s |
+| Chroma1-HD fp8mixed | ![](assets/shots/chroma1hd.jpg) | 42.6 s |
+| Lens turbo | ![](assets/shots/lens_turbo.jpg) | 13.6 s |
+| ERNIE-Image Turbo | ![](assets/shots/ernie_turbo.jpg) | 37.3 s |
+| PixelDiT 1.3B（全表最快 1024²） | ![](assets/shots/pixeldit_tower.jpg) | **10.1 s** |
+
+#### PixelDiT 潜空间超分：1024² → 2048²，只用 5.4 秒
+
+左：FLUX.2 Klein 9B 的 1024² 原图。右：PixelDiT `pid_flux2` 精修后的 2048² ——
+山脊细节更丰富、人物轮廓更锐利、朱红印章更清晰，而**构图与内容完全保留**。
+
+![PixelDiT 1024→2048](assets/shots/cmp_pid_1024_to_2048.jpg)
+
+#### SeedVR2 3B：768² → 3072²（4×），23.6 秒
+
+![SeedVR2 4× 放大](assets/shots/cmp_seedvr2_4x.jpg)
+
+#### 视频：同一句蜂鸟提示词，三条线同框对比
+
+第 1 行 Wan 2.2 5B（355.1 s，完全跟随）、第 2 行 MiniMax H3（539.5 s，完全跟随、构图更好）、
+第 3 行 LTX-Video 2B（23.2 s，**完全没有跟随提示词** —— 生成的是地中海海岸）。
+
+![三条视频线同提示词对比](assets/shots/cmp_video_3way.jpg)
+
+#### LTX 的语言无关失败：换英文提示词仍是同一片海岸
+
+上排：英文提示词。下排：中文提示词。**输出完全一样** —— 排除「不支持中文」，
+说明是提示词遵循本身失效（详见 §6.4）。
+
+![LTX 中英文提示词对比](assets/shots/cmp_ltx_lang.jpg)
+
+#### Kandinsky 5 T2V Lite：最轻的视频线（4.57 GB）
+
+![Kandinsky 5 视频帧](assets/shots/cmp_kandinsky5_t2v.jpg)
+
+---
+
 ## 目录
 
 | 章节 | 内容 | 你会得到 |
