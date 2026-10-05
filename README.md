@@ -510,6 +510,41 @@ ComfyUI 0.38.0 新增 `TextEncodeQwenImage21` 节点后，Qwen-Image 2.1 变得�
 风格上两者可互补：2512 笔画粗犷、对比强烈；2.1 更雅致、留白更多、水墨层次更细腻。
 
 
+
+#### Kandinsky 5.0 T2I Lite —— 新增图像线（2026-10-05 实测）
+
+12.04 GB 单文件（1246 张量），**依赖里只有它需要新下载** —— `clip_l` / `ae.safetensors` /
+`qwen_2.5_vl_7b_fp8_scaled` 本机全部已有。
+
+| 项 | 值 |
+|---|---|
+| 关键结构 | `DualCLIPLoader(clip_name1=qwen_2.5_vl_7b_fp8_scaled, clip_name2=clip_l, type=kandinsky5_image)` → `UNETLoader` → `ModelSamplingSD3(shift=3)` → KSampler |
+| 参数 | 1024²，**50 步，cfg 3.5**，euler/simple |
+| 实测 | **68.1 s** |
+
+**一个值得记的坑**：这个模板有两个 `CLIPTextEncode`（正向 + 负向），
+我第一次把自定义提示词写进了**空的那个（负向槽）**，结果模型忠实执行了模板自带的正向提示词
+（生成了一张登山者照片而不是茶壶）。**教训：改模板工作流时，先确认哪个 CLIPTextEncode 接的是
+`positive`、哪个接 `negative`，别按「空的就是要填的」来判断。**
+
+#### SeedVR2 3B int8 —— 放大 / 修复工具（2026-10-05 实测）
+
+**这不是生成模型，是「1 步扩散的放大修复器」**：输入小图 → 输出 4× 大图，同时 cleans 边缘与色带。
+
+| 项 | 值 |
+|---|---|
+| 权重 | `seedvr2_3b_int8_convrot` 3.46 GB + `seedvr2_ema_vae_fp16` 0.50 GB |
+| 关键结构 | `SeedVR2Conditioning` → `VAEEncodeTiled(512/128)` → `KSampler(**仅 1 步**)` → `VAEDecodeTiled` → `SeedVR2PostProcessing` |
+| 实测 | 768² → **3072²**（4×）= **23.6 s** |
+
+**实测效果**：边缘明显变干净、天空渐变的色带消失、内容**完全保留没有臆造**。
+
+> **⚠️ 踩坑：跑之前必须重启 ComfyUI。** 第一次报
+> `group_norm_silu_pad3d() got an unexpected keyword argument 'zero_pad'` ——
+> 装的 comfy-kitchen 0.2.36 **确实有** `zero_pad` 参数，但**正在跑的 ComfyUI 进程是升级前启动的**，
+> 内存里加载的是旧模块。**升级 Python 包后不重启 ComfyUI，就会用到旧代码。**
+
+
 ### 6.2 图像编辑 —— FLUX.2 Klein 4B
 
 | 项 | 值 |

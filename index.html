@@ -939,6 +939,66 @@ int8 版配的是 <code>qwen_3_4b.safetensors</code>（bf16），nvfp4 版配的
 选型：<strong>要绝对速度 → 2512 + Lightning（12.2 s）；要满质量 + 中等速度 + 更小体积 → 2.1（72.7 s）。</strong></p>
 </blockquote>
 <p>风格上两者可互补：2512 笔画粗犷、对比强烈；2.1 更雅致、留白更多、水墨层次更细腻。</p>
+<h4 id="kandinsky-50-t2i-lite--新增图像线2026-10-05-实测">Kandinsky 5.0 T2I Lite —— 新增图像线（2026-10-05 实测）</h4>
+<p>12.04 GB 单文件（1246 张量），<strong>依赖里只有它需要新下载</strong> —— <code>clip_l</code> / <code>ae.safetensors</code> /
+<code>qwen_2.5_vl_7b_fp8_scaled</code> 本机全部已有。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>项</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>关键结构</td>
+<td><code>DualCLIPLoader(clip_name1=qwen_2.5_vl_7b_fp8_scaled, clip_name2=clip_l, type=kandinsky5_image)</code> → <code>UNETLoader</code> → <code>ModelSamplingSD3(shift=3)</code> → KSampler</td>
+</tr>
+<tr>
+<td>参数</td>
+<td>1024²，<strong>50 步，cfg 3.5</strong>，euler/simple</td>
+</tr>
+<tr>
+<td>实测</td>
+<td><strong>68.1 s</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>一个值得记的坑</strong>：这个模板有两个 <code>CLIPTextEncode</code>（正向 + 负向），
+我第一次把自定义提示词写进了<strong>空的那个（负向槽）</strong>，结果模型忠实执行了模板自带的正向提示词
+（生成了一张登山者照片而不是茶壶）。<strong>教训：改模板工作流时，先确认哪个 CLIPTextEncode 接的是
+<code>positive</code>、哪个接 <code>negative</code>，别按「空的就是要填的」来判断。</strong></p>
+<h4 id="seedvr2-3b-int8--放大--修复工具2026-10-05-实测">SeedVR2 3B int8 —— 放大 / 修复工具（2026-10-05 实测）</h4>
+<p><strong>这不是生成模型，是「1 步扩散的放大修复器」</strong>：输入小图 → 输出 4× 大图，同时 cleans 边缘与色带。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>项</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>权重</td>
+<td><code>seedvr2_3b_int8_convrot</code> 3.46 GB + <code>seedvr2_ema_vae_fp16</code> 0.50 GB</td>
+</tr>
+<tr>
+<td>关键结构</td>
+<td><code>SeedVR2Conditioning</code> → <code>VAEEncodeTiled(512/128)</code> → <code>KSampler(**仅 1 步**)</code> → <code>VAEDecodeTiled</code> → <code>SeedVR2PostProcessing</code></td>
+</tr>
+<tr>
+<td>实测</td>
+<td>768² → <strong>3072²</strong>（4×）= <strong>23.6 s</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>实测效果</strong>：边缘明显变干净、天空渐变的色带消失、内容<strong>完全保留没有臆造</strong>。</p>
+<blockquote>
+<p><strong>⚠️ 踩坑：跑之前必须重启 ComfyUI。</strong> 第一次报
+<code>group_norm_silu_pad3d() got an unexpected keyword argument 'zero_pad'</code> ——
+装的 comfy-kitchen 0.2.36 <strong>确实有</strong> <code>zero_pad</code> 参数，但<strong>正在跑的 ComfyUI 进程是升级前启动的</strong>，
+内存里加载的是旧模块。<strong>升级 Python 包后不重启 ComfyUI，就会用到旧代码。</strong></p>
+</blockquote>
 <h3 id="62-图像编辑--flux2-klein-4b">6.2 图像编辑 —— FLUX.2 Klein 4B</h3>
 <div class="tw"><table>
 <thead>
@@ -3860,6 +3920,70 @@ moderate speed and a smaller footprint → 2.1 (72.7 s)</strong>.</p>
 </blockquote>
 <p>The two are stylistically complementary: 2512 gives bolder brushwork and stronger contrast;
 2.1 is more refined with more whitespace and subtler ink-wash gradation.</p>
+<h4 id="kandinsky-50-t2i-lite--a-new-image-line-measured-2026-10-05">Kandinsky 5.0 T2I Lite — a new image line (measured 2026-10-05)</h4>
+<p>A single 12.04 GB file (1,246 tensors), and <strong>it is the only thing that needed downloading</strong> —
+<code>clip_l</code>, <code>ae.safetensors</code> and <code>qwen_2.5_vl_7b_fp8_scaled</code> were all already on this machine.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Key structure</td>
+<td><code>DualCLIPLoader(clip_name1=qwen_2.5_vl_7b_fp8_scaled, clip_name2=clip_l, type=kandinsky5_image)</code> → <code>UNETLoader</code> → <code>ModelSamplingSD3(shift=3)</code> → KSampler</td>
+</tr>
+<tr>
+<td>Parameters</td>
+<td>1024², <strong>50 steps, cfg 3.5</strong>, euler/simple</td>
+</tr>
+<tr>
+<td>Measured</td>
+<td><strong>68.1 s</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>A trap worth recording</strong>: this template has two <code>CLIPTextEncode</code> nodes (positive and negative).
+My first attempt wrote the custom prompt into the <strong>empty one (the negative slot)</strong>, and the model
+faithfully executed the template's built-in positive prompt — it produced a photo of a hiker rather
+than a teapot. <strong>Lesson: when editing a template workflow, first establish which CLIPTextEncode feeds
+<code>positive</code> and which feeds <code>negative</code>; do not assume &quot;the empty one is the one to fill&quot;.</strong></p>
+<h4 id="seedvr2-3b-int8--an-upscale--restore-tool-measured-2026-10-05">SeedVR2 3B int8 — an upscale / restore tool (measured 2026-10-05)</h4>
+<p><strong>This is not a generative model</strong> — it is a one-step diffusion upscaler: small image in, 4× image
+out, with cleaner edges and no banding.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Weights</td>
+<td><code>seedvr2_3b_int8_convrot</code> 3.46 GB + <code>seedvr2_ema_vae_fp16</code> 0.50 GB</td>
+</tr>
+<tr>
+<td>Key structure</td>
+<td><code>SeedVR2Conditioning</code> → <code>VAEEncodeTiled(512/128)</code> → <code>KSampler(**1 step only**)</code> → <code>VAEDecodeTiled</code> → <code>SeedVR2PostProcessing</code></td>
+</tr>
+<tr>
+<td>Measured</td>
+<td>768² → <strong>3072²</strong> (4×) in <strong>23.6 s</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Observed result</strong>: noticeably cleaner edges, sky gradients free of banding, and content
+<strong>fully preserved with no hallucination</strong>.</p>
+<blockquote>
+<p><strong>⚠️ Trap: restart ComfyUI before running.</strong> The first attempt failed with
+<code>group_norm_silu_pad3d() got an unexpected keyword argument 'zero_pad'</code> — the installed
+comfy-kitchen 0.2.36 <strong>does</strong> have <code>zero_pad</code>, but <strong>the running ComfyUI process had been started
+before the upgrade</strong> and held the old module in memory. <strong>Upgrade a Python package without
+restarting ComfyUI and you keep running the old code.</strong></p>
+</blockquote>
 <h3 id="62-image-editing--flux2-klein-4b">6.2 Image editing — FLUX.2 Klein 4B</h3>
 <div class="tw"><table>
 <thead>

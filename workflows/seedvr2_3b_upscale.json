@@ -1,0 +1,150 @@
+{
+ "1": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "example.png"
+  }
+ },
+ "9": {
+  "class_type": "SaveImage",
+  "inputs": {
+   "filename_prefix": "seedvr2/upscaled",
+   "images": [
+    "1080",
+    0
+   ]
+  }
+ },
+ "1072": {
+  "class_type": "VAEEncodeTiled",
+  "inputs": {
+   "tile_size": 512,
+   "overlap": 128,
+   "temporal_size": 4096,
+   "temporal_overlap": 8,
+   "pixels": [
+    "1079",
+    0
+   ],
+   "vae": [
+    "1074",
+    0
+   ]
+  }
+ },
+ "1074": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "seedvr2_ema_vae_fp16.safetensors"
+  }
+ },
+ "1075": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "seedvr2_3b_int8_convrot.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "1076": {
+  "class_type": "KSampler",
+  "inputs": {
+   "seed": 20260922,
+   "steps": 1,
+   "cfg": 1,
+   "sampler_name": "euler",
+   "scheduler": "simple",
+   "denoise": 1,
+   "model": [
+    "1075",
+    0
+   ],
+   "positive": [
+    "1081",
+    0
+   ],
+   "negative": [
+    "1081",
+    1
+   ],
+   "latent_image": [
+    "1072",
+    0
+   ]
+  }
+ },
+ "1077": {
+  "class_type": "VAEDecodeTiled",
+  "inputs": {
+   "tile_size": 512,
+   "overlap": 128,
+   "temporal_size": 4096,
+   "temporal_overlap": 8,
+   "samples": [
+    "1076",
+    0
+   ],
+   "vae": [
+    "1074",
+    0
+   ]
+  }
+ },
+ "1078": {
+  "class_type": "ResizeImageMaskNode",
+  "inputs": {
+   "resize_type": "scale by multiplier",
+   "resize_type.multiplier": 4,
+   "scale_method": "lanczos",
+   "input": [
+    "1",
+    0
+   ]
+  }
+ },
+ "1079": {
+  "class_type": "SeedVR2Preprocess",
+  "inputs": {
+   "resized_images": [
+    "1078",
+    0
+   ]
+  }
+ },
+ "1080": {
+  "class_type": "SeedVR2PostProcessing",
+  "inputs": {
+   "color_correction_method": "none",
+   "images": [
+    "1077",
+    0
+   ],
+   "original_resized_images": [
+    "1078",
+    0
+   ]
+  }
+ },
+ "1081": {
+  "class_type": "SeedVR2Conditioning",
+  "inputs": {
+   "model": [
+    "1075",
+    0
+   ],
+   "vae_conditioning": [
+    "1072",
+    0
+   ]
+  }
+ },
+ "_meta": {
+  "title": "SeedVR2 3B int8 · 4× 图像放大/修复",
+  "based_on": "官方模板 utility_seedvr2_3b_int8_upscale_image.json 拓扑",
+  "notes": [
+   "★ SeedVR2Conditioning → VAEEncodeTiled(512/128) → KSampler(仅 1 步) → VAEDecodeTiled → SeedVR2PostProcessing",
+   "★ 这是「放大修复」而非生成：1 步扩散，输入图小、输出 4×",
+   "★ 视频放大模板 utility_seedvr2_3b_int8_upscale_video.json 同权重",
+   "已删除 JoinImageWithAlpha / ImageCompare 两个预览节点（单图流程不需要），1078 直接接 LoadImage"
+  ]
+ }
+}

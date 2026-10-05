@@ -556,6 +556,45 @@ The two are stylistically complementary: 2512 gives bolder brushwork and stronge
 2.1 is more refined with more whitespace and subtler ink-wash gradation.
 
 
+
+#### Kandinsky 5.0 T2I Lite — a new image line (measured 2026-10-05)
+
+A single 12.04 GB file (1,246 tensors), and **it is the only thing that needed downloading** —
+`clip_l`, `ae.safetensors` and `qwen_2.5_vl_7b_fp8_scaled` were all already on this machine.
+
+| Item | Value |
+|---|---|
+| Key structure | `DualCLIPLoader(clip_name1=qwen_2.5_vl_7b_fp8_scaled, clip_name2=clip_l, type=kandinsky5_image)` → `UNETLoader` → `ModelSamplingSD3(shift=3)` → KSampler |
+| Parameters | 1024², **50 steps, cfg 3.5**, euler/simple |
+| Measured | **68.1 s** |
+
+**A trap worth recording**: this template has two `CLIPTextEncode` nodes (positive and negative).
+My first attempt wrote the custom prompt into the **empty one (the negative slot)**, and the model
+faithfully executed the template's built-in positive prompt — it produced a photo of a hiker rather
+than a teapot. **Lesson: when editing a template workflow, first establish which CLIPTextEncode feeds
+`positive` and which feeds `negative`; do not assume "the empty one is the one to fill".**
+
+#### SeedVR2 3B int8 — an upscale / restore tool (measured 2026-10-05)
+
+**This is not a generative model** — it is a one-step diffusion upscaler: small image in, 4× image
+out, with cleaner edges and no banding.
+
+| Item | Value |
+|---|---|
+| Weights | `seedvr2_3b_int8_convrot` 3.46 GB + `seedvr2_ema_vae_fp16` 0.50 GB |
+| Key structure | `SeedVR2Conditioning` → `VAEEncodeTiled(512/128)` → `KSampler(**1 step only**)` → `VAEDecodeTiled` → `SeedVR2PostProcessing` |
+| Measured | 768² → **3072²** (4×) in **23.6 s** |
+
+**Observed result**: noticeably cleaner edges, sky gradients free of banding, and content
+**fully preserved with no hallucination**.
+
+> **⚠️ Trap: restart ComfyUI before running.** The first attempt failed with
+> `group_norm_silu_pad3d() got an unexpected keyword argument 'zero_pad'` — the installed
+> comfy-kitchen 0.2.36 **does** have `zero_pad`, but **the running ComfyUI process had been started
+> before the upgrade** and held the old module in memory. **Upgrade a Python package without
+> restarting ComfyUI and you keep running the old code.**
+
+
 ### 6.2 Image editing — FLUX.2 Klein 4B
 
 | Item | Value |
