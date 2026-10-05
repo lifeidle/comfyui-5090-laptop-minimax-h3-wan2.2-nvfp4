@@ -545,6 +545,45 @@ ComfyUI 0.38.0 新增 `TextEncodeQwenImage21` 节点后，Qwen-Image 2.1 变得�
 > 内存里加载的是旧模块。**升级 Python 包后不重启 ComfyUI，就会用到旧代码。**
 
 
+
+#### Chroma1-HD fp8mixed —— 新图像线（2026-10-05 实测 42.6 s）
+
+9.19 GB（1099 张量）。`CLIPLoader type=chroma`（`t5xxl_fp8_e4m3fn`）+ `VAELoader ae.safetensors`，
+`ModelSamplingAuraFlow shift=1` + `BasicScheduler(beta) 26 步` + `CFGGuider cfg 3.5` → **42.6 s @1024²**。
+
+> **⚠️ 别下错模型**：同名的 **Chroma1-Radiance 是另一个模型且要 19.01 GB**（本机装不下）。
+> Chroma1-HD 与 Chroma1-Radiance 各有自己的模板，混用会报 `value_not_in_list`。
+> 另外模板里写的 `t5xxl_fp8_e4m3fn_scaled.safetensors` 与本机实际文件名不一致（没有 `_scaled`），要改。
+
+#### PixelDiT 1.3B —— 潜空间 DiT 架构的新图像线（2026-10-05 实测 **10.1 s**）
+
+**目前全表最快的 1024² 图像配置**（比 Qwen-Image 2512 + Lightning 的 12.2 s 还快）。
+
+| 项 | 值 |
+|---|---|
+| 权重 | `pixeldit_1300m_1024px_bf16` 2.60 GB + `gemma_2_2b_it_elm_bf16` 5.23 GB |
+| 关键结构 | `CLIPLoader type=pixeldit` + `VAELoader vae_name=pixel_space`（内置）+ `EmptyChromaRadianceLatentImage` |
+| 参数 | 1024²，30 步，cfg 4，`er_sde` |
+| 实测 | **10.1 s** |
+
+**同系列还有 4 个潜空间超分器已下载待测**：`pid_{flux1,flux2,sd3}_{512→2048, 1024→4096}_4step`（各 2.73 GB）。
+它们是 4 步的潜空间超分 —— **这是本手册里最有希望解决「1080p 超分跑不动」那条负面结果的候选**。
+
+#### Kandinsky 5.0 T2V Lite —— 最轻的视频线（2026-10-05 实测 884.5 s）
+
+**只有 4.57 GB（814 张量），是本手册最轻的视频模型** —— 代价是慢。
+
+| 项 | 值 |
+|---|---|
+| 结构 | `DualCLIPLoader(qwen_2.5_vl_7b_fp8 + clip_l, type=kandinsky5)` → `ModelSamplingSD3(shift=5)` → `Kandinsky5ImageToVideo` |
+| 参数 | 768×512，121 帧，**50 步，cfg 5**，`euler_ancestral` + `beta` scheduler |
+| VAE | Kijai 的 `hunyuan_video_vae_bf16.safetensors`（0.49 GB） |
+| 实测 | **884.5 s**（+ 排队 304 s） |
+
+> **⚠️ 连线要解析两层**：这个图的 `KSampler` 的 `positive` / `negative` **都指向 `Kandinsky5ImageToVideo`(1022)**，
+> 真正的两个 `CLIPTextEncode` 在 1022 那一层。只解析一层会拿到 1022 自己（它没有 `text` 字段）。
+
+
 ### 6.2 图像编辑 —— FLUX.2 Klein 4B
 
 | 项 | 值 |

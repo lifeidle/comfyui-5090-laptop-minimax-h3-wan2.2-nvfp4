@@ -1,0 +1,173 @@
+{
+ "298": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "747",
+    0
+   ],
+   "vae": [
+    "710",
+    0
+   ]
+  }
+ },
+ "694": {
+  "class_type": "CFGGuider",
+  "inputs": {
+   "cfg": 3.5,
+   "model": [
+    "701",
+    0
+   ],
+   "positive": [
+    "748",
+    0
+   ],
+   "negative": [
+    "749",
+    0
+   ]
+  }
+ },
+ "700": {
+  "class_type": "KSamplerSelect",
+  "inputs": {
+   "sampler_name": "euler"
+  }
+ },
+ "701": {
+  "class_type": "ModelSamplingAuraFlow",
+  "inputs": {
+   "shift": 1,
+   "sampling": "flow",
+   "model": [
+    "731",
+    0
+   ]
+  }
+ },
+ "710": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "ae.safetensors"
+  }
+ },
+ "718": {
+  "class_type": "RandomNoise",
+  "inputs": {
+   "noise_seed": 20260922
+  }
+ },
+ "733": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "t5xxl_fp8_e4m3fn.safetensors",
+   "type": "chroma",
+   "device": "default"
+  }
+ },
+ "734": {
+  "class_type": "BasicScheduler",
+  "inputs": {
+   "scheduler": "beta",
+   "steps": 26,
+   "denoise": 1,
+   "model": [
+    "701",
+    0
+   ]
+  }
+ },
+ "737": {
+  "class_type": "EmptySD3LatentImage",
+  "inputs": {
+   "width": 1024,
+   "height": 1024,
+   "batch_size": 1
+  }
+ },
+ "740": {
+  "class_type": "SaveImage",
+  "inputs": {
+   "filename_prefix": "chroma1hd/blue_white_teapot",
+   "images": [
+    "298",
+    0
+   ]
+  }
+ },
+ "741": {
+  "class_type": "T5TokenizerOptions",
+  "inputs": {
+   "min_padding": 0,
+   "min_length": 0,
+   "clip": [
+    "733",
+    0
+   ]
+  }
+ },
+ "747": {
+  "class_type": "SamplerCustomAdvanced",
+  "inputs": {
+   "noise": [
+    "718",
+    0
+   ],
+   "guider": [
+    "694",
+    0
+   ],
+   "sampler": [
+    "700",
+    0
+   ],
+   "sigmas": [
+    "734",
+    0
+   ],
+   "latent_image": [
+    "737",
+    0
+   ]
+  }
+ },
+ "749": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "text": "",
+   "clip": [
+    "741",
+    0
+   ]
+  }
+ },
+ "748": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "text": "Hyperrealistic macro photograph of a hand-painted blue-and-white porcelain teapot on pure white background, soft even studio lighting, crisp glaze and painted pattern, clean edges, commercial product photography, 8k",
+   "clip": [
+    "741",
+    0
+   ]
+  }
+ },
+ "731": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "Chroma1-HD-fp8mixed.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "_meta": {
+  "title": "Chroma1-HD fp8mixed · 蓝白茶壶",
+  "based_on": "官方模板 image_chroma_text_to_image.json 拓扑",
+  "notes": [
+   "★ CLIPLoader type=chroma（t5xxl_fp8_e4m3fn_scaled）+ VAELoader ae.safetensors",
+   "★ ModelSamplingAuraFlow shift=1 / BasicScheduler beta 26 步 / CFGGuider cfg 3.5",
+   "★ 注意别下错：Chroma1-Radiance 是另一个模型且需 19 GB（装不下）",
+   "修正：模板写的是 t5xxl_fp8_e4m3fn_scaled.safetensors，本机实际文件名没有 _scaled"
+  ]
+ }
+}

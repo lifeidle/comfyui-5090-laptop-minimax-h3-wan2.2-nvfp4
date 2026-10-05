@@ -1,0 +1,151 @@
+{
+ "1015": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "text": "",
+   "clip": [
+    "1016",
+    0
+   ]
+  }
+ },
+ "1016": {
+  "class_type": "DualCLIPLoader",
+  "inputs": {
+   "clip_name1": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+   "clip_name2": "clip_l.safetensors",
+   "type": "kandinsky5",
+   "device": "default"
+  }
+ },
+ "1017": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "hunyuan_video_vae_bf16.safetensors"
+  }
+ },
+ "1018": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "text": "Rim light, side light, soft light, medium shot, a hand-painted blue-and-white porcelain teapot slowly rotating on a white studio table, steam rising gently, shallow depth of field, cinematic product film, 4k",
+   "clip": [
+    "1016",
+    0
+   ]
+  }
+ },
+ "1019": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "1021",
+    0
+   ],
+   "vae": [
+    "1017",
+    0
+   ]
+  }
+ },
+ "1020": {
+  "class_type": "ModelSamplingSD3",
+  "inputs": {
+   "shift": 5,
+   "model": [
+    "1024",
+    0
+   ]
+  }
+ },
+ "1021": {
+  "class_type": "KSampler",
+  "inputs": {
+   "seed": 20260922,
+   "steps": 50,
+   "cfg": 5,
+   "sampler_name": "euler_ancestral",
+   "scheduler": "beta",
+   "denoise": 1,
+   "model": [
+    "1020",
+    0
+   ],
+   "positive": [
+    "1022",
+    0
+   ],
+   "negative": [
+    "1022",
+    1
+   ],
+   "latent_image": [
+    "1022",
+    2
+   ]
+  }
+ },
+ "1022": {
+  "class_type": "Kandinsky5ImageToVideo",
+  "inputs": {
+   "width": 768,
+   "height": 512,
+   "length": 121,
+   "batch_size": 1,
+   "positive": [
+    "1018",
+    0
+   ],
+   "negative": [
+    "1015",
+    0
+   ],
+   "vae": [
+    "1017",
+    0
+   ]
+  }
+ },
+ "1023": {
+  "class_type": "CreateVideo",
+  "inputs": {
+   "fps": 24,
+   "bit_depth": "auto",
+   "color_space": "sRGB",
+   "codec": "none",
+   "images": [
+    "1019",
+    0
+   ]
+  }
+ },
+ "1024": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "kandinsky5lite_t2v_sft_5s.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "11": {
+  "class_type": "SaveVideo",
+  "inputs": {
+   "filename_prefix": "kandinsky5/teapot_turntable",
+   "format": "mp4",
+   "format.codec": "h264",
+   "video": [
+    "1023",
+    0
+   ]
+  }
+ },
+ "_meta": {
+  "title": "Kandinsky 5.0 T2V Lite SFT 5s · 茶壶转台",
+  "based_on": "官方模板 video_kandinsky5_t2v.json 拓扑",
+  "notes": [
+   "★ DualCLIPLoader(qwen_2.5_vl_7b_fp8_scaled + clip_l, type=kandinsky5) → ModelSamplingSD3(shift=5)",
+   "★ Kandinsky5ImageToVideo 768×512 / 121 帧 / 50 步 / cfg 5 / euler_ancestral + beta scheduler",
+   "★ VAE 用 Kijai 的 hunyuan_video_vae_bf16.safetensors",
+   "★ 模型只有 4.57 GB（814 张量），是本手册最轻的视频线",
+   "修正：KSampler 的 positive/negative 都指向 Kandinsky5ImageToVideo(1022)，需再解析一层才拿到真正的 CLIPTextEncode"
+  ]
+ }
+}

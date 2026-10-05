@@ -999,6 +999,76 @@ int8 版配的是 <code>qwen_3_4b.safetensors</code>（bf16），nvfp4 版配的
 装的 comfy-kitchen 0.2.36 <strong>确实有</strong> <code>zero_pad</code> 参数，但<strong>正在跑的 ComfyUI 进程是升级前启动的</strong>，
 内存里加载的是旧模块。<strong>升级 Python 包后不重启 ComfyUI，就会用到旧代码。</strong></p>
 </blockquote>
+<h4 id="chroma1-hd-fp8mixed--新图像线2026-10-05-实测-426-s">Chroma1-HD fp8mixed —— 新图像线（2026-10-05 实测 42.6 s）</h4>
+<p>9.19 GB（1099 张量）。<code>CLIPLoader type=chroma</code>（<code>t5xxl_fp8_e4m3fn</code>）+ <code>VAELoader ae.safetensors</code>，
+<code>ModelSamplingAuraFlow shift=1</code> + <code>BasicScheduler(beta) 26 步</code> + <code>CFGGuider cfg 3.5</code> → <strong>42.6 s @1024²</strong>。</p>
+<blockquote>
+<p><strong>⚠️ 别下错模型</strong>：同名的 <strong>Chroma1-Radiance 是另一个模型且要 19.01 GB</strong>（本机装不下）。
+Chroma1-HD 与 Chroma1-Radiance 各有自己的模板，混用会报 <code>value_not_in_list</code>。
+另外模板里写的 <code>t5xxl_fp8_e4m3fn_scaled.safetensors</code> 与本机实际文件名不一致（没有 <code>_scaled</code>），要改。</p>
+</blockquote>
+<h4 id="pixeldit-13b--潜空间-dit-架构的新图像线2026-10-05-实测-101-s">PixelDiT 1.3B —— 潜空间 DiT 架构的新图像线（2026-10-05 实测 <strong>10.1 s</strong>）</h4>
+<p><strong>目前全表最快的 1024² 图像配置</strong>（比 Qwen-Image 2512 + Lightning 的 12.2 s 还快）。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>项</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>权重</td>
+<td><code>pixeldit_1300m_1024px_bf16</code> 2.60 GB + <code>gemma_2_2b_it_elm_bf16</code> 5.23 GB</td>
+</tr>
+<tr>
+<td>关键结构</td>
+<td><code>CLIPLoader type=pixeldit</code> + <code>VAELoader vae_name=pixel_space</code>（内置）+ <code>EmptyChromaRadianceLatentImage</code></td>
+</tr>
+<tr>
+<td>参数</td>
+<td>1024²，30 步，cfg 4，<code>er_sde</code></td>
+</tr>
+<tr>
+<td>实测</td>
+<td><strong>10.1 s</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>同系列还有 4 个潜空间超分器已下载待测</strong>：<code>pid_{flux1,flux2,sd3}_{512→2048, 1024→4096}_4step</code>（各 2.73 GB）。
+它们是 4 步的潜空间超分 —— <strong>这是本手册里最有希望解决「1080p 超分跑不动」那条负面结果的候选</strong>。</p>
+<h4 id="kandinsky-50-t2v-lite--最轻的视频线2026-10-05-实测-8845-s">Kandinsky 5.0 T2V Lite —— 最轻的视频线（2026-10-05 实测 884.5 s）</h4>
+<p><strong>只有 4.57 GB（814 张量），是本手册最轻的视频模型</strong> —— 代价是慢。</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>项</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>结构</td>
+<td><code>DualCLIPLoader(qwen_2.5_vl_7b_fp8 + clip_l, type=kandinsky5)</code> → <code>ModelSamplingSD3(shift=5)</code> → <code>Kandinsky5ImageToVideo</code></td>
+</tr>
+<tr>
+<td>参数</td>
+<td>768×512，121 帧，<strong>50 步，cfg 5</strong>，<code>euler_ancestral</code> + <code>beta</code> scheduler</td>
+</tr>
+<tr>
+<td>VAE</td>
+<td>Kijai 的 <code>hunyuan_video_vae_bf16.safetensors</code>（0.49 GB）</td>
+</tr>
+<tr>
+<td>实测</td>
+<td><strong>884.5 s</strong>（+ 排队 304 s）</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><strong>⚠️ 连线要解析两层</strong>：这个图的 <code>KSampler</code> 的 <code>positive</code> / <code>negative</code> <strong>都指向 <code>Kandinsky5ImageToVideo</code>(1022)</strong>，
+真正的两个 <code>CLIPTextEncode</code> 在 1022 那一层。只解析一层会拿到 1022 自己（它没有 <code>text</code> 字段）。</p>
+</blockquote>
 <h3 id="62-图像编辑--flux2-klein-4b">6.2 图像编辑 —— FLUX.2 Klein 4B</h3>
 <div class="tw"><table>
 <thead>
@@ -3983,6 +4053,83 @@ out, with cleaner edges and no banding.</p>
 comfy-kitchen 0.2.36 <strong>does</strong> have <code>zero_pad</code>, but <strong>the running ComfyUI process had been started
 before the upgrade</strong> and held the old module in memory. <strong>Upgrade a Python package without
 restarting ComfyUI and you keep running the old code.</strong></p>
+</blockquote>
+<h4 id="chroma1-hd-fp8mixed--a-new-image-line-measured-426-s-on-2026-10-05">Chroma1-HD fp8mixed — a new image line (measured 42.6 s on 2026-10-05)</h4>
+<p>9.19 GB (1,099 tensors). <code>CLIPLoader type=chroma</code> (<code>t5xxl_fp8_e4m3fn</code>) + <code>VAELoader ae.safetensors</code>,
+<code>ModelSamplingAuraFlow shift=1</code> + <code>BasicScheduler(beta) 26 steps</code> + <code>CFGGuider cfg 3.5</code> → <strong>42.6 s @1024²</strong>.</p>
+<blockquote>
+<p><strong>⚠️ Do not confuse the models</strong>: <strong>Chroma1-Radiance is a different model and needs 19.01 GB</strong>
+(does not fit here). Chroma1-HD and Chroma1-Radiance each have their own template, and mixing them
+fails with <code>value_not_in_list</code>. Also, the template names the encoder
+<code>t5xxl_fp8_e4m3fn_scaled.safetensors</code>, which does not match this machine's actual filename
+(no <code>_scaled</code>) — fix it.</p>
+</blockquote>
+<h4 id="pixeldit-13b--a-latent-space-dit-image-line-measured-101-s-on-2026-10-05">PixelDiT 1.3B — a latent-space DiT image line (measured <strong>10.1 s</strong> on 2026-10-05)</h4>
+<p><strong>The fastest 1024² image configuration in the whole table</strong> — even faster than Qwen-Image 2512 +
+Lightning at 12.2 s.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Weights</td>
+<td><code>pixeldit_1300m_1024px_bf16</code> 2.60 GB + <code>gemma_2_2b_it_elm_bf16</code> 5.23 GB</td>
+</tr>
+<tr>
+<td>Key structure</td>
+<td><code>CLIPLoader type=pixeldit</code> + <code>VAELoader vae_name=pixel_space</code> (built-in) + <code>EmptyChromaRadianceLatentImage</code></td>
+</tr>
+<tr>
+<td>Parameters</td>
+<td>1024², 30 steps, cfg 4, <code>er_sde</code></td>
+</tr>
+<tr>
+<td>Measured</td>
+<td><strong>10.1 s</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Four latent-space upscalers from the same family are downloaded and pending</strong>:
+<code>pid_{flux1,flux2,sd3}_{512→2048, 1024→4096}_4step</code> (2.73 GB each). They are 4-step latent-space
+upscalers — <strong>the most promising candidates for solving the &quot;1080p upscale never finishes&quot; negative
+result in this document</strong>.</p>
+<h4 id="kandinsky-50-t2v-lite--the-lightest-video-line-measured-8845-s-on-2026-10-05">Kandinsky 5.0 T2V Lite — the lightest video line (measured 884.5 s on 2026-10-05)</h4>
+<p><strong>Only 4.57 GB (814 tensors) — the lightest video model in this document.</strong> The cost is speed.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Structure</td>
+<td><code>DualCLIPLoader(qwen_2.5_vl_7b_fp8 + clip_l, type=kandinsky5)</code> → <code>ModelSamplingSD3(shift=5)</code> → <code>Kandinsky5ImageToVideo</code></td>
+</tr>
+<tr>
+<td>Parameters</td>
+<td>768×512, 121 frames, <strong>50 steps, cfg 5</strong>, <code>euler_ancestral</code> + <code>beta</code> scheduler</td>
+</tr>
+<tr>
+<td>VAE</td>
+<td>Kijai's <code>hunyuan_video_vae_bf16.safetensors</code> (0.49 GB)</td>
+</tr>
+<tr>
+<td>Measured</td>
+<td><strong>884.5 s</strong> (+ 304 s queue)</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><strong>⚠️ The links need two levels of resolution</strong>: in this graph the <code>KSampler</code>'s <code>positive</code> and
+<code>negative</code> <strong>both point at <code>Kandinsky5ImageToVideo</code> (1022)</strong> — the two real <code>CLIPTextEncode</code> nodes
+live one level further down. Resolving only one level returns node 1022 itself, which has no
+<code>text</code> field.</p>
 </blockquote>
 <h3 id="62-image-editing--flux2-klein-4b">6.2 Image editing — FLUX.2 Klein 4B</h3>
 <div class="tw"><table>

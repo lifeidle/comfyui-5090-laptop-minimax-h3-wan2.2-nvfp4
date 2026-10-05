@@ -595,6 +595,52 @@ out, with cleaner edges and no banding.
 > restarting ComfyUI and you keep running the old code.**
 
 
+
+#### Chroma1-HD fp8mixed — a new image line (measured 42.6 s on 2026-10-05)
+
+9.19 GB (1,099 tensors). `CLIPLoader type=chroma` (`t5xxl_fp8_e4m3fn`) + `VAELoader ae.safetensors`,
+`ModelSamplingAuraFlow shift=1` + `BasicScheduler(beta) 26 steps` + `CFGGuider cfg 3.5` → **42.6 s @1024²**.
+
+> **⚠️ Do not confuse the models**: **Chroma1-Radiance is a different model and needs 19.01 GB**
+> (does not fit here). Chroma1-HD and Chroma1-Radiance each have their own template, and mixing them
+> fails with `value_not_in_list`. Also, the template names the encoder
+> `t5xxl_fp8_e4m3fn_scaled.safetensors`, which does not match this machine's actual filename
+> (no `_scaled`) — fix it.
+
+#### PixelDiT 1.3B — a latent-space DiT image line (measured **10.1 s** on 2026-10-05)
+
+**The fastest 1024² image configuration in the whole table** — even faster than Qwen-Image 2512 +
+Lightning at 12.2 s.
+
+| Item | Value |
+|---|---|
+| Weights | `pixeldit_1300m_1024px_bf16` 2.60 GB + `gemma_2_2b_it_elm_bf16` 5.23 GB |
+| Key structure | `CLIPLoader type=pixeldit` + `VAELoader vae_name=pixel_space` (built-in) + `EmptyChromaRadianceLatentImage` |
+| Parameters | 1024², 30 steps, cfg 4, `er_sde` |
+| Measured | **10.1 s** |
+
+**Four latent-space upscalers from the same family are downloaded and pending**:
+`pid_{flux1,flux2,sd3}_{512→2048, 1024→4096}_4step` (2.73 GB each). They are 4-step latent-space
+upscalers — **the most promising candidates for solving the "1080p upscale never finishes" negative
+result in this document**.
+
+#### Kandinsky 5.0 T2V Lite — the lightest video line (measured 884.5 s on 2026-10-05)
+
+**Only 4.57 GB (814 tensors) — the lightest video model in this document.** The cost is speed.
+
+| Item | Value |
+|---|---|
+| Structure | `DualCLIPLoader(qwen_2.5_vl_7b_fp8 + clip_l, type=kandinsky5)` → `ModelSamplingSD3(shift=5)` → `Kandinsky5ImageToVideo` |
+| Parameters | 768×512, 121 frames, **50 steps, cfg 5**, `euler_ancestral` + `beta` scheduler |
+| VAE | Kijai's `hunyuan_video_vae_bf16.safetensors` (0.49 GB) |
+| Measured | **884.5 s** (+ 304 s queue) |
+
+> **⚠️ The links need two levels of resolution**: in this graph the `KSampler`'s `positive` and
+> `negative` **both point at `Kandinsky5ImageToVideo` (1022)** — the two real `CLIPTextEncode` nodes
+> live one level further down. Resolving only one level returns node 1022 itself, which has no
+> `text` field.
+
+
 ### 6.2 Image editing — FLUX.2 Klein 4B
 
 | Item | Value |
