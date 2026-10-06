@@ -111,6 +111,12 @@ Top row: English prompt. Bottom row: Chinese prompt. **The output is the same** 
 
 ---
 
+### 📜 Project history (hand-off document)
+
+**[HISTORY.md](HISTORY.md)** — the complete timeline from deployment to finalisation: what each stage did and why, the 42 recorded pitfalls, the current verdicts across 27 measured configurations, and what comes next.
+
+---
+
 ## Contents
 
 | Section | Topic | What you get |
