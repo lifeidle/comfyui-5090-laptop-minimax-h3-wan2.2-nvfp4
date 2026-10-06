@@ -4,7 +4,8 @@
 #  ③ 最终校验：字节数 + safetensors header
 import os, sys, time, json, struct, threading, urllib.request
 OP = urllib.request.build_opener(urllib.request.ProxyHandler({}))
-ROOT = r"D:/models/comfyui-models"; REPO = "Comfy-Org/Qwen-Image-2.1"
+# 模型库根目录（按需改，或设环境变量 COMFY_MODELS）
+ROOT = os.environ.get("COMFY_MODELS", "./comfyui-models"); REPO = "Comfy-Org/Qwen-Image-2.1"
 ITEMS = ["diffusion_models/qwen_image_2.1_int8_convrot.safetensors",
          "text_encoders/qwen3vl_8b_int8_convrot.safetensors"]
 BASES = [f"https://www.modelscope.cn/models/{REPO}/resolve/master/",
@@ -18,7 +19,7 @@ def total(p):
         except Exception: pass
     return -1
 def fetch(p, tries=60):
-    dst = os.path.join(ROOT, p.replace("/", os.sep)); os.makedirs(os.path.dirname(dst), exist_ok=True)
+    dst = os.path.join(ROOT, p.replace("/", os.sep)); os.makedirs(os.path.dirname(dst) or ".", exist_ok=True)
     exp = total(p)
     if exp <= 0: return print(f"  取不到大小 {p}")
     part = dst + ".part"

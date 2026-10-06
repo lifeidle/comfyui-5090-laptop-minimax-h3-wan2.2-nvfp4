@@ -51,7 +51,6 @@ Check before commercial use. "The weights download" ≠ "the output is commercia
 
 ---
 
-
 ### Pictures first — every image below is a real run on this machine
 
 #### Chinese text rendering: Qwen-Image 2512 vs 2.1, same prompt, same 1328×1328
@@ -108,12 +107,6 @@ Top row: English prompt. Bottom row: Chinese prompt. **The output is the same** 
 #### Kandinsky 5 T2V Lite: the lightest video line (4.57 GB)
 
 ![Kandinsky 5 video frames](assets/shots/cmp_kandinsky5_t2v.jpg)
-
----
-
-### 📜 Project history (hand-off document)
-
-**[HISTORY.md](HISTORY.md)** — the complete timeline from deployment to finalisation: what each stage did and why, the 42 recorded pitfalls, the current verdicts across 27 measured configurations, and what comes next.
 
 ---
 
@@ -588,7 +581,6 @@ Worth recording separately: the Lightning LoRA took the same model from **206.7 
 faster** — with detail, if anything, more present. This again confirms the §2 rule:
 **speed comes from fewer steps, not from smaller weights.**
 
-
 #### Qwen-Image 2.1 — the **successor** to our image pick (measured 2026-10-05)
 
 Once ComfyUI 0.38.0 added the `TextEncodeQwenImage21` node, Qwen-Image 2.1 became runnable.
@@ -620,8 +612,6 @@ Once ComfyUI 0.38.0 added the `TextEncodeQwenImage21` node, Qwen-Image 2.1 becam
 
 The two are stylistically complementary: 2512 gives bolder brushwork and stronger contrast;
 2.1 is more refined with more whitespace and subtler ink-wash gradation.
-
-
 
 #### Kandinsky 5.0 T2I Lite — a new image line (measured 2026-10-05)
 
@@ -659,8 +649,6 @@ out, with cleaner edges and no banding.
 > comfy-kitchen 0.2.36 **does** have `zero_pad`, but **the running ComfyUI process had been started
 > before the upgrade** and held the old module in memory. **Upgrade a Python package without
 > restarting ComfyUI and you keep running the old code.**
-
-
 
 #### Chroma1-HD fp8mixed — a new image line (measured 42.6 s on 2026-10-05)
 
@@ -706,8 +694,6 @@ result in this document**.
 > live one level further down. Resolving only one level returns node 1022 itself, which has no
 > `text` field.
 
-
-
 ##### ★ PixelDiT latent-space upscale — **the alternative that overturns this document's only "not feasible" result**
 
 | Item | Value |
@@ -734,7 +720,6 @@ model**: one pass, four steps, 2.73 GB of weights.
 **So this document's conclusion about 1080p has to be rewritten**: not "high resolution is not
 achievable on a 24 GB laptop", but **"HV1.5's two-stage serial upscale path cannot do it; PixelDiT's
 single-pass 4-step latent refinement can, in 5.4 s"**.
-
 
 ### 6.2 Image editing — FLUX.2 Klein 4B
 
@@ -1098,7 +1083,6 @@ numbers in this document:
 >    deleting 95 GB moved the free-space number not at all, and stopping ComfyUI released 46.5 GB at once.
 > 2. **Never use `os.path.realpath` to measure disk usage.** It does not resolve junctions and inflated
 >    515.6 GB to 852 GB. Use the Windows file identity (volume serial + `nFileIndex`).
-
 
 ## 7. Optimization checklist (configs you can copy)
 

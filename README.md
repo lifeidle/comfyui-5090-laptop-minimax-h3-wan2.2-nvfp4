@@ -48,7 +48,6 @@
 
 ---
 
-
 ### 看图说话 —— 这些图全部是本机实跑产物
 
 #### 中文文字渲染：Qwen-Image 2512 vs 2.1，同一句提示词、同一个 1328×1328
@@ -102,12 +101,6 @@
 #### Kandinsky 5 T2V Lite：最轻的视频线（4.57 GB）
 
 ![Kandinsky 5 视频帧](assets/shots/cmp_kandinsky5_t2v.jpg)
-
----
-
-### 📜 项目全史（交接文档）
-
-**[HISTORY.md](HISTORY.md)** —— 从部署到定稿的完整时间线：每个阶段做了什么、为什么这么选、踩过的 42 个坑、当前 27 组实测的最终结论、以及下一步候选。
 
 ---
 
@@ -541,7 +534,6 @@ det = 0.0000   |   cross = 0.0858   |   seedB = 0.1085   |   seed = 0.1256
 顺带一提，Lightning LoRA 的收益值得单独记一笔：**同一个模型，206.7 s → 12.2 s，快 16.9 倍**，
 而且细节反而更足。这又一次印证了 §2 那条原则 —— **提速靠「少走步数」，不靠「压权重」**。
 
-
 #### Qwen-Image 2.1 —— 图像首选的**继任者**（2026-10-05 实测）
 
 ComfyUI 0.38.0 新增 `TextEncodeQwenImage21` 节点后，Qwen-Image 2.1 变得可跑。
@@ -571,8 +563,6 @@ ComfyUI 0.38.0 新增 `TextEncodeQwenImage21` 节点后，Qwen-Image 2.1 变得�
 > 选型：**要绝对速度 → 2512 + Lightning（12.2 s）；要满质量 + 中等速度 + 更小体积 → 2.1（72.7 s）。**
 
 风格上两者可互补：2512 笔画粗犷、对比强烈；2.1 更雅致、留白更多、水墨层次更细腻。
-
-
 
 #### Kandinsky 5.0 T2I Lite —— 新增图像线（2026-10-05 实测）
 
@@ -606,8 +596,6 @@ ComfyUI 0.38.0 新增 `TextEncodeQwenImage21` 节点后，Qwen-Image 2.1 变得�
 > `group_norm_silu_pad3d() got an unexpected keyword argument 'zero_pad'` ——
 > 装的 comfy-kitchen 0.2.36 **确实有** `zero_pad` 参数，但**正在跑的 ComfyUI 进程是升级前启动的**，
 > 内存里加载的是旧模块。**升级 Python 包后不重启 ComfyUI，就会用到旧代码。**
-
-
 
 #### Chroma1-HD fp8mixed —— 新图像线（2026-10-05 实测 42.6 s）
 
@@ -646,8 +634,6 @@ ComfyUI 0.38.0 新增 `TextEncodeQwenImage21` 节点后，Qwen-Image 2.1 变得�
 > **⚠️ 连线要解析两层**：这个图的 `KSampler` 的 `positive` / `negative` **都指向 `Kandinsky5ImageToVideo`(1022)**，
 > 真正的两个 `CLIPTextEncode` 在 1022 那一层。只解析一层会拿到 1022 自己（它没有 `text` 字段）。
 
-
-
 ##### ★ PixelDiT 潜空间超分 —— **推翻本手册唯一那条「不可行」结论的替代方案**
 
 | 项 | 值 |
@@ -670,7 +656,6 @@ ComfyUI 0.38.0 新增 `TextEncodeQwenImage21` 节点后，Qwen-Image 2.1 变得�
 
 **所以本手册关于「1080p」的结论要改写**：不是「24 GB 上做不了高分辨率」，而是
 **「HV1.5 那条两步串行的超分路径做不了；PixelDiT 的单遍 4 步潜空间精修可以，5.4 秒」**。
-
 
 ### 6.2 图像编辑 —— FLUX.2 Klein 4B
 
@@ -1010,7 +995,6 @@ materials = 1   nodes = 1
 > 2. **统计磁盘占用不能用 `os.path.realpath`。** 它不解析 junction，会把 515.6 GB 算成 852 GB。
 >    必须用 Windows 文件身份（卷序列号 + `nFileIndex`）。
 
-
 ## 7. 优化清单（可以直接抄的配置）
 
 ![NVFP4 实际带来什么](assets/zh/chart6-nvfp4-gain.svg)
@@ -1151,7 +1135,6 @@ ComfyUI 官方的模板（`comfyui_workflow_templates_json/templates/` 与 `blue
 > 不会自己报错。所以**每次转换都应该做一次 dry-run 提交**（`POST /prompt`）——
 > 结构/类型正确时只会报 `value_not_in_list`（缺模型），其余报错都是真问题。
 
-
 ---
 
 ### 9.5 一个环境坑：Node 无法 spawn 子进程
@@ -1185,7 +1168,6 @@ Error: spawnSync C:\Program Files\Git\cmd\git.exe EBUSY
 > （换调用方、换目标程序），再决定是修脚本还是换工具链。
 > 我们一开始误以为是「scratch 目录被锁」，清理了目录、重启了进程都没用 ——
 > 直到测了「Node 能不能跑 `cmd.exe`」才定位到是**整个 Node 子进程能力被禁**。
-
 
 ## 10. 结论与后续
 
