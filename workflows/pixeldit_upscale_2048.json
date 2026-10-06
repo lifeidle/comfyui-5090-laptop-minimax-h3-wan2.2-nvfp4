@@ -1,0 +1,148 @@
+{
+ "1": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "gemma_2_2b_it_elm_fp8_scaled.safetensors",
+   "type": "pixeldit",
+   "device": "default"
+  }
+ },
+ "2": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "text": "A slender glass tower rising from a mirror-flat lake at dawn, soft mist, delicate light, highly detailed, cinematic",
+   "clip": [
+    "1",
+    0
+   ]
+  }
+ },
+ "3": {
+  "class_type": "ConditioningZeroOut",
+  "inputs": {
+   "conditioning": [
+    "2",
+    0
+   ]
+  }
+ },
+ "4": {
+  "class_type": "EmptyChromaRadianceLatentImage",
+  "inputs": {
+   "width": 2048,
+   "height": 2048,
+   "batch_size": 1
+  }
+ },
+ "5": {
+  "class_type": "PiDConditioning",
+  "inputs": {
+   "positive": [
+    "2",
+    0
+   ],
+   "latent": [
+    "4",
+    0
+   ],
+   "latent_format": "flux",
+   "degrade_sigma": 0
+  }
+ },
+ "6": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "pid_flux2_512_to_2048_4step_bf16.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "7": {
+  "class_type": "BasicScheduler",
+  "inputs": {
+   "scheduler": "simple",
+   "steps": 4,
+   "denoise": 1,
+   "model": [
+    "6",
+    0
+   ]
+  }
+ },
+ "8": {
+  "class_type": "KSamplerSelect",
+  "inputs": {
+   "sampler_name": "lcm"
+  }
+ },
+ "9": {
+  "class_type": "SamplerCustom",
+  "inputs": {
+   "add_noise": true,
+   "noise_seed": 20260922,
+   "cfg": 1,
+   "model": [
+    "6",
+    0
+   ],
+   "positive": [
+    "5",
+    0
+   ],
+   "negative": [
+    "3",
+    0
+   ],
+   "sampler": [
+    "8",
+    0
+   ],
+   "sigmas": [
+    "7",
+    0
+   ],
+   "latent_image": [
+    "4",
+    0
+   ]
+  }
+ },
+ "10": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "pixel_space"
+  }
+ },
+ "11": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "9",
+    0
+   ],
+   "vae": [
+    "10",
+    0
+   ]
+  }
+ },
+ "12": {
+  "class_type": "SaveImage",
+  "inputs": {
+   "filename_prefix": "pixeldit/upscale_2048_4step",
+   "images": [
+    "11",
+    0
+   ]
+  }
+ },
+ "_meta": {
+  "title": "PixelDiT pid_flux2_512→2048 · 4 步直出 2048²",
+  "based_on": "官方模板 utility_pid_latent_upscale_dit.json 的 PiD 支路简化而来",
+  "notes": [
+   "★ 关键认识：PixelDiT 的「超分」不是 img2img 放大，而是**用 4 步蒸馏模型直接在目标分辨率上生成**",
+   "★ EmptyChromaRadianceLatentImage 给的是目标尺寸潜空间；PiDConditioning 同时吃 positive 和这个 latent",
+   "★ latent_format=flux 与 pid_flux2_* 配对",
+   "★ 若这条能 4 步出 2048²，就绕开了 HV1.5 720p→1080p 超分那条「70 分钟未完成」的困境"
+  ]
+ }
+}
